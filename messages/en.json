@@ -1,0 +1,227 @@
+{
+  "metadata": {
+    "title": "GardenOS — Smart garden & robot mowing",
+    "description": "mygardenos.com: digitized gardens and robot mowing subscriptions."
+  },
+  "nav": {
+    "home": "Home",
+    "about": "About",
+    "participate": "How to participate",
+    "live": "Live & testing",
+    "register": "Membership"
+  },
+  "home": {
+    "badge": "mygardenos.com",
+    "headline": "Digital Gardens.\nSmarter Mowing.\nUnbeatable Price.",
+    "sub": "GardenOS unifies mapping, sensing, and operations data with a subscription-first robot mowing service—less guesswork, more predictable yards.",
+    "ctaPrimary": "How to participate",
+    "ctaSecondary": "Become a member",
+    "highlights": {
+      "title": "Product highlights",
+      "col1": {
+        "title": "End-to-end garden digitization",
+        "body": "From boundary mapping to growth and fleet signals—one digital twin and dashboard so every decision is grounded in live context."
+      },
+      "col2": {
+        "title": "Mowing as a subscription",
+        "body": "Seasonal or monthly plans with routing, scheduling, and remote ops included—less weekend rescue, more reliable coverage."
+      },
+      "col3": {
+        "title": "Built for homes and portfolios",
+        "body": "The same stack scales from single yards to multi-parcel estates with repeatable rollout, monitoring, and operations playbooks."
+      }
+    },
+    "prototype": {
+      "eyebrow": "Prototype field tests",
+      "title": "Next public test window opens soon",
+      "body": "We will run live mowing passes, boundary regression, and edge-case drills on a published schedule—RSVP for reminders and send your yard checklist.",
+      "cta": "Live & testing"
+    },
+    "registerBlock": {
+      "title": "Join early membership, hold your subscription perks",
+      "body": "Share your contact to get release notes, pilot slots, and launch pricing bands—we also post the roadmap in the community.",
+      "primaryCta": "Create membership",
+      "secondaryCta": "Learn how to participate"
+    }
+  },
+  "about": {
+    "metaTitle": "About",
+    "metaDescription": "Mission, vision, problems we solve, and values behind GardenOS digitized gardens and subscription mowing.",
+    "badge": "GardenOS",
+    "title": "About GardenOS",
+    "lead": "GardenOS serves homes and property teams with a combined playbook: digitize the yard first, then deliver mowing through a subscription-grade robot service.",
+    "mission": {
+      "title": "Mission",
+      "body": "Lower the operational bar for high-quality outdoor care—sensing, data, and robotics delivered as a subscription you can plan around."
+    },
+    "vision": {
+      "title": "Vision",
+      "body": "Become a trusted standard for digitized gardens and outdoor spaces—connecting devices, service partners, and communities into a durable smart-outdoors network."
+    },
+    "problems": {
+      "title": "Problems we obsess over",
+      "p1": {
+        "title": "Fragmented knowledge, hero-dependent ops",
+        "body": "Boundaries, slopes, vegetation, and fleet health live across paper trails and chats—hard to audit or hand off."
+      },
+      "p2": {
+        "title": "Mowing is costly to scale",
+        "body": "Outsourced crews fluctuate; owned robots idle without maintenance discipline—few repeatable service standards or data loops."
+      },
+      "p3": {
+        "title": "Subscriptions need a trustworthy backbone",
+        "body": "Moving from one-off sales to recurring care demands transparent job logs, predictable windows, and accountable remote operations."
+      }
+    },
+    "values": {
+      "title": "What we will not compromise",
+      "v1": {
+        "title": "Safety and compliance first",
+        "body": "Outdoor robotics must respect boundaries, privacy, and local rules before feature velocity."
+      },
+      "v2": {
+        "title": "Data should serve the owner",
+        "body": "Mapping and mowing telemetry stay within the scope you authorize for optimization—not a lock-in ransom."
+      },
+      "v3": {
+        "title": "Co-build with the community",
+        "body": "Early users, property partners, and builders shape the roadmap with grounded field feedback."
+      }
+    },
+    "cta": {
+      "title": "Exploring pilots or partnerships?",
+      "body": "Start with how to participate, or create a membership to get updates and invites.",
+      "primary": "How to participate",
+      "secondary": "Create membership"
+    }
+  },
+  "participate": {
+    "metaTitle": "How to participate",
+    "metaDescription": "Three ways to engage, baseline requirements, and sample cadence for GardenOS pilots and co-creation.",
+    "badge": "Co-creation",
+    "title": "Join the GardenOS early build",
+    "lead": "Homeowners, property operators, and technical partners can all contribute—the paths below turn your signal into roadmap decisions.",
+    "pathsTitle": "Three ways to engage",
+    "step1": {
+      "title": "Early access & private betas",
+      "body": "Exercise mapping tools, the mobile app, and prototype mowing flows—then file structured feedback and tickets inside published windows."
+    },
+    "step2": {
+      "title": "Scenario workshops",
+      "body": "Join virtual or on-site workshops to share edge cases so we can prioritize acceptance tests and release notes."
+    },
+    "step3": {
+      "title": "Pilot rollouts & joint ops",
+      "body": "When aligned, bring pilot parcels or project-based collaborations to validate subscription delivery, SLAs, and settlement models."
+    },
+    "reqTitle": "Before you jump in",
+    "reqIntro": "Safety and data quality gates differ by track—the bullets below are universal baselines (see each cohort invite for specifics).",
+    "req1": "You can sign the relevant pilot / beta agreement and authorize on-site mapping plus job telemetry needed to improve the product.",
+    "req2": "Sites need baseline network and power; disclose complex boundaries or local restrictions up front.",
+    "req3": "Please use the feedback template (screenshots, repro steps, expected behavior) so engineering can respond quickly.",
+    "req4": "Livestream schedules may shift—follow this page or member email for the final calendar.",
+    "scheduleTitle": "Near-term cadence (sample)",
+    "scheduleBody": "Q2: prototype revisit + boundary regression week. Q3: expand pilot metros and billing dry-runs. Official dates publish on Live & testing.",
+    "ctaTitle": "What to do next",
+    "ctaBody": "RSVP for the next public test, or create a membership to hold launch perks and notifications.",
+    "ctaLive": "Live & testing",
+    "ctaRegister": "Create membership"
+  },
+  "live": {
+    "metaTitle": "Live & testing",
+    "metaDescription": "Public prototype windows, how to watch, replays, and release notes for GardenOS field tests.",
+    "badge": "Public calendar",
+    "title": "Livestreams, replays, and release notes",
+    "lead": "Track public prototype windows, how to watch, and what changed in each drop—we ship on a predictable, traceable cadence.",
+    "windowEyebrow": "Next up",
+    "windowTitle": "Prototype public test window",
+    "windowBody": "We demo typical mowing passes, boundary hugging, obstacle avoidance, and recovery flows—with live Q&A for your scenarios.",
+    "windowNote": "Once dates and RSVP links are firm, we broadcast via member email and pinned community posts; replay links land here.",
+    "channelsTitle": "How to watch and download assets",
+    "ch1": {
+      "title": "Live broadcast",
+      "body": "Public sessions include multi-camera streams and captions—join five minutes early for the safety briefing."
+    },
+    "ch2": {
+      "title": "Replays & write-ups",
+      "body": "Edited replays and written recaps ship within 48 hours, including parameter ranges and known limitations."
+    },
+    "ch3": {
+      "title": "Technical briefs",
+      "body": "Each release ships with a changelog and migration notes; breaking behavior is called out explicitly."
+    },
+    "releasesTitle": "Recent capability drops (sample)",
+    "rel1": {
+      "title": "v0.4 — Subscription billing preview",
+      "body": "Draft pricing by parcel size and cadence with exportable reconciliation reports (test data)."
+    },
+    "rel2": {
+      "title": "v0.3 — Boundary regression toolkit",
+      "body": "Compare remapping deltas and auto-generate review task lists."
+    },
+    "rel3": {
+      "title": "v0.2 — Remote ops console",
+      "body": "Searchable job logs, explainable fault codes, and remote safe-stop controls."
+    },
+    "bannerTitle": "Never miss a public test",
+    "bannerBody": "Create a membership and enable email alerts to get RSVP and watch links the moment a schedule drops.",
+    "bannerCta": "Create membership"
+  },
+  "register": {
+    "metaTitle": "Membership",
+    "metaDescription": "Create a GardenOS membership for updates, pilots, and launch pricing—lead form opens soon.",
+    "badge": "Early access",
+    "title": "Create your GardenOS membership",
+    "lead": "Share contact details to receive release notes, pilot invites, launch pricing bands, and event reminders. The form below is a visual scaffold—submission will open once backend and compliance checks are wired.",
+    "benefitsTitle": "Member benefits",
+    "b1": {
+      "title": "Product updates & roadmap",
+      "body": "Regular digests on shipped features, known issues, and upcoming milestones."
+    },
+    "b2": {
+      "title": "Pilot and event alerts",
+      "body": "Get first notice when cohorts open; some sessions are members-only."
+    },
+    "b3": {
+      "title": "Launch and subscription conversations",
+      "body": "During pricing dry-runs, join surveys or interviews for a shot at early bands or service bundles (per published rules)."
+    },
+    "stepsTitle": "How registration works",
+    "s1": {
+      "title": "Share basics",
+      "body": "Email, display name, and optional org context for notifications and verification."
+    },
+    "s2": {
+      "title": "Choose channels",
+      "body": "Pick email and/or community channels—update preferences anytime via the footer link."
+    },
+    "s3": {
+      "title": "Receive targeted invites",
+      "body": "When pilots or livestreams open, you get the RSVP link and briefing pack."
+    },
+    "formTitle": "Lead capture (opening soon)",
+    "formHint": "Placeholder layout only; submissions will connect to our API and consent flows when ready.",
+    "labelName": "Name or nickname",
+    "labelEmail": "Email",
+    "labelOrg": "Organization (optional)",
+    "labelNotes": "Scenario notes (optional)",
+    "submitDisabled": "Submit opens soon",
+    "privacy": "We handle your data under our privacy policy—product and pilot comms only, never sold lists.",
+    "sideTitle": "Want context first?",
+    "sideBody": "Skim About and How to participate before choosing a track.",
+    "sideAbout": "About",
+    "sideParticipate": "How to participate"
+  },
+  "footer": {
+    "rights": "All rights reserved."
+  },
+  "lang": {
+    "zh": "中文",
+    "en": "English"
+  },
+  "notFound": {
+    "title": "Page not found",
+    "body": "The link may be outdated or this page is not available yet.",
+    "cta": "Back to home"
+  }
+}
