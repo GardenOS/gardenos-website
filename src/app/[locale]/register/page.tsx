@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/routing";
 import { FeatureCard } from "@/components/content/FeatureCard";
+import { RegisterForm } from "@/components/register/RegisterForm";
 
 type Props = { params: Promise<{ locale: string }> };
 
@@ -79,84 +80,20 @@ export default async function RegisterPage({ params }: Props) {
           </ol>
         </div>
 
-        <div className="rounded-2xl border border-garden-200 bg-white p-6 shadow-sm sm:p-8 lg:col-span-3">
-          <h2 className="text-lg font-semibold text-garden-950">{t("formTitle")}</h2>
-          <p className="mt-2 text-sm leading-relaxed text-garden-700">{t("formHint")}</p>
-          <div className="mt-8 space-y-5">
-            <div>
-              <label
-                className="mb-1.5 block text-xs font-medium uppercase tracking-wide text-garden-700"
-                htmlFor="reg-name"
-              >
-                {t("labelName")}
-              </label>
-              <input
-                id="reg-name"
-                name="name"
-                type="text"
-                disabled
-                className="w-full rounded-xl border border-garden-200 bg-garden-50/80 px-4 py-2.5 text-sm text-garden-900 outline-none ring-garden-500/30 placeholder:text-garden-400 disabled:cursor-not-allowed disabled:opacity-70"
-                placeholder="—"
-              />
-            </div>
-            <div>
-              <label
-                className="mb-1.5 block text-xs font-medium uppercase tracking-wide text-garden-700"
-                htmlFor="reg-email"
-              >
-                {t("labelEmail")}
-              </label>
-              <input
-                id="reg-email"
-                name="email"
-                type="email"
-                disabled
-                className="w-full rounded-xl border border-garden-200 bg-garden-50/80 px-4 py-2.5 text-sm text-garden-900 outline-none disabled:cursor-not-allowed disabled:opacity-70"
-                placeholder="—"
-              />
-            </div>
-            <div>
-              <label
-                className="mb-1.5 block text-xs font-medium uppercase tracking-wide text-garden-700"
-                htmlFor="reg-org"
-              >
-                {t("labelOrg")}
-              </label>
-              <input
-                id="reg-org"
-                name="org"
-                type="text"
-                disabled
-                className="w-full rounded-xl border border-garden-200 bg-garden-50/80 px-4 py-2.5 text-sm text-garden-900 outline-none disabled:cursor-not-allowed disabled:opacity-70"
-                placeholder="—"
-              />
-            </div>
-            <div>
-              <label
-                className="mb-1.5 block text-xs font-medium uppercase tracking-wide text-garden-700"
-                htmlFor="reg-notes"
-              >
-                {t("labelNotes")}
-              </label>
-              <textarea
-                id="reg-notes"
-                name="notes"
-                rows={3}
-                disabled
-                className="w-full resize-none rounded-xl border border-garden-200 bg-garden-50/80 px-4 py-2.5 text-sm text-garden-900 outline-none disabled:cursor-not-allowed disabled:opacity-70"
-                placeholder="—"
-              />
-            </div>
-            <button
-              type="button"
-              disabled
-              className="w-full rounded-full bg-garden-200 px-5 py-3 text-sm font-semibold text-garden-700 sm:w-auto sm:px-8"
-            >
-              {t("submitDisabled")}
-            </button>
-            <p className="text-xs leading-relaxed text-garden-600">{t("privacy")}</p>
-          </div>
-        </div>
+        <RegisterForm
+          labels={{
+            formTitle: t("formTitle"),
+            formHint: t("formHint"),
+            labelName: t("labelName"),
+            labelEmail: t("labelEmail"),
+            labelOrg: t("labelOrg"),
+            labelNotes: t("labelNotes"),
+            submitLabel: t("submit"),
+            privacy: t("privacy"),
+            successMsg: t("submitSuccessTitle"),
+            errorMsg: t("submitErrorBody")
+          }}
+        />
       </section>
 
       <aside
