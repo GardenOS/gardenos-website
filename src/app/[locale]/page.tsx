@@ -54,7 +54,7 @@ export default async function HomePage({ params }: Props) {
           <video
             controls
             preload="metadata"
-            className="w-full rounded-2xl border border-garden-200 bg-black shadow-sm"
+            className="w-full rounded-2xl border border-garden-200 bg-garden-950 shadow-sm"
           >
             <source src="/videos/gardenos-explainer.mp4" type="video/mp4" />
           </video>

@@ -122,8 +122,8 @@ export function CrowdfundingProgress({
               <span className="text-xs font-semibold uppercase tracking-wide text-garden-700">Members</span>
               <span className="inline-flex items-center gap-2 rounded-full bg-garden-950 px-3 py-1 text-sm font-semibold text-white">
                 <span className="relative inline-flex h-2 w-2">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />
-                  <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-garden-500 opacity-60" />
+                  <span className="relative inline-flex h-2 w-2 rounded-full bg-garden-500" />
                 </span>
                 <span className="tabular-nums">{currentMembers.toLocaleString(intlLocale)}</span>
               </span>
@@ -139,7 +139,7 @@ export function CrowdfundingProgress({
           <div className="relative">
             <div className="h-3 w-full rounded-full bg-white ring-1 ring-garden-200" aria-hidden />
             <div
-              className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-garden-600 via-garden-500 to-emerald-400 shadow-sm transition-[width] duration-1200 ease-out"
+              className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-garden-700 via-garden-500 to-garden-400 shadow-sm transition-[width] duration-1200 ease-out"
               style={{ width: `${(hasEntered ? animatedProgress : 0) * 100}%` }}
               aria-hidden
             />
@@ -157,7 +157,7 @@ export function CrowdfundingProgress({
                   <div
                     className={[
                       "h-5 w-5 -translate-x-1/2 rounded-full border-2 shadow-sm",
-                      reached ? "border-white bg-garden-600" : "border-garden-200 bg-white",
+                      reached ? "border-white bg-garden-950" : "border-garden-300 bg-garden-100",
                     ].join(" ")}
                   />
                 </div>
@@ -196,7 +196,7 @@ export function CrowdfundingProgress({
                     <span
                       className={[
                         "text-[11px] font-semibold",
-                        reached ? "text-garden-700" : "text-garden-500/70",
+                        reached ? "text-garden-700" : "text-garden-900/70",
                       ].join(" ")}
                     >
                       {reached ? "Unlocked" : "Locked"}
@@ -206,7 +206,7 @@ export function CrowdfundingProgress({
                     {currencySymbol}
                     {tier.price}
                     {idx === 0 ? null : (
-                      <span className="ml-2 text-xs font-semibold text-garden-500/80">
+                      <span className="ml-2 text-xs font-semibold text-garden-900/80">
                         down from {currencySymbol}
                         {tiers[0]?.price ?? 0}
                       </span>
