@@ -9,10 +9,13 @@ type AirtableCreateRecordsPayload = {
 export async function POST(request: Request) {
   try {
     const formData = await request.formData();
-    const name = String(formData.get("name") ?? "").trim();
+    const fullName = String(formData.get("fullName") ?? "").trim();
+    const wechatId = String(formData.get("wechatId") ?? "").trim();
+    const phone = String(formData.get("phone") ?? "").trim();
     const email = String(formData.get("email") ?? "").trim();
-    const org = String(formData.get("org") ?? "").trim();
-    const notes = String(formData.get("notes") ?? "").trim();
+    const preferredContact = String(formData.get("preferredContact") ?? "").trim();
+    const language = String(formData.get("language") ?? "").trim();
+    const subscriptionPlan = String(formData.get("subscriptionPlan") ?? "").trim();
 
     if (!email) {
       return NextResponse.json({ ok: false, error: "Email is required." }, { status: 400 });
@@ -37,11 +40,13 @@ export async function POST(request: Request) {
       records: [
         {
           fields: {
-            Name: name || undefined,
+            "Full Name": fullName || undefined,
+            "WeChat ID": wechatId || undefined,
+            Phone: phone || undefined,
             Email: email,
-            Organization: org || undefined,
-            Notes: notes || undefined,
-            Source: "website",
+            "Preferred Contact": preferredContact || undefined,
+            Language: language || undefined,
+            "Subscription Plan": subscriptionPlan || undefined,
           },
         },
       ],
@@ -73,4 +78,3 @@ export async function POST(request: Request) {
     );
   }
 }
-

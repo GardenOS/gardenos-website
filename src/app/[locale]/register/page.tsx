@@ -70,14 +70,22 @@ export default async function RegisterPage({ params }: Props) {
           <h2 className="text-lg font-semibold text-garden-950">{t("formTitle")}</h2>
           <p className="mt-2 text-sm leading-relaxed text-garden-700">{t("formHint")}</p>
           <RegisterForm
-            labelName={t("labelName")}
+            defaultLanguage={locale === "zh" ? "中文" : "English"}
+            labelFullName={t("labelFullName")}
+            labelWeChatId={t("labelWeChatId")}
+            labelPhone={t("labelPhone")}
             labelEmail={t("labelEmail")}
-            labelOrg={t("labelOrg")}
-            labelNotes={t("labelNotes")}
-            placeholderName={t("placeholderName")}
+            labelPreferredContact={t("labelPreferredContact")}
+            labelLanguage={t("labelLanguage")}
+            labelSubscriptionPlan={t("labelSubscriptionPlan")}
+            placeholderFullName={t("placeholderFullName")}
+            placeholderWeChatId={t("placeholderWeChatId")}
+            placeholderPhone={t("placeholderPhone")}
             placeholderEmail={t("placeholderEmail")}
-            placeholderOrg={t("placeholderOrg")}
-            placeholderNotes={t("placeholderNotes")}
+            placeholderPreferredContact={t("placeholderPreferredContact")}
+            placeholderSubscriptionPlan={t("placeholderSubscriptionPlan")}
+            languageOptionEnglish={t("languageOptionEnglish")}
+            languageOptionChinese={t("languageOptionChinese")}
             submit={t("submit")}
             reassurance={t("reassurance")}
             submitSuccess={t("submitSuccess")}

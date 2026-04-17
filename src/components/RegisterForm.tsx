@@ -3,14 +3,22 @@
 import { FormEvent, useState } from "react";
 
 type Props = {
-  labelName: string;
+  defaultLanguage: string;
+  labelFullName: string;
+  labelWeChatId: string;
+  labelPhone: string;
   labelEmail: string;
-  labelOrg: string;
-  labelNotes: string;
-  placeholderName: string;
+  labelPreferredContact: string;
+  labelLanguage: string;
+  labelSubscriptionPlan: string;
+  placeholderFullName: string;
+  placeholderWeChatId: string;
+  placeholderPhone: string;
   placeholderEmail: string;
-  placeholderOrg: string;
-  placeholderNotes: string;
+  placeholderPreferredContact: string;
+  placeholderSubscriptionPlan: string;
+  languageOptionEnglish: string;
+  languageOptionChinese: string;
   submit: string;
   reassurance: string;
   submitSuccess: string;
@@ -20,14 +28,22 @@ type Props = {
 };
 
 export function RegisterForm({
-  labelName,
+  defaultLanguage,
+  labelFullName,
+  labelWeChatId,
+  labelPhone,
   labelEmail,
-  labelOrg,
-  labelNotes,
-  placeholderName,
+  labelPreferredContact,
+  labelLanguage,
+  labelSubscriptionPlan,
+  placeholderFullName,
+  placeholderWeChatId,
+  placeholderPhone,
   placeholderEmail,
-  placeholderOrg,
-  placeholderNotes,
+  placeholderPreferredContact,
+  placeholderSubscriptionPlan,
+  languageOptionEnglish,
+  languageOptionChinese,
   submit,
   reassurance,
   submitSuccess,
@@ -68,6 +84,8 @@ export function RegisterForm({
       }
 
       form.reset();
+      const languageSelect = form.querySelector<HTMLSelectElement>("#reg-language");
+      if (languageSelect) languageSelect.value = defaultLanguage;
       setStatus({ kind: "success", message: submitSuccess });
     } catch {
       setStatus({ kind: "error", message: submitError });
@@ -81,17 +99,49 @@ export function RegisterForm({
       <div>
         <label
           className="mb-1.5 block text-xs font-medium uppercase tracking-wide text-garden-700"
-          htmlFor="reg-name"
+          htmlFor="reg-full-name"
         >
-          {labelName}
+          {labelFullName}
         </label>
         <input
-          id="reg-name"
-          name="name"
+          id="reg-full-name"
+          name="fullName"
           type="text"
           autoComplete="name"
           className="w-full rounded-xl border border-garden-200 bg-garden-50/80 px-4 py-2.5 text-sm text-garden-900 outline-none ring-garden-500/30 placeholder:text-garden-400"
-          placeholder={placeholderName}
+          placeholder={placeholderFullName}
+        />
+      </div>
+      <div>
+        <label
+          className="mb-1.5 block text-xs font-medium uppercase tracking-wide text-garden-700"
+          htmlFor="reg-wechat"
+        >
+          {labelWeChatId}
+        </label>
+        <input
+          id="reg-wechat"
+          name="wechatId"
+          type="text"
+          autoComplete="off"
+          className="w-full rounded-xl border border-garden-200 bg-garden-50/80 px-4 py-2.5 text-sm text-garden-900 outline-none"
+          placeholder={placeholderWeChatId}
+        />
+      </div>
+      <div>
+        <label
+          className="mb-1.5 block text-xs font-medium uppercase tracking-wide text-garden-700"
+          htmlFor="reg-phone"
+        >
+          {labelPhone}
+        </label>
+        <input
+          id="reg-phone"
+          name="phone"
+          type="tel"
+          autoComplete="tel"
+          className="w-full rounded-xl border border-garden-200 bg-garden-50/80 px-4 py-2.5 text-sm text-garden-900 outline-none"
+          placeholder={placeholderPhone}
         />
       </div>
       <div>
@@ -114,32 +164,49 @@ export function RegisterForm({
       <div>
         <label
           className="mb-1.5 block text-xs font-medium uppercase tracking-wide text-garden-700"
-          htmlFor="reg-org"
+          htmlFor="reg-preferred-contact"
         >
-          {labelOrg}
+          {labelPreferredContact}
         </label>
         <input
-          id="reg-org"
-          name="org"
+          id="reg-preferred-contact"
+          name="preferredContact"
           type="text"
-          autoComplete="organization"
           className="w-full rounded-xl border border-garden-200 bg-garden-50/80 px-4 py-2.5 text-sm text-garden-900 outline-none"
-          placeholder={placeholderOrg}
+          placeholder={placeholderPreferredContact}
         />
       </div>
       <div>
         <label
           className="mb-1.5 block text-xs font-medium uppercase tracking-wide text-garden-700"
-          htmlFor="reg-notes"
+          htmlFor="reg-language"
         >
-          {labelNotes}
+          {labelLanguage}
         </label>
-        <textarea
-          id="reg-notes"
-          name="notes"
-          rows={3}
-          className="w-full resize-none rounded-xl border border-garden-200 bg-garden-50/80 px-4 py-2.5 text-sm text-garden-900 outline-none"
-          placeholder={placeholderNotes}
+        <select
+          id="reg-language"
+          name="language"
+          required
+          defaultValue={defaultLanguage}
+          className="w-full rounded-xl border border-garden-200 bg-garden-50/80 px-4 py-2.5 text-sm text-garden-900 outline-none"
+        >
+          <option value="English">{languageOptionEnglish}</option>
+          <option value="中文">{languageOptionChinese}</option>
+        </select>
+      </div>
+      <div>
+        <label
+          className="mb-1.5 block text-xs font-medium uppercase tracking-wide text-garden-700"
+          htmlFor="reg-subscription-plan"
+        >
+          {labelSubscriptionPlan}
+        </label>
+        <input
+          id="reg-subscription-plan"
+          name="subscriptionPlan"
+          type="text"
+          className="w-full rounded-xl border border-garden-200 bg-garden-50/80 px-4 py-2.5 text-sm text-garden-900 outline-none"
+          placeholder={placeholderSubscriptionPlan}
         />
       </div>
       <button
