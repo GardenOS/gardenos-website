@@ -2,11 +2,11 @@ import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/routing";
 import { FeatureCard } from "@/components/content/FeatureCard";
+import { CrowdfundingProgress } from "@/components/CrowdfundingProgress";
 
 type Props = { params: Promise<{ locale: string }> };
 
 const channels = ["ch1", "ch2", "ch3"] as const;
-const releases = ["rel1", "rel2", "rel3"] as const;
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
@@ -55,6 +55,8 @@ export default async function LivePage({ params }: Props) {
         </div>
       </section>
 
+      <CrowdfundingProgress currentMembers={2} />
+
       <section aria-labelledby="channels-heading" className="space-y-8">
         <h2
           id="channels-heading"
@@ -68,31 +70,6 @@ export default async function LivePage({ params }: Props) {
               <FeatureCard title={t(`${key}.title`)}>
                 <p>{t(`${key}.body`)}</p>
               </FeatureCard>
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      <section aria-labelledby="releases-heading" className="space-y-8">
-        <h2
-          id="releases-heading"
-          className="text-lg font-semibold tracking-tight text-garden-950 sm:text-xl"
-        >
-          {t("releasesTitle")}
-        </h2>
-        <ul className="relative space-y-0 border-l-2 border-garden-200 pl-8">
-          {releases.map((key) => (
-            <li key={key} className="relative pb-10 last:pb-0">
-              <span
-                className="absolute -left-[calc(0.5rem+1px)] top-1.5 flex h-3 w-3 -translate-x-1/2 rounded-full border-2 border-white bg-garden-500 shadow-sm"
-                aria-hidden
-              />
-              <div className="rounded-xl border border-garden-200/90 bg-white p-5 shadow-sm">
-                <h3 className="text-sm font-semibold text-garden-950 sm:text-base">
-                  {t(`${key}.title`)}
-                </h3>
-                <p className="mt-2 text-sm leading-relaxed text-garden-800">{t(`${key}.body`)}</p>
-              </div>
             </li>
           ))}
         </ul>

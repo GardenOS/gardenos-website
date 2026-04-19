@@ -1,69 +1,80 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
-const DEFAULT_BASE_ID = "appVcxgsLlVnnY3RD";
-const DEFAULT_TABLE_ID = "tblxlxijrK3zJqAYA";
-
-type Body = {
-  name?: string;
-  email?: string;
-  organization?: string;
-  notes?: string;
+type AirtableCreateRecordsPayload = {
+  records: Array<{
+    fields: Record<string, unknown>;
+  }>;
 };
 
-export async function POST(req: NextRequest) {
+export async function POST(request: Request) {
   try {
-    const { name, email, organization, notes } = (await req.json()) as Body;
+    const formData = await request.formData();
+    const fullName = String(formData.get("fullName") ?? "").trim();
+    const wechatId = String(formData.get("wechatId") ?? "").trim();
+    const phone = String(formData.get("phone") ?? "").trim();
+    const email = String(formData.get("email") ?? "").trim();
+    const preferredContact = String(formData.get("preferredContact") ?? "").trim();
+    const language = String(formData.get("language") ?? "").trim();
+    const subscriptionPlan = String(formData.get("subscriptionPlan") ?? "").trim();
 
-    const token = process.env.AIRTABLE_TOKEN?.trim();
-    if (!token) {
-      return NextResponse.json({ error: "Missing AIRTABLE_TOKEN" }, { status: 500 });
+    if (!email) {
+      return NextResponse.json({ ok: false, error: "Email is required." }, { status: 400 });
     }
 
-    const emailTrimmed = typeof email === "string" ? email.trim() : "";
-    if (!emailTrimmed) {
-      return NextResponse.json({ error: "Email is required" }, { status: 400 });
+    const apiKey = process.env.AIRTABLE_API_KEY;
+    const baseId = process.env.AIRTABLE_BASE_ID;
+    const tableName = process.env.AIRTABLE_TABLE_NAME;
+
+    if (!apiKey || !baseId || !tableName) {
+      return NextResponse.json(
+        {
+          ok: false,
+          error:
+            "Server is missing AIRTABLE_API_KEY / AIRTABLE_BASE_ID / AIRTABLE_TABLE_NAME environment variables.",
+        },
+        { status: 500 }
+      );
     }
 
-    const baseId = process.env.AIRTABLE_BASE_ID?.trim() || DEFAULT_BASE_ID;
-    const tableId = process.env.AIRTABLE_TABLE_ID?.trim() || DEFAULT_TABLE_ID;
-
-    const fields: Record<string, string> = {
-      fldOxGDc3DFJNnrOI: typeof name === "string" ? name.trim() : "",
-      fldL59yygf319CsJ6: emailTrimmed,
-      fldtunhClMnHCknYo: "Other",
+    const payload: AirtableCreateRecordsPayload = {
+      records: [
+        {
+          fields: {
+            "Full Name": fullName || undefined,
+            "WeChat ID": wechatId || undefined,
+            Phone: phone || undefined,
+            Email: email,
+            "Preferred Contact": preferredContact || undefined,
+            Language: language || undefined,
+            "Subscription Plan": subscriptionPlan || undefined,
+          },
+        },
+      ],
     };
 
-    const extra = [organization, notes]
-      .filter((v): v is string => typeof v === "string" && v.trim().length > 0)
-      .map((v) => v.trim())
-      .join(" | ");
-
-    if (extra) {
-      fields.fld1VWNyLrPWaxyg1 = extra;
-    }
-
-    const res = await fetch(
-      `https://api.airtable.com/v0/${baseId}/${tableId}`,
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ fields }),
-      }
-    );
-
-    const data = (await res.json()) as unknown;
+    const res = await fetch(`https://api.airtable.com/v0/${baseId}/${encodeURIComponent(tableName)}`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+      cache: "no-store",
+    });
 
     if (!res.ok) {
-      console.error("Airtable error:", data);
-      return NextResponse.json({ error: data }, { status: 500 });
+      const text = await res.text().catch(() => "");
+      return NextResponse.json(
+        { ok: false, error: "Airtable request failed.", status: res.status, details: text },
+        { status: 502 }
+      );
     }
 
-    return NextResponse.json({ success: true });
-  } catch (e) {
-    console.error("register route:", e);
-    return NextResponse.json({ error: String(e) }, { status: 500 });
+    return NextResponse.json({ ok: true });
+  } catch {
+    return NextResponse.json(
+      { ok: false, error: "Unexpected server error while submitting registration." },
+      { status: 500 }
+    );
   }
 }

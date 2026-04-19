@@ -1,5 +1,7 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/routing";
+import { CrowdfundingProgress } from "@/components/CrowdfundingProgress";
+import { HomePointCloudHero } from "@/components/home/HomePointCloudHero";
 
 type Props = { params: Promise<{ locale: string }> };
 
@@ -7,10 +9,14 @@ export default async function HomePage({ params }: Props) {
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations("home");
+  const videoTitle = locale === "zh" ? "看看它如何工作" : "See how it works";
 
   return (
     <div className="space-y-16 sm:space-y-20">
       <section className="space-y-8">
+        <div className="mb-6">
+          <HomePointCloudHero />
+        </div>
         <p className="inline-flex rounded-full border border-garden-200 bg-white px-3 py-1 text-xs font-medium uppercase tracking-wide text-garden-700">
           {t("badge")}
         </p>
@@ -33,6 +39,29 @@ export default async function HomePage({ params }: Props) {
           >
             {t("ctaSecondary")}
           </Link>
+        </div>
+      </section>
+
+      <section aria-label="Crowdfunding progress spotlight" className="relative">
+        <div className="absolute inset-0 -z-10 rounded-3xl bg-gradient-to-r from-garden-100/70 via-white to-garden-100/70 blur-2xl" />
+        <CrowdfundingProgress currentMembers={2} />
+      </section>
+
+      <section aria-labelledby="video-heading" className="space-y-6">
+        <h2
+          id="video-heading"
+          className="text-lg font-semibold tracking-tight text-garden-950 sm:text-xl"
+        >
+          {videoTitle}
+        </h2>
+        <div className="mx-auto w-full max-w-[900px]">
+          <video
+            controls
+            preload="metadata"
+            className="w-full rounded-2xl border border-garden-200 bg-garden-950 shadow-sm"
+          >
+            <source src="/videos/gardenos-explainer.mp4" type="video/mp4" />
+          </video>
         </div>
       </section>
 

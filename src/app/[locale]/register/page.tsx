@@ -2,12 +2,11 @@ import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/routing";
 import { FeatureCard } from "@/components/content/FeatureCard";
-import { RegisterForm } from "@/components/register/RegisterForm";
+import { RegisterForm } from "@/components/RegisterForm";
 
 type Props = { params: Promise<{ locale: string }> };
 
 const benefits = ["b1", "b2", "b3"] as const;
-const regSteps = ["s1", "s2", "s3"] as const;
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
@@ -60,40 +59,41 @@ export default async function RegisterPage({ params }: Props) {
             id="register-flow"
             className="text-lg font-semibold tracking-tight text-garden-950 sm:text-xl"
           >
-            {t("stepsTitle")}
+            {t("formSideTitle")}
           </h2>
-          <ol className="mt-8 space-y-6">
-            {regSteps.map((key, index) => (
-              <li key={key} className="flex gap-4">
-                <div
-                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-garden-100 text-sm font-bold text-garden-800"
-                  aria-hidden
-                >
-                  {index + 1}
-                </div>
-                <div>
-                  <h3 className="text-base font-semibold text-garden-950">{t(`${key}.title`)}</h3>
-                  <p className="mt-1 text-sm leading-relaxed text-garden-800">{t(`${key}.body`)}</p>
-                </div>
-              </li>
-            ))}
-          </ol>
+          <p className="mt-4 text-sm leading-relaxed text-garden-800 sm:text-base">
+            {t("formSideBody")}
+          </p>
         </div>
 
-        <RegisterForm
-          labels={{
-            formTitle: t("formTitle"),
-            formHint: t("formHint"),
-            labelName: t("labelName"),
-            labelEmail: t("labelEmail"),
-            labelOrg: t("labelOrg"),
-            labelNotes: t("labelNotes"),
-            submitLabel: t("submit"),
-            privacy: t("privacy"),
-            successMsg: t("submitSuccessTitle"),
-            errorMsg: t("submitErrorBody")
-          }}
-        />
+        <div className="rounded-2xl border border-garden-200 bg-white p-6 shadow-sm sm:p-8 lg:col-span-3">
+          <h2 className="text-lg font-semibold text-garden-950">{t("formTitle")}</h2>
+          <p className="mt-2 text-sm leading-relaxed text-garden-700">{t("formHint")}</p>
+          <RegisterForm
+            defaultLanguage={locale === "zh" ? "中文" : "English"}
+            labelFullName={t("labelFullName")}
+            labelWeChatId={t("labelWeChatId")}
+            labelPhone={t("labelPhone")}
+            labelEmail={t("labelEmail")}
+            labelPreferredContact={t("labelPreferredContact")}
+            labelLanguage={t("labelLanguage")}
+            labelSubscriptionPlan={t("labelSubscriptionPlan")}
+            placeholderFullName={t("placeholderFullName")}
+            placeholderWeChatId={t("placeholderWeChatId")}
+            placeholderPhone={t("placeholderPhone")}
+            placeholderEmail={t("placeholderEmail")}
+            placeholderPreferredContact={t("placeholderPreferredContact")}
+            placeholderSubscriptionPlan={t("placeholderSubscriptionPlan")}
+            languageOptionEnglish={t("languageOptionEnglish")}
+            languageOptionChinese={t("languageOptionChinese")}
+            submit={t("submit")}
+            reassurance={t("reassurance")}
+            submitSuccess={t("submitSuccess")}
+            submitError={t("submitError")}
+            submitMissingConfig={t("submitMissingConfig")}
+            submitInFlight={t("submitInFlight")}
+          />
+        </div>
       </section>
 
       <aside

@@ -29,24 +29,11 @@ export default async function AboutPage({ params }: Props) {
         <h1 className="text-balance text-3xl font-semibold tracking-tight text-garden-950 sm:text-4xl">
           {t("title")}
         </h1>
+        <p className="max-w-3xl text-pretty text-lg leading-relaxed text-garden-800">
+          {t("origin")}
+        </p>
         <p className="max-w-3xl text-pretty text-lg leading-relaxed text-garden-800">{t("lead")}</p>
       </header>
-
-      <section aria-labelledby="mission-vision" className="grid gap-6 lg:grid-cols-2">
-        <h2 id="mission-vision" className="sr-only">
-          {t("mission.title")} / {t("vision.title")}
-        </h2>
-        <div className="rounded-2xl border border-garden-200/90 bg-white p-6 shadow-sm ring-1 ring-garden-100/80 sm:p-8">
-          <span className="mb-4 block h-1 w-10 rounded-full bg-garden-500" aria-hidden />
-          <h3 className="text-lg font-semibold text-garden-950">{t("mission.title")}</h3>
-          <p className="mt-3 text-sm leading-relaxed text-garden-800 sm:text-base">{t("mission.body")}</p>
-        </div>
-        <div className="rounded-2xl border border-garden-200/90 bg-white p-6 shadow-sm ring-1 ring-garden-100/80 sm:p-8">
-          <span className="mb-4 block h-1 w-10 rounded-full bg-garden-400" aria-hidden />
-          <h3 className="text-lg font-semibold text-garden-950">{t("vision.title")}</h3>
-          <p className="mt-3 text-sm leading-relaxed text-garden-800 sm:text-base">{t("vision.body")}</p>
-        </div>
-      </section>
 
       <section aria-labelledby="problems-heading" className="space-y-8">
         <h2
@@ -66,6 +53,22 @@ export default async function AboutPage({ params }: Props) {
         </ul>
       </section>
 
+      <section aria-labelledby="mission-vision" className="grid gap-6 lg:grid-cols-2">
+        <h2 id="mission-vision" className="sr-only">
+          {t("mission.title")} / {t("vision.title")}
+        </h2>
+        <div className="rounded-2xl border border-garden-200/90 bg-white p-6 shadow-sm ring-1 ring-garden-100/80 sm:p-8">
+          <span className="mb-4 block h-1 w-10 rounded-full bg-garden-500" aria-hidden />
+          <h3 className="text-lg font-semibold text-garden-950">{t("mission.title")}</h3>
+          <p className="mt-3 text-sm leading-relaxed text-garden-800 sm:text-base">{t("mission.body")}</p>
+        </div>
+        <div className="rounded-2xl border border-garden-200/90 bg-white p-6 shadow-sm ring-1 ring-garden-100/80 sm:p-8">
+          <span className="mb-4 block h-1 w-10 rounded-full bg-garden-400" aria-hidden />
+          <h3 className="text-lg font-semibold text-garden-950">{t("vision.title")}</h3>
+          <p className="mt-3 text-sm leading-relaxed text-garden-800 sm:text-base">{t("vision.body")}</p>
+        </div>
+      </section>
+
       <section aria-labelledby="values-heading" className="space-y-8">
         <h2
           id="values-heading"
@@ -79,6 +82,33 @@ export default async function AboutPage({ params }: Props) {
               <FeatureCard title={t(`values.${key}.title`)}>
                 <p>{t(`values.${key}.body`)}</p>
               </FeatureCard>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section aria-labelledby="changelog-heading" className="space-y-8">
+        <h2
+          id="changelog-heading"
+          className="text-lg font-semibold tracking-tight text-garden-950 sm:text-xl"
+        >
+          {t("changelogTitle")}
+        </h2>
+        <ul className="relative space-y-0 border-l-2 border-garden-200 pl-8">
+          {(["rel1", "rel2", "rel3"] as const).map((key) => (
+            <li key={key} className="relative pb-10 last:pb-0">
+              <span
+                className="absolute -left-[calc(0.5rem+1px)] top-1.5 flex h-3 w-3 -translate-x-1/2 rounded-full border-2 border-white bg-garden-500 shadow-sm"
+                aria-hidden
+              />
+              <div className="rounded-xl border border-garden-200/90 bg-white p-5 shadow-sm">
+                <h3 className="text-sm font-semibold text-garden-950 sm:text-base">
+                  {t(`changelog.${key}.title`)}
+                </h3>
+                <p className="mt-2 text-sm leading-relaxed text-garden-800">
+                  {t(`changelog.${key}.body`)}
+                </p>
+              </div>
             </li>
           ))}
         </ul>
