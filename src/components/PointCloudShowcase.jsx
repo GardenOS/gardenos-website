@@ -2,52 +2,66 @@
 import { useRef, useEffect, Suspense, useMemo } from 'react'
 import { Canvas, useFrame, useLoader } from '@react-three/fiber'
 import { OrbitControls } from '@react-three/drei'
-import { PLYLoader } from 'three/examples/jsm/loaders/PLYLoader'
+import { PLYLoader } from 'three/examples/jsm/loaders/PLYLoader.js'
 import * as THREE from 'three'
 
 const SHOWCASE_URL = 'https://pub-87cdc52ee5f6468fa264d104e891c756.r2.dev/showcase_rgb.ply'
 
 function PointCloud() {
   const geometry = useLoader(PLYLoader, SHOWCASE_URL)
-  const meshRef = useRef()
+  const meshRef = useRef(null)
+
+  const hasVertexColors = geometry.hasAttribute('color')
 
   const texture = useMemo(() => {
+    if (typeof document === 'undefined') return null
     const canvas = document.createElement('canvas')
     canvas.width = 64
     canvas.height = 64
     const ctx = canvas.getContext('2d')
+    if (!ctx) return null
     const gradient = ctx.createRadialGradient(32, 32, 0, 32, 32, 32)
     gradient.addColorStop(0, 'rgba(255,255,255,1)')
     gradient.addColorStop(0.4, 'rgba(255,255,255,0.8)')
     gradient.addColorStop(1, 'rgba(255,255,255,0)')
     ctx.fillStyle = gradient
     ctx.fillRect(0, 0, 64, 64)
-    return new THREE.CanvasTexture(canvas)
+    const tex = new THREE.CanvasTexture(canvas)
+    tex.needsUpdate = true
+    return tex
   }, [])
 
   useEffect(() => {
     if (!geometry) return
     geometry.computeBoundingBox()
+    const box = geometry.boundingBox
+    if (!box) return
     const center = new THREE.Vector3()
-    geometry.boundingBox.getCenter(center)
+    box.getCenter(center)
     geometry.translate(-center.x, -center.y, -center.z)
   }, [geometry])
+
+  useEffect(() => {
+    return () => {
+      texture?.dispose?.()
+    }
+  }, [texture])
 
   useFrame(() => {
     if (meshRef.current) meshRef.current.rotation.z += 0.0005
   })
 
   return (
-    <points ref={meshRef}>
-      <primitive object={geometry} attach="geometry" />
+    <points ref={meshRef} geometry={geometry}>
       <pointsMaterial
         size={0.15}
-        map={texture}
-        vertexColors
+        map={texture ?? undefined}
+        vertexColors={hasVertexColors}
+        color={hasVertexColors ? '#ffffff' : '#7dcea0'}
         sizeAttenuation
         transparent
         opacity={1}
-        alphaTest={0.05}
+        alphaTest={texture ? 0.05 : undefined}
         blending={THREE.AdditiveBlending}
         depthWrite={false}
       />
