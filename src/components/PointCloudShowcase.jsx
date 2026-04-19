@@ -82,7 +82,7 @@ export default function PointCloudShowcase() {
   return (
     <div className="relative w-full h-[600px] bg-black rounded-2xl overflow-hidden">
       <Suspense fallback={<Loader />}>
-        <Canvas camera={{ position: [0, 40, 120], fov: 55 }}>
+        <Canvas camera={{ position: [0, 80, 160], fov: 45 }}>
           <PointCloud />
           <OrbitControls
             enableDamping
