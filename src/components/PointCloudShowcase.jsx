@@ -54,7 +54,7 @@ function PointCloud() {
   return (
     <points ref={meshRef} geometry={geometry}>
       <pointsMaterial
-        size={0.3}
+        size={0.15}
         map={texture ?? undefined}
         vertexColors={hasVertexColors}
         color={hasVertexColors ? '#ffffff' : '#7dcea0'}
@@ -82,7 +82,7 @@ export default function PointCloudShowcase() {
   return (
     <div className="relative w-full h-[600px] bg-black rounded-2xl overflow-hidden">
       <Suspense fallback={<Loader />}>
-        <Canvas camera={{ position: [60, 50, 60], fov: 55 }}>
+        <Canvas camera={{ position: [80, 60, 80], fov: 60 }}>
           <PointCloud />
           <OrbitControls
             enableDamping
