@@ -232,6 +232,30 @@
     "sideAbout": "关于我们",
     "sideParticipate": "如何参与"
   },
+  "dashboard": {
+    "metaTitle": "控制台",
+    "metaDescription": "管理 LiDAR 扫描与上传。",
+    "eyebrow": "控制台",
+    "loadingList": "加载中…",
+    "title": "你的扫描文件",
+    "subtitle": "将 .las 点云上传到 GardenOS 安全存储。",
+    "listTitle": "扫描文件列表",
+    "empty": "暂无扫描。上传 .las 文件即可开始。",
+    "upload": "上传 .LAS",
+    "uploading": "上传中…",
+    "uploadHint": "仅支持 .las 文件。",
+    "refresh": "刷新列表",
+    "colName": "文件",
+    "colSize": "大小",
+    "colDate": "上传时间",
+    "successTitle": "上传成功",
+    "successBody": "文件已成功上传到存储。",
+    "dismiss": "关闭",
+    "errorAuth": "请重新登录。",
+    "errorUpload": "上传失败，请重试。",
+    "errorList": "无法加载扫描列表。",
+    "errorPresign": "无法准备上传，请检查网络后重试。"
+  },
   "footer": {
     "rights": "保留所有权利。"
   },

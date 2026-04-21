@@ -232,6 +232,30 @@
     "sideAbout": "About",
     "sideParticipate": "How to participate"
   },
+  "dashboard": {
+    "metaTitle": "Dashboard",
+    "metaDescription": "Manage your LiDAR scans and uploads.",
+    "eyebrow": "Dashboard",
+    "loadingList": "Loading…",
+    "title": "Your scans",
+    "subtitle": "Upload .las point clouds to your secure GardenOS storage.",
+    "listTitle": "Scan files",
+    "empty": "No scans yet. Upload a .las file to get started.",
+    "upload": "Upload .LAS",
+    "uploading": "Uploading…",
+    "uploadHint": "Only .las files are accepted.",
+    "refresh": "Refresh list",
+    "colName": "File",
+    "colSize": "Size",
+    "colDate": "Uploaded",
+    "successTitle": "Upload complete",
+    "successBody": "Your file was uploaded successfully.",
+    "dismiss": "Dismiss",
+    "errorAuth": "Please sign in again.",
+    "errorUpload": "Upload failed. Please try again.",
+    "errorList": "Could not load your scan list.",
+    "errorPresign": "Could not prepare upload. Please try again."
+  },
   "footer": {
     "rights": "All rights reserved."
   },

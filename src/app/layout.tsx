@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { ClerkProvider } from "@clerk/nextjs";
 import { Noto_Sans_SC } from "next/font/google";
 import "./globals.css";
 
@@ -13,7 +14,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html className={notoSansSc.variable} lang="zh" suppressHydrationWarning>
       <body className="min-h-dvh font-sans antialiased">
-        {children}
+        <ClerkProvider>{children}</ClerkProvider>
       </body>
     </html>
   );
