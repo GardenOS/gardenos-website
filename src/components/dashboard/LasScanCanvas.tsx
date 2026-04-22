@@ -3,6 +3,7 @@
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import type { BufferGeometry } from "three";
+import { LasScanEdlComposer } from "./LasScanEdlComposer";
 
 type Props = {
   geometry: BufferGeometry | null;
@@ -21,19 +22,22 @@ export function LasScanCanvas({ geometry }: Props) {
 
   return (
     <div className="h-[min(70vh,720px)] min-h-[420px] w-full overflow-hidden rounded-2xl border border-garden-700/40 bg-black ring-1 ring-garden-800/50">
-      <Canvas camera={{ position: [0, 80, 160], fov: 45 }}>
+      <Canvas
+        gl={{ antialias: false, stencil: false, depth: true }}
+        camera={{ position: [0, 80, 160], fov: 45 }}
+      >
         <color attach="background" args={["#0a120e"]} />
         <ambientLight intensity={0.35} />
         <directionalLight position={[40, 80, 40]} intensity={0.45} color="#c8e6c9" />
         <points key={geometry.uuid} geometry={geometry}>
           <pointsMaterial
-            size={0.003}
+            size={0.01}
             sizeAttenuation
             vertexColors={hasColors}
             color={hasColors ? "#ffffff" : "#7dcea0"}
-            transparent
-            opacity={0.95}
-            depthWrite={false}
+            depthWrite
+            depthTest
+            transparent={false}
           />
         </points>
         <OrbitControls
@@ -42,6 +46,7 @@ export function LasScanCanvas({ geometry }: Props) {
           minDistance={20}
           maxDistance={800}
         />
+        <LasScanEdlComposer />
       </Canvas>
     </div>
   );
