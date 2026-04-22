@@ -2,6 +2,7 @@ import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/routing";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { SiteHeaderClerkAuth } from "./SiteHeaderClerkAuth";
+import { SiteHeaderDashboardLink } from "./SiteHeaderDashboardLink";
 
 export async function SiteHeader() {
   const t = await getTranslations("nav");
@@ -30,6 +31,7 @@ export async function SiteHeader() {
               {label}
             </Link>
           ))}
+          <SiteHeaderDashboardLink />
         </nav>
         <div className="flex flex-wrap items-center gap-3 sm:ml-auto">
           <SiteHeaderClerkAuth />
