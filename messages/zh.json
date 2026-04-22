@@ -233,6 +233,19 @@
     "sideAbout": "关于我们",
     "sideParticipate": "如何参与"
   },
+  "dashboardScan": {
+    "metaTitle": "扫描查看",
+    "metaDescription": "在浏览器中查看 LiDAR 点云。",
+    "back": "返回控制台",
+    "title": "点云预览",
+    "loading": "正在下载…",
+    "parsing": "正在解析 LAS…",
+    "missingKey": "缺少文件 key。请从控制台扫描列表进入本页。",
+    "badKey": "文件路径无效。",
+    "missingPublicUrl": "未配置公共文件地址（NEXT_PUBLIC_R2_PUBLIC_URL）。",
+    "loadFailed": "无法加载或解析该 LAS 文件。",
+    "hintControls": "拖拽旋转 · 滚轮缩放"
+  },
   "dashboard": {
     "metaTitle": "控制台",
     "metaDescription": "管理 LiDAR 扫描与上传。",

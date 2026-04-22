@@ -233,6 +233,19 @@
     "sideAbout": "About",
     "sideParticipate": "How to participate"
   },
+  "dashboardScan": {
+    "metaTitle": "Scan viewer",
+    "metaDescription": "View a LiDAR scan in the browser.",
+    "back": "Back to dashboard",
+    "title": "Point cloud",
+    "loading": "Downloading…",
+    "parsing": "Parsing LAS…",
+    "missingKey": "Missing file key. Open this page from your dashboard scan list.",
+    "badKey": "Invalid file path.",
+    "missingPublicUrl": "Public file URL is not configured (NEXT_PUBLIC_R2_PUBLIC_URL).",
+    "loadFailed": "Could not load or parse this LAS file.",
+    "hintControls": "Drag to rotate · Scroll to zoom"
+  },
   "dashboard": {
     "metaTitle": "Dashboard",
     "metaDescription": "Manage your LiDAR scans and uploads.",

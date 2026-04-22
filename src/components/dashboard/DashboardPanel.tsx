@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
+import { Link } from "@/i18n/routing";
 
 type ScanRow = { key: string; size: number; lastModified: string | null };
 
@@ -25,7 +26,14 @@ function formatBytes(bytes: number, localeTag: string) {
   return `${nf.format(v)} ${units[i]}`;
 }
 
-export function DashboardPanel() {
+type DashboardPanelProps = {
+  /** Pathname for LAS viewer (locale prefix added by next-intl Link). */
+  scanViewerPath?: string;
+};
+
+export function DashboardPanel({
+  scanViewerPath = "/dashboard/scan",
+}: DashboardPanelProps) {
   const t = useTranslations("dashboard");
   const locale = useLocale();
   const localeTag = locale === "zh" ? "zh-CN" : "en-US";
@@ -240,8 +248,13 @@ export function DashboardPanel() {
                       key={row.key}
                       className="bg-garden-950/40 transition hover:bg-garden-900/50"
                     >
-                      <td className="max-w-[14rem] truncate px-5 py-3 font-medium text-white sm:max-w-md sm:px-6">
-                        {scanBasename(row.key)}
+                      <td className="max-w-[14rem] truncate px-5 py-3 font-medium sm:max-w-md sm:px-6">
+                        <Link
+                          href={`${scanViewerPath}?key=${encodeURIComponent(row.key)}`}
+                          className="text-garden-200 underline decoration-garden-600 decoration-1 underline-offset-4 transition hover:text-white hover:decoration-garden-400"
+                        >
+                          {scanBasename(row.key)}
+                        </Link>
                       </td>
                       <td className="whitespace-nowrap px-3 py-3 text-garden-200 tabular-nums">
                         {formatBytes(row.size, localeTag)}

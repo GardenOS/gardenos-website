@@ -17,5 +17,5 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function DashboardPage({ params }: Props) {
   const { locale } = await params;
   setRequestLocale(locale);
-  return <DashboardPanel />;
+  return <DashboardPanel scanViewerPath="/dashboard/scan" />;
 }
