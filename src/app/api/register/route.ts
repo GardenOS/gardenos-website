@@ -12,6 +12,8 @@ export async function POST(request: Request) {
     const fullName = String(formData.get("fullName") ?? "").trim();
     const email = String(formData.get("email") ?? "").trim();
     const organization = String(formData.get("organization") ?? "").trim();
+    const optionalContact = String(formData.get("optionalContact") ?? "").trim();
+    const registerLocale = String(formData.get("registerLocale") ?? "").trim();
     const scenarioNeeds = String(formData.get("scenarioNeeds") ?? "").trim();
 
     if (!email) {
@@ -33,17 +35,23 @@ export async function POST(request: Request) {
       );
     }
 
+    const fields: Record<string, unknown> = {
+      "Full Name": fullName || undefined,
+      Email: email,
+      Organization: organization || undefined,
+      "Scenario & Needs": scenarioNeeds || undefined,
+    };
+
+    if (optionalContact) {
+      if (registerLocale === "zh") {
+        fields["WeChat ID"] = optionalContact;
+      } else if (registerLocale === "en") {
+        fields.Phone = optionalContact;
+      }
+    }
+
     const payload: AirtableCreateRecordsPayload = {
-      records: [
-        {
-          fields: {
-            "Full Name": fullName || undefined,
-            Email: email,
-            Organization: organization || undefined,
-            "Scenario & Needs": scenarioNeeds || undefined,
-          },
-        },
-      ],
+      records: [{ fields }],
     };
 
     const res = await fetch(`https://api.airtable.com/v0/${baseId}/${encodeURIComponent(tableName)}`, {

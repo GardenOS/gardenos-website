@@ -207,6 +207,8 @@
     "labelName": "Name / nickname",
     "labelEmail": "Email (required)",
     "labelOrg": "Organization (optional)",
+    "labelOptionalContact": "WhatsApp（optional）",
+    "placeholderOptionalContact": "Your WhatsApp number",
     "labelScenario": "Context & needs (optional)",
     "placeholderName": "Alex Rivera",
     "placeholderEmail": "alex@example.com",
@@ -214,7 +216,8 @@
     "placeholderScenario": "Garden type, rough size, or what you want to explore",
     "submit": "Join Free Now",
     "submitInFlight": "Submitting…",
-    "submitSuccess": "Thanks for joining! We'll be in touch.",
+    "successTitle": "You're in! 🎉",
+    "successBody": "We've received your details and will email you as soon as prices drop or events are confirmed.",
     "submitError": "We could not submit your registration right now. Please try again.",
     "submitMissingConfig": "Registration is temporarily unavailable. Please try again later."
   },

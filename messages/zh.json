@@ -207,6 +207,8 @@
     "labelName": "姓名 / 昵称",
     "labelEmail": "邮箱（必填）",
     "labelOrg": "组织（可选）",
+    "labelOptionalContact": "微信号（可选）",
+    "placeholderOptionalContact": "你的微信 ID",
     "labelScenario": "场景与需求（可选）",
     "placeholderName": "例如：王小明",
     "placeholderEmail": "name@example.com",
@@ -214,7 +216,8 @@
     "placeholderScenario": "简单描述你的花园类型、面积或想了解的功能等",
     "submit": "立即免费注册",
     "submitInFlight": "提交中…",
-    "submitSuccess": "感谢注册！我们会第一时间通知你。",
+    "successTitle": "感谢注册！🎉",
+    "successBody": "我们已收到你的信息，会在第一时间通过邮件通知你价格动态和活动安排。",
     "submitError": "提交失败，请稍后再试。",
     "submitMissingConfig": "注册服务暂时不可用，请稍后再试。"
   },

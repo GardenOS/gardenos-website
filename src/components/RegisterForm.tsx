@@ -6,37 +6,43 @@ export type RegisterFormCopy = {
   labelName: string;
   labelEmail: string;
   labelOrg: string;
+  labelOptionalContact: string;
   labelScenario: string;
   placeholderName: string;
   placeholderEmail: string;
   placeholderOrg: string;
+  placeholderOptionalContact: string;
   placeholderScenario: string;
   submit: string;
   submitInFlight: string;
-  submitSuccess: string;
+  successTitle: string;
+  successBody: string;
   submitError: string;
   submitMissingConfig: string;
 };
 
 type Props = {
+  locale: string;
   copy: RegisterFormCopy;
 };
 
 const inputClass =
   "w-full rounded-xl border border-garden-200 bg-garden-50/80 px-4 py-2.5 text-sm text-garden-900 outline-none ring-garden-500/30 placeholder:text-garden-400";
 
-export function RegisterForm({ copy }: Props) {
+export function RegisterForm({ locale, copy }: Props) {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [status, setStatus] = useState<{ kind: "success" | "error"; message: string } | null>(null);
+  const [submitted, setSubmitted] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     const form = event.currentTarget;
     const formData = new FormData(form);
+    formData.set("registerLocale", locale);
 
     setIsSubmitting(true);
-    setStatus(null);
+    setErrorMessage(null);
 
     try {
       const response = await fetch("/api/register", {
@@ -55,17 +61,34 @@ export function RegisterForm({ copy }: Props) {
             ? copy.submitMissingConfig
             : data?.error || copy.submitError;
 
-        setStatus({ kind: "error", message });
+        setErrorMessage(message);
         return;
       }
 
       form.reset();
-      setStatus({ kind: "success", message: copy.submitSuccess });
+      setSubmitted(true);
     } catch {
-      setStatus({ kind: "error", message: copy.submitError });
+      setErrorMessage(copy.submitError);
     } finally {
       setIsSubmitting(false);
     }
+  }
+
+  if (submitted) {
+    return (
+      <div
+        className="rounded-2xl border border-garden-300/80 bg-gradient-to-br from-garden-50 to-white px-6 py-8 shadow-sm sm:px-8 sm:py-10"
+        role="status"
+        aria-live="polite"
+      >
+        <h3 className="text-balance text-xl font-semibold tracking-tight text-garden-800 sm:text-2xl">
+          {copy.successTitle}
+        </h3>
+        <p className="mt-4 max-w-lg text-pretty text-base leading-relaxed text-garden-700">
+          {copy.successBody}
+        </p>
+      </div>
+    );
   }
 
   return (
@@ -122,6 +145,22 @@ export function RegisterForm({ copy }: Props) {
       <div>
         <label
           className="mb-1.5 block text-xs font-medium uppercase tracking-wide text-garden-700"
+          htmlFor="reg-optional-contact"
+        >
+          {copy.labelOptionalContact}
+        </label>
+        <input
+          id="reg-optional-contact"
+          name="optionalContact"
+          type="text"
+          autoComplete="off"
+          className={inputClass}
+          placeholder={copy.placeholderOptionalContact}
+        />
+      </div>
+      <div>
+        <label
+          className="mb-1.5 block text-xs font-medium uppercase tracking-wide text-garden-700"
           htmlFor="reg-scenario"
         >
           {copy.labelScenario}
@@ -141,17 +180,9 @@ export function RegisterForm({ copy }: Props) {
       >
         {isSubmitting ? copy.submitInFlight : copy.submit}
       </button>
-      {status ? (
-        <p
-          className={
-            status.kind === "success"
-              ? "text-sm font-medium text-garden-800"
-              : "text-sm text-red-700"
-          }
-          role="status"
-          aria-live="polite"
-        >
-          {status.message}
+      {errorMessage ? (
+        <p className="text-sm leading-relaxed text-red-700" role="alert">
+          {errorMessage}
         </p>
       ) : null}
     </form>

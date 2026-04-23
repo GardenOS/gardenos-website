@@ -60,18 +60,22 @@ export default async function RegisterPage({ params }: Props) {
           {t("formSectionTitle")}
         </h2>
         <RegisterForm
+          locale={locale}
           copy={{
             labelName: t("labelName"),
             labelEmail: t("labelEmail"),
             labelOrg: t("labelOrg"),
+            labelOptionalContact: t("labelOptionalContact"),
             labelScenario: t("labelScenario"),
             placeholderName: t("placeholderName"),
             placeholderEmail: t("placeholderEmail"),
             placeholderOrg: t("placeholderOrg"),
+            placeholderOptionalContact: t("placeholderOptionalContact"),
             placeholderScenario: t("placeholderScenario"),
             submit: t("submit"),
             submitInFlight: t("submitInFlight"),
-            submitSuccess: t("submitSuccess"),
+            successTitle: t("successTitle"),
+            successBody: t("successBody"),
             submitError: t("submitError"),
             submitMissingConfig: t("submitMissingConfig"),
           }}
