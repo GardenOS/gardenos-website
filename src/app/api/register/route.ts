@@ -10,12 +10,9 @@ export async function POST(request: Request) {
   try {
     const formData = await request.formData();
     const fullName = String(formData.get("fullName") ?? "").trim();
-    const wechatId = String(formData.get("wechatId") ?? "").trim();
-    const phone = String(formData.get("phone") ?? "").trim();
     const email = String(formData.get("email") ?? "").trim();
-    const preferredContact = String(formData.get("preferredContact") ?? "").trim();
-    const language = String(formData.get("language") ?? "").trim();
-    const subscriptionPlan = String(formData.get("subscriptionPlan") ?? "").trim();
+    const organization = String(formData.get("organization") ?? "").trim();
+    const scenarioNeeds = String(formData.get("scenarioNeeds") ?? "").trim();
 
     if (!email) {
       return NextResponse.json({ ok: false, error: "Email is required." }, { status: 400 });
@@ -41,12 +38,9 @@ export async function POST(request: Request) {
         {
           fields: {
             "Full Name": fullName || undefined,
-            "WeChat ID": wechatId || undefined,
-            Phone: phone || undefined,
             Email: email,
-            "Preferred Contact": preferredContact || undefined,
-            Language: language || undefined,
-            "Subscription Plan": subscriptionPlan || undefined,
+            Organization: organization || undefined,
+            "Scenario & Needs": scenarioNeeds || undefined,
           },
         },
       ],

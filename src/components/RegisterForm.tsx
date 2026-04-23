@@ -2,55 +2,30 @@
 
 import { FormEvent, useState } from "react";
 
-type Props = {
-  defaultLanguage: string;
-  labelFullName: string;
-  labelWeChatId: string;
-  labelPhone: string;
+export type RegisterFormCopy = {
+  labelName: string;
   labelEmail: string;
-  labelPreferredContact: string;
-  labelLanguage: string;
-  labelSubscriptionPlan: string;
-  placeholderFullName: string;
-  placeholderWeChatId: string;
-  placeholderPhone: string;
+  labelOrg: string;
+  labelScenario: string;
+  placeholderName: string;
   placeholderEmail: string;
-  placeholderPreferredContact: string;
-  placeholderSubscriptionPlan: string;
-  languageOptionEnglish: string;
-  languageOptionChinese: string;
+  placeholderOrg: string;
+  placeholderScenario: string;
   submit: string;
-  reassurance: string;
+  submitInFlight: string;
   submitSuccess: string;
   submitError: string;
   submitMissingConfig: string;
-  submitInFlight: string;
 };
 
-export function RegisterForm({
-  defaultLanguage,
-  labelFullName,
-  labelWeChatId,
-  labelPhone,
-  labelEmail,
-  labelPreferredContact,
-  labelLanguage,
-  labelSubscriptionPlan,
-  placeholderFullName,
-  placeholderWeChatId,
-  placeholderPhone,
-  placeholderEmail,
-  placeholderPreferredContact,
-  placeholderSubscriptionPlan,
-  languageOptionEnglish,
-  languageOptionChinese,
-  submit,
-  reassurance,
-  submitSuccess,
-  submitError,
-  submitMissingConfig,
-  submitInFlight,
-}: Props) {
+type Props = {
+  copy: RegisterFormCopy;
+};
+
+const inputClass =
+  "w-full rounded-xl border border-garden-200 bg-garden-50/80 px-4 py-2.5 text-sm text-garden-900 outline-none ring-garden-500/30 placeholder:text-garden-400";
+
+export function RegisterForm({ copy }: Props) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [status, setStatus] = useState<{ kind: "success" | "error"; message: string } | null>(null);
 
@@ -75,73 +50,40 @@ export function RegisterForm({
 
       if (!response.ok || !data?.ok) {
         const message =
-          data?.error === "Server is missing AIRTABLE_API_KEY / AIRTABLE_BASE_ID / AIRTABLE_TABLE_NAME environment variables."
-            ? submitMissingConfig
-            : data?.error || submitError;
+          data?.error ===
+          "Server is missing AIRTABLE_API_KEY / AIRTABLE_BASE_ID / AIRTABLE_TABLE_NAME environment variables."
+            ? copy.submitMissingConfig
+            : data?.error || copy.submitError;
 
         setStatus({ kind: "error", message });
         return;
       }
 
       form.reset();
-      const languageSelect = form.querySelector<HTMLSelectElement>("#reg-language");
-      if (languageSelect) languageSelect.value = defaultLanguage;
-      setStatus({ kind: "success", message: submitSuccess });
+      setStatus({ kind: "success", message: copy.submitSuccess });
     } catch {
-      setStatus({ kind: "error", message: submitError });
+      setStatus({ kind: "error", message: copy.submitError });
     } finally {
       setIsSubmitting(false);
     }
   }
 
   return (
-    <form onSubmit={handleSubmit} className="mt-8 space-y-5">
+    <form onSubmit={handleSubmit} className="space-y-5">
       <div>
         <label
           className="mb-1.5 block text-xs font-medium uppercase tracking-wide text-garden-700"
-          htmlFor="reg-full-name"
+          htmlFor="reg-name"
         >
-          {labelFullName}
+          {copy.labelName}
         </label>
         <input
-          id="reg-full-name"
+          id="reg-name"
           name="fullName"
           type="text"
-          autoComplete="name"
-          className="w-full rounded-xl border border-garden-200 bg-garden-50/80 px-4 py-2.5 text-sm text-garden-900 outline-none ring-garden-500/30 placeholder:text-garden-400"
-          placeholder={placeholderFullName}
-        />
-      </div>
-      <div>
-        <label
-          className="mb-1.5 block text-xs font-medium uppercase tracking-wide text-garden-700"
-          htmlFor="reg-wechat"
-        >
-          {labelWeChatId}
-        </label>
-        <input
-          id="reg-wechat"
-          name="wechatId"
-          type="text"
-          autoComplete="off"
-          className="w-full rounded-xl border border-garden-200 bg-garden-50/80 px-4 py-2.5 text-sm text-garden-900 outline-none"
-          placeholder={placeholderWeChatId}
-        />
-      </div>
-      <div>
-        <label
-          className="mb-1.5 block text-xs font-medium uppercase tracking-wide text-garden-700"
-          htmlFor="reg-phone"
-        >
-          {labelPhone}
-        </label>
-        <input
-          id="reg-phone"
-          name="phone"
-          type="tel"
-          autoComplete="tel"
-          className="w-full rounded-xl border border-garden-200 bg-garden-50/80 px-4 py-2.5 text-sm text-garden-900 outline-none"
-          placeholder={placeholderPhone}
+          autoComplete="nickname"
+          className={inputClass}
+          placeholder={copy.placeholderName}
         />
       </div>
       <div>
@@ -149,7 +91,7 @@ export function RegisterForm({
           className="mb-1.5 block text-xs font-medium uppercase tracking-wide text-garden-700"
           htmlFor="reg-email"
         >
-          {labelEmail}
+          {copy.labelEmail}
         </label>
         <input
           id="reg-email"
@@ -157,71 +99,61 @@ export function RegisterForm({
           type="email"
           required
           autoComplete="email"
-          className="w-full rounded-xl border border-garden-200 bg-garden-50/80 px-4 py-2.5 text-sm text-garden-900 outline-none"
-          placeholder={placeholderEmail}
+          className={inputClass}
+          placeholder={copy.placeholderEmail}
         />
       </div>
       <div>
         <label
           className="mb-1.5 block text-xs font-medium uppercase tracking-wide text-garden-700"
-          htmlFor="reg-preferred-contact"
+          htmlFor="reg-org"
         >
-          {labelPreferredContact}
+          {copy.labelOrg}
         </label>
         <input
-          id="reg-preferred-contact"
-          name="preferredContact"
+          id="reg-org"
+          name="organization"
           type="text"
-          className="w-full rounded-xl border border-garden-200 bg-garden-50/80 px-4 py-2.5 text-sm text-garden-900 outline-none"
-          placeholder={placeholderPreferredContact}
+          autoComplete="organization"
+          className={inputClass}
+          placeholder={copy.placeholderOrg}
         />
       </div>
       <div>
         <label
           className="mb-1.5 block text-xs font-medium uppercase tracking-wide text-garden-700"
-          htmlFor="reg-language"
+          htmlFor="reg-scenario"
         >
-          {labelLanguage}
+          {copy.labelScenario}
         </label>
-        <select
-          id="reg-language"
-          name="language"
-          required
-          defaultValue={defaultLanguage}
-          className="w-full rounded-xl border border-garden-200 bg-garden-50/80 px-4 py-2.5 text-sm text-garden-900 outline-none"
-        >
-          <option value="English">{languageOptionEnglish}</option>
-          <option value="中文">{languageOptionChinese}</option>
-        </select>
-      </div>
-      <div>
-        <label
-          className="mb-1.5 block text-xs font-medium uppercase tracking-wide text-garden-700"
-          htmlFor="reg-subscription-plan"
-        >
-          {labelSubscriptionPlan}
-        </label>
-        <input
-          id="reg-subscription-plan"
-          name="subscriptionPlan"
-          type="text"
-          className="w-full rounded-xl border border-garden-200 bg-garden-50/80 px-4 py-2.5 text-sm text-garden-900 outline-none"
-          placeholder={placeholderSubscriptionPlan}
+        <textarea
+          id="reg-scenario"
+          name="scenarioNeeds"
+          rows={4}
+          className={`${inputClass} resize-y`}
+          placeholder={copy.placeholderScenario}
         />
       </div>
       <button
         type="submit"
         disabled={isSubmitting}
-        className="w-full rounded-full bg-garden-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-garden-700 sm:w-auto sm:px-8"
+        className="w-full rounded-full bg-garden-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-garden-700 disabled:opacity-70 sm:w-auto sm:px-8"
       >
-        {isSubmitting ? submitInFlight : submit}
+        {isSubmitting ? copy.submitInFlight : copy.submit}
       </button>
       {status ? (
-        <p className="text-xs leading-relaxed text-garden-600" role="status" aria-live="polite">
+        <p
+          className={
+            status.kind === "success"
+              ? "text-sm font-medium text-garden-800"
+              : "text-sm text-red-700"
+          }
+          role="status"
+          aria-live="polite"
+        >
           {status.message}
         </p>
       ) : null}
-      <p className="text-xs leading-relaxed text-garden-600">{reassurance}</p>
     </form>
   );
 }

@@ -185,53 +185,38 @@
     "bannerCta": "Create membership"
   },
   "register": {
-    "metaTitle": "Membership",
-    "metaDescription": "Register for GardenOS updates, pilot invites, and test schedules.",
+    "metaTitle": "Join GardenOS — free",
+    "metaDescription": "First 200 members get a professional garden scan. Sign up with your email.",
     "badge": "Early access",
-    "title": "Create your GardenOS membership",
-    "lead": "Register once to get updates, pilot invites, and notifications when live test dates are confirmed.",
+    "title": "Join free — first 200 members get a professional garden scan",
+    "lead": "Share how we should reach you; scan slots, pricing, and schedules will be confirmed by email.",
     "benefitsTitle": "Member benefits",
     "b1": {
-      "title": "Product updates & roadmap",
-      "body": "Regular digests on shipped features, known issues, and upcoming milestones."
+      "title": "Be the first to know when prices drop",
+      "body": "Get an email heads-up when we lower prices or adjust plans."
     },
     "b2": {
-      "title": "Pilot and event alerts",
-      "body": "Get first notice when cohorts open; some sessions are members-only."
+      "title": "Priority access to free garden scans",
+      "body": "Hear first when complimentary professional scan slots open."
     },
     "b3": {
-      "title": "Launch and subscription conversations",
-      "body": "During pricing dry-runs, join surveys or interviews for a shot at early bands or service bundles (per published rules)."
+      "title": "Lock in your early price — forever",
+      "body": "Early-bird pricing stays with your account per published terms."
     },
-    "formSideTitle": "A quick note",
-    "formSideBody": "We’ll only use this to send updates you asked for: test dates, pilot openings, and important product milestones.",
-    "formTitle": "Register for updates",
-    "formHint": "Fill this out and we’ll keep you in the loop.",
-    "labelFullName": "Full name",
-    "labelWeChatId": "WeChat ID (optional)",
-    "labelPhone": "Phone (optional)",
-    "labelEmail": "Email",
-    "labelPreferredContact": "Preferred contact (optional)",
-    "labelLanguage": "Language",
-    "labelSubscriptionPlan": "Subscription plan (optional)",
-    "placeholderFullName": "Alex Rivera",
-    "placeholderWeChatId": "Optional",
-    "placeholderPhone": "+1 555 0100",
+    "formSectionTitle": "Registration form",
+    "labelName": "Name / nickname",
+    "labelEmail": "Email (required)",
+    "labelOrg": "Organization (optional)",
+    "labelScenario": "Context & needs (optional)",
+    "placeholderName": "Alex Rivera",
     "placeholderEmail": "alex@example.com",
-    "placeholderPreferredContact": "e.g. Email, WeChat, or Phone",
-    "placeholderSubscriptionPlan": "e.g. Monthly, Annual",
-    "languageOptionEnglish": "English",
-    "languageOptionChinese": "中文",
-    "submit": "Submit",
-    "submitInFlight": "Submitting...",
-    "submitSuccess": "Thanks. Your registration was received.",
+    "placeholderOrg": "Optional",
+    "placeholderScenario": "Garden type, rough size, or what you want to explore",
+    "submit": "Join Free Now",
+    "submitInFlight": "Submitting…",
+    "submitSuccess": "Thanks for joining! We'll be in touch.",
     "submitError": "We could not submit your registration right now. Please try again.",
-    "submitMissingConfig": "Registration is temporarily unavailable. Please try again later.",
-    "reassurance": "No spam. Just updates when it matters.",
-    "sideTitle": "Want context first?",
-    "sideBody": "Skim About and How to participate before choosing a track.",
-    "sideAbout": "About",
-    "sideParticipate": "How to participate"
+    "submitMissingConfig": "Registration is temporarily unavailable. Please try again later."
   },
   "dashboardScan": {
     "metaTitle": "Scan viewer",
