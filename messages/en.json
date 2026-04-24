@@ -16,8 +16,9 @@
     "pointCloudCaption": "This will be your garden's digital file",
     "headline": "Your garden, digitized. Your lawn care, automated.",
     "sub": "The more people subscribe, the lower the price for everyone. Let's get robot lawn mowing to $29/month — together.",
-    "crowdfundingTitle": "Let's unlock $29 unlimited robot mowing — together",
+    "crowdfundingTitle": "Let's get robot lawn mowing to $29/month — together",
     "crowdfundingSubtitle": "As more members join, everyone unlocks lower pricing.",
+    "crowdfundingUnlockHeadline": "$29/month unlocks when we reach 2,000 members",
     "ctaPrimary": "Join Us",
     "ctaSecondary": "Join Free",
     "highlights": {
@@ -32,17 +33,17 @@
       },
       "col3": {
         "title": "One yard or ten properties — same simple setup",
-        "body": "Whether it’s your home or multiple properties, you get the same consistent setup, visibility, and results."
+        "body": "Whether you have one property or ten, you get the same consistent setup, visibility, and results."
       }
     },
     "prototype": {
       "eyebrow": "Prototype field tests",
       "title": "Want to see the robot mow? Come in person or watch live",
-      "body": "We'll run public mowing demos, boundary tests, and live walkthroughs. Add your name now—we'll email you as soon as time and place are confirmed.",
+      "body": "We'll run public mowing demos, boundary tests, and live walkthroughs. Add your name now — we'll email you as soon as time and place are confirmed.",
       "cta": "Live demo"
     },
     "registerBlock": {
-      "title": "Join free now and lock in your early price",
+      "title": "Join free now and lock in your early-bird pricing",
       "primaryCta": "Join Free",
       "secondaryCta": "Join Us"
     }
@@ -52,10 +53,10 @@
     "metaDescription": "Why we built GardenOS, the mowing problems we solve, what we're building, and our $29/month robot mowing goal.",
     "badge": "GardenOS",
     "title": "Who We Are & Why We Built This",
-    "origin": "Grass grows back every week. A lawn mower costs $60+ per visit — that's $800 a year without thinking about it. We're a small team in Auckland who think robots can do this better, and cheaper. The more people join, the lower the price for everyone. Our goal: robot lawn mowing for $29/month.",
+    "origin": "Grass grows back every week. A lawn mowing service costs $60+ per visit — that's $800 a year without thinking about it. We're a small team in Auckland who think robots can do this better and cheaper. The more people join, the lower the price for everyone. Our goal: robot lawn mowing for $29/month.",
     "mission": {
       "title": "What we're building",
-      "body": "3D scanning to map your garden. Robots to mow it regularly. Crowdfunding to get the price down to $29/month."
+      "body": "3D scanning to map your garden. Robots to mow it regularly. Collective pricing to get the cost down to $29/month."
     },
     "vision": {
       "title": "Our goal",
@@ -65,7 +66,7 @@
       "title": "Three problems we're solving",
       "p1": {
         "title": "Mowing costs too much and needs rebooking every time",
-        "body": "Every new mower needs a full briefing. No record of your garden, everything from memory."
+        "body": "Every new gardener needs a full briefing. No record of your garden — everything from memory."
       },
       "p2": {
         "title": "Manual mowing is unreliable",
@@ -73,7 +74,7 @@
       },
       "p3": {
         "title": "You paid, but you don't know if it was done",
-        "body": "No way to check whether the lawn was mowed today, or done properly."
+        "body": "You paid, and they showed up — but was it actually done right? No photos, no record, no way to hold anyone accountable."
       }
     },
     "values": {

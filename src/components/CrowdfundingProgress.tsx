@@ -15,6 +15,8 @@ type Props = {
   currencySymbol?: string;
   title?: string;
   subtitle?: string;
+  /** When set, replaces the default “$X unlocks at N members” headline (e.g. localized copy). */
+  unlockHeadline?: string;
 };
 
 function clamp01(value: number) {
@@ -45,6 +47,7 @@ export function CrowdfundingProgress({
   currencySymbol = "$",
   title = "Crowdfunding Progress",
   subtitle = "As more members join, everyone unlocks lower pricing.",
+  unlockHeadline,
 }: Props) {
   const locale = useLocale();
   const intlLocale = intlLocaleForRouting(locale);
@@ -107,12 +110,18 @@ export function CrowdfundingProgress({
               {title}
             </p>
             <h3 className="text-pretty text-xl font-semibold tracking-tight text-garden-950 sm:text-2xl">
-              {currencySymbol}
-              {finalPrice} unlocks at{" "}
-              <span className="tabular-nums text-garden-700">
-                {lowestPriceAtMembers.toLocaleString(intlLocale)}
-              </span>{" "}
-              members
+              {unlockHeadline ? (
+                unlockHeadline
+              ) : (
+                <>
+                  {currencySymbol}
+                  {finalPrice} unlocks at{" "}
+                  <span className="tabular-nums text-garden-700">
+                    {lowestPriceAtMembers.toLocaleString(intlLocale)}
+                  </span>{" "}
+                  members
+                </>
+              )}
             </h3>
             <p className="max-w-2xl text-sm leading-relaxed text-garden-800 sm:text-base">{subtitle}</p>
           </div>

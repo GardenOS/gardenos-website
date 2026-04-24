@@ -51,6 +51,7 @@ export default async function HomePage({ params }: Props) {
           currentMembers={2}
           title={t("crowdfundingTitle")}
           subtitle={t("crowdfundingSubtitle")}
+          unlockHeadline={t("crowdfundingUnlockHeadline")}
         />
       </section>
 
