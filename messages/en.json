@@ -140,11 +140,11 @@
     },
     "ch2": {
       "title": "Watch replay",
-      "body": "Edited replays and written recaps ship within 48 hours, including parameter ranges and known limitations."
+      "body": "Edited replays and written recaps will be posted within 48 hours, including what was tested and any known limitations."
     },
     "ch3": {
       "title": "What's new",
-      "body": "Each release ships with a changelog and migration notes; breaking behavior is called out explicitly."
+      "body": "After each session, we share what changed, what worked, and what we're still figuring out."
     },
     "bannerTitle": "Never miss a public test",
     "bannerBody": "Create a membership and enable email alerts to get RSVP and watch links the moment a schedule drops.",
@@ -166,16 +166,16 @@
       "body": "Hear first when complimentary professional scan slots open."
     },
     "b3": {
-      "title": "Lock in your early price — forever",
+      "title": "Lock in your early-bird price — forever",
       "body": "Early-bird pricing stays with your account per published terms."
     },
     "formSectionTitle": "Registration form",
     "labelName": "Name / nickname",
     "labelEmail": "Email (required)",
     "labelOrg": "Organization (optional)",
-    "labelOptionalContact": "WhatsApp（optional）",
+    "labelOptionalContact": "WhatsApp (optional)",
     "placeholderOptionalContact": "Your WhatsApp number",
-    "labelScenario": "Context & needs (optional)",
+    "labelScenario": "Tell us about your garden (optional)",
     "placeholderName": "Alex Rivera",
     "placeholderEmail": "alex@example.com",
     "placeholderOrg": "Optional",
