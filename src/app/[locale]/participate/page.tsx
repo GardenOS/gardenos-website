@@ -58,20 +58,6 @@ export default async function ParticipatePage({ params }: Props) {
         </ol>
       </section>
 
-      <section aria-labelledby="schedule-heading">
-        <div className="rounded-2xl border border-dashed border-garden-300 bg-garden-50/60 px-6 py-6 sm:px-8 sm:py-8">
-          <h2
-            id="schedule-heading"
-            className="text-base font-semibold text-garden-900 sm:text-lg"
-          >
-            {t("scheduleTitle")}
-          </h2>
-          <p className="mt-3 text-sm leading-relaxed text-garden-800 sm:text-base">
-            {t("scheduleBody")}
-          </p>
-        </div>
-      </section>
-
       <section aria-labelledby="participate-cta-heading">
         <div className="overflow-hidden rounded-2xl border border-garden-700/30 bg-gradient-to-br from-garden-800 via-garden-700 to-garden-600 px-6 py-8 text-garden-50 shadow-lg sm:px-10 sm:py-10">
           <h2

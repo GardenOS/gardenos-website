@@ -18,8 +18,8 @@
     "sub": "The more people subscribe, the lower the price for everyone. Let's get robot lawn mowing to $29/month — together.",
     "crowdfundingTitle": "Let's unlock $29 unlimited robot mowing — together",
     "crowdfundingSubtitle": "As more members join, everyone unlocks lower pricing.",
-    "ctaPrimary": "How to participate",
-    "ctaSecondary": "Become a member",
+    "ctaPrimary": "Join Us",
+    "ctaSecondary": "Join Free",
     "highlights": {
       "title": "Product highlights",
       "col1": {
@@ -37,15 +37,14 @@
     },
     "prototype": {
       "eyebrow": "Prototype field tests",
-      "title": "Next test window opening soon — be the first to know",
-      "body": "We run live mowing passes, boundary checks, and edge‑case drills. Register for a reminder and we'll send you the details.",
-      "cta": "Live & testing"
+      "title": "Want to see the robot mow? Come in person or watch live",
+      "body": "We'll run public mowing demos, boundary tests, and live walkthroughs. Add your name now—we'll email you as soon as time and place are confirmed.",
+      "cta": "Live demo"
     },
     "registerBlock": {
-      "title": "Join early and lock in your subscription perks",
-      "body": "Drop your email to get product updates, pilot spots, and early pricing.",
-      "primaryCta": "Become a member",
-      "secondaryCta": "Learn how to participate"
+      "title": "Join free now and lock in your early price",
+      "primaryCta": "Join Free",
+      "secondaryCta": "Join Us"
     }
   },
   "about": {
@@ -118,12 +117,10 @@
       "title": "Join a live mowing demo",
       "body": "Watch the robot mow in public sessions—we’ll send RSVP and watch links when dates are set."
     },
-    "scheduleTitle": "Near-term cadence (sample)",
-    "scheduleBody": "Q2: prototype revisit + boundary regression week. Q3: expand pilot metros and billing dry-runs. Official dates publish on Live & testing.",
     "ctaTitle": "What to do next",
     "ctaBody": "RSVP for the next public test, or create a membership to hold launch perks and notifications.",
-    "ctaLive": "Live & testing",
-    "ctaRegister": "Create membership"
+    "ctaLive": "Live demo",
+    "ctaRegister": "Join Free"
   },
   "live": {
     "metaTitle": "Live demo",
@@ -150,7 +147,7 @@
     },
     "bannerTitle": "Never miss a public test",
     "bannerBody": "Create a membership and enable email alerts to get RSVP and watch links the moment a schedule drops.",
-    "bannerCta": "Create membership"
+    "bannerCta": "Join Free"
   },
   "register": {
     "metaTitle": "Join GardenOS — free",

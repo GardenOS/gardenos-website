@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/routing";
 import { FeatureCard } from "@/components/content/FeatureCard";
-import { CrowdfundingProgress } from "@/components/CrowdfundingProgress";
 
 type Props = { params: Promise<{ locale: string }> };
 
@@ -54,8 +53,6 @@ export default async function LivePage({ params }: Props) {
           </p>
         </div>
       </section>
-
-      <CrowdfundingProgress currentMembers={2} />
 
       <section aria-labelledby="channels-heading" className="space-y-8">
         <h2

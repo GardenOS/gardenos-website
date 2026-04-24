@@ -18,8 +18,8 @@
     "sub": "越多人订阅割草服务，价格越低。让我们一起努力，实现每月 $29 机器人不限次割草。",
     "crowdfundingTitle": "一起把无限次割草订阅费压到 $29",
     "crowdfundingSubtitle": "加入的早期会员越多，所有人越早享受更低月费。",
-    "ctaPrimary": "了解如何参与",
-    "ctaSecondary": "注册会员",
+    "ctaPrimary": "怎么加入",
+    "ctaSecondary": "免费注册",
     "highlights": {
       "title": "产品亮点",
       "col1": {
@@ -37,15 +37,14 @@
     },
     "prototype": {
       "eyebrow": "样机测试预告",
-      "title": "下一场测试窗口即将开启——第一时间通知你",
-      "body": "我们会进行公开剪草演示、边界检查与异常场景演练。现在登记提醒，确认后我们会把具体信息发给你。",
-      "cta": "前往直播与测试"
+      "title": "想亲眼看机器人割草？来现场或观看直播",
+      "body": "我们将进行公开割草演示、边界测试与实况展示。现在登记，时间地点确认后我们第一时间通知你。",
+      "cta": "现场演示"
     },
     "registerBlock": {
-      "title": "抢先加入，锁定订阅权益",
-      "body": "留下邮箱即可获取产品更新、试点名额和早鸟价格。",
-      "primaryCta": "成为会员",
-      "secondaryCta": "先了解如何参与"
+      "title": "现在免费注册，锁定你的早鸟价格",
+      "primaryCta": "免费注册",
+      "secondaryCta": "怎么加入"
     }
   },
   "about": {
@@ -118,12 +117,10 @@
       "title": "参与现场割草演示",
       "body": "公开场次观看机器人实机作业；日程确认后我们会发送报名与观看方式。"
     },
-    "scheduleTitle": "近期安排（示例）",
-    "scheduleBody": "Q2：样机回访与边界回归周；Q3：扩大试点城市与订阅计费试运行。正式日历以「直播与测试」页公布为准。",
     "ctaTitle": "下一步你可以",
     "ctaBody": "预约公开测试提醒，或先注册会员锁定首发权益与活动通知。",
-    "ctaLive": "直播与测试",
-    "ctaRegister": "注册会员"
+    "ctaLive": "现场演示",
+    "ctaRegister": "免费注册"
   },
   "live": {
     "metaTitle": "现场演示",
@@ -150,7 +147,7 @@
     },
     "bannerTitle": "不错过任何一场公开测试",
     "bannerBody": "注册会员并打开邮件提醒，即可在日程发布时第一时间收到报名与观看链接。",
-    "bannerCta": "注册会员"
+    "bannerCta": "免费注册"
   },
   "register": {
     "metaTitle": "免费注册 GardenOS",

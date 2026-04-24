@@ -135,9 +135,6 @@ export default async function HomePage({ params }: Props) {
         >
           {t("registerBlock.title")}
         </h2>
-        <p className="mt-4 max-w-2xl text-sm leading-relaxed text-garden-800 sm:text-base">
-          {t("registerBlock.body")}
-        </p>
         <div className="mt-8 flex flex-wrap gap-3">
           <Link
             href="/register"
