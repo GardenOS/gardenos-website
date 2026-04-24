@@ -25,7 +25,7 @@
       "title": "Product highlights",
       "col1": {
         "title": "Your garden gets its own digital file",
-        "body": "See boundaries, key areas, and what’s happening over time—so decisions are simple and surprises are rare."
+        "body": "See boundaries, key areas, and what's happening over time—so decisions are simple and surprises are rare."
       },
       "col2": {
         "title": "Robot mows on schedule. You just relax.",
@@ -116,7 +116,7 @@
     },
     "step3": {
       "title": "Join a live mowing demo",
-      "body": "Watch the robot mow in public sessions—we’ll send RSVP and watch links when dates are set."
+      "body": "Watch the robot mow in public sessions—we'll send RSVP and watch links when dates are set."
     },
     "ctaTitle": "What to do next",
     "ctaBody": "RSVP for the next public test, or create a membership to hold launch perks and notifications.",
@@ -125,14 +125,14 @@
   },
   "live": {
     "metaTitle": "Live demo",
-    "metaDescription": "Watch the robot mow live, catch replays, and read what’s new for GardenOS public tests.",
+    "metaDescription": "Watch the robot mow live, catch replays, and read what's new for GardenOS public tests.",
     "badge": "Public calendar",
     "title": "Watch the robot mow — live",
-    "lead": "We run open prototype tests on a rolling schedule. Register once, and we’ll notify you the moment a date is confirmed.",
+    "lead": "We run open prototype tests on a rolling schedule. Register once, and we'll notify you the moment a date is confirmed.",
     "windowEyebrow": "Next up",
     "windowTitle": "Prototype public test window",
-    "windowBody": "No date locked yet. When the next session is confirmed, we’ll share the RSVP link, what we’re testing, and how to watch.",
-    "windowNote": "If you register, you’ll get notified when it’s official. If you can’t make it live, we’ll post the recap and replay link here.",
+    "windowBody": "No date locked yet. When the next session is confirmed, we'll share the RSVP link, what we're testing, and how to watch.",
+    "windowNote": "If you register, you'll get notified when it's official. If you can't make it live, we'll post the recap and replay link here.",
     "channelsTitle": "How to watch and download assets",
     "ch1": {
       "title": "Live stream",
