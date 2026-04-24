@@ -14,7 +14,10 @@ export default async function HomePage({ params }: Props) {
   return (
     <div className="space-y-16 sm:space-y-20">
       <section className="space-y-8">
-        <div className="mb-6">
+        <div className="mb-6 space-y-3">
+          <p className="text-center text-sm font-medium tracking-wide text-garden-700 sm:text-base">
+            {t("pointCloudCaption")}
+          </p>
           <HomePointCloudHero />
         </div>
         <p className="inline-flex rounded-full border border-garden-200 bg-white px-3 py-1 text-xs font-medium uppercase tracking-wide text-garden-700">
@@ -44,10 +47,14 @@ export default async function HomePage({ params }: Props) {
 
       <section aria-label="Crowdfunding progress spotlight" className="relative">
         <div className="absolute inset-0 -z-10 rounded-3xl bg-gradient-to-r from-garden-100/70 via-white to-garden-100/70 blur-2xl" />
-        <CrowdfundingProgress currentMembers={2} />
+        <CrowdfundingProgress
+          currentMembers={2}
+          title={t("crowdfundingTitle")}
+          subtitle={t("crowdfundingSubtitle")}
+        />
       </section>
 
-      <section aria-labelledby="video-heading" className="space-y-6">
+      <section hidden aria-labelledby="video-heading" className="space-y-6">
         <h2
           id="video-heading"
           className="text-lg font-semibold tracking-tight text-garden-950 sm:text-xl"

@@ -29,10 +29,7 @@ export default async function AboutPage({ params }: Props) {
         <h1 className="text-balance text-3xl font-semibold tracking-tight text-garden-950 sm:text-4xl">
           {t("title")}
         </h1>
-        <p className="max-w-3xl text-pretty text-lg leading-relaxed text-garden-800">
-          {t("origin")}
-        </p>
-        <p className="max-w-3xl text-pretty text-lg leading-relaxed text-garden-800">{t("lead")}</p>
+        <p className="max-w-3xl text-pretty text-lg leading-relaxed text-garden-800">{t("origin")}</p>
       </header>
 
       <section aria-labelledby="problems-heading" className="space-y-8">
@@ -87,33 +84,6 @@ export default async function AboutPage({ params }: Props) {
         </ul>
       </section>
 
-      <section aria-labelledby="changelog-heading" className="space-y-8">
-        <h2
-          id="changelog-heading"
-          className="text-lg font-semibold tracking-tight text-garden-950 sm:text-xl"
-        >
-          {t("changelogTitle")}
-        </h2>
-        <ul className="relative space-y-0 border-l-2 border-garden-200 pl-8">
-          {(["rel1", "rel2", "rel3"] as const).map((key) => (
-            <li key={key} className="relative pb-10 last:pb-0">
-              <span
-                className="absolute -left-[calc(0.5rem+1px)] top-1.5 flex h-3 w-3 -translate-x-1/2 rounded-full border-2 border-white bg-garden-500 shadow-sm"
-                aria-hidden
-              />
-              <div className="rounded-xl border border-garden-200/90 bg-white p-5 shadow-sm">
-                <h3 className="text-sm font-semibold text-garden-950 sm:text-base">
-                  {t(`changelog.${key}.title`)}
-                </h3>
-                <p className="mt-2 text-sm leading-relaxed text-garden-800">
-                  {t(`changelog.${key}.body`)}
-                </p>
-              </div>
-            </li>
-          ))}
-        </ul>
-      </section>
-
       <section aria-labelledby="about-cta-heading">
         <div className="overflow-hidden rounded-2xl border border-garden-700/30 bg-gradient-to-br from-garden-800 via-garden-700 to-garden-600 px-6 py-8 text-garden-50 shadow-lg sm:px-10 sm:py-10">
           <h2
@@ -127,14 +97,14 @@ export default async function AboutPage({ params }: Props) {
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Link
-              href="/participate"
-              className="inline-flex items-center justify-center rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-garden-900 shadow-sm transition hover:bg-garden-50"
+              href="/register"
+              className="inline-flex items-center justify-center rounded-full bg-garden-500 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-garden-400"
             >
               {t("cta.primary")}
             </Link>
             <Link
-              href="/register"
-              className="inline-flex items-center justify-center rounded-full border border-white/40 bg-white/10 px-5 py-2.5 text-sm font-semibold text-white backdrop-blur-sm transition hover:bg-white/20"
+              href="/participate"
+              className="inline-flex items-center justify-center rounded-full border border-white/50 bg-white/10 px-5 py-2.5 text-sm font-semibold text-white backdrop-blur-sm transition hover:bg-white/20"
             >
               {t("cta.secondary")}
             </Link>

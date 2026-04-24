@@ -5,30 +5,33 @@
   },
   "nav": {
     "home": "Home",
-    "about": "About",
-    "participate": "How to participate",
-    "live": "Live & testing",
-    "register": "Membership",
+    "about": "Who We Are",
+    "participate": "Join Us",
+    "live": "Live Demo",
+    "register": "Join Free",
     "dashboard": "Dashboard"
   },
   "home": {
     "badge": "mygardenos.com",
-    "headline": "Your garden, on autopilot",
-    "sub": "GardenOS handles the mapping, monitoring, and mowing—so your yard looks great without stealing your weekend.",
+    "pointCloudCaption": "This will be your garden's digital file",
+    "headline": "Your garden, digitized. Your lawn care, automated.",
+    "sub": "The more people subscribe, the lower the price for everyone. Let's get robot lawn mowing to $29/month — together.",
+    "crowdfundingTitle": "Let's unlock $29 unlimited robot mowing — together",
+    "crowdfundingSubtitle": "As more members join, everyone unlocks lower pricing.",
     "ctaPrimary": "How to participate",
     "ctaSecondary": "Become a member",
     "highlights": {
       "title": "Product highlights",
       "col1": {
-        "title": "Know everything about your garden in one place",
+        "title": "Your garden gets its own digital file",
         "body": "See boundaries, key areas, and what’s happening over time—so decisions are simple and surprises are rare."
       },
       "col2": {
-        "title": "Mowing that runs on a schedule, not your weekend",
+        "title": "Robot mows on schedule. You just relax.",
         "body": "Set it and forget it. Regular mowing keeps things tidy without the last‑minute scramble before guests arrive."
       },
       "col3": {
-        "title": "Works for one yard or twenty",
+        "title": "One yard or ten properties — same simple setup",
         "body": "Whether it’s your home or multiple properties, you get the same consistent setup, visibility, and results."
       }
     },
@@ -46,70 +49,54 @@
     }
   },
   "about": {
-    "metaTitle": "About",
-    "metaDescription": "Mission, vision, problems we solve, and values behind GardenOS digitized gardens and subscription mowing.",
+    "metaTitle": "Who we are",
+    "metaDescription": "Why we built GardenOS, the mowing problems we solve, what we're building, and our $29/month robot mowing goal.",
     "badge": "GardenOS",
-    "title": "About GardenOS",
-    "origin": "GardenOS is a robotic lawn mowing subscription — we map your yard, run the mowing on a schedule, and manage the whole thing remotely. GardenOS started with a simple problem: keeping up with lawn growth shouldn’t take hours every week. We’re a small team in Auckland building a calmer, more reliable way to take care of outdoor spaces—starting at home, then scaling out.",
-    "lead": "We focus on the real-world pain: unclear boundaries, unpredictable results, and mowing that eats weekends. Our approach is practical—map the yard, monitor what matters, and run mowing as a repeatable service you can trust.",
+    "title": "Who We Are & Why We Built This",
+    "origin": "Grass grows back every week. A lawn mower costs $60+ per visit — that's $800 a year without thinking about it. We're a small team in Auckland who think robots can do this better, and cheaper. The more people join, the lower the price for everyone. Our goal: robot lawn mowing for $29/month.",
     "mission": {
-      "title": "Mission",
-      "body": "Make reliable lawn care ridiculously easy: use 3D mapping + robotics to deliver consistent results, with subscription pricing that’s built for ultimate value."
+      "title": "What we're building",
+      "body": "3D scanning to map your garden. Robots to mow it regularly. Crowdfunding to get the price down to $29/month."
     },
     "vision": {
-      "title": "Vision",
-      "body": "Help more people enjoy a yard they’re proud of—without the constant time and stress. As we learn in the field, we’ll make outdoor care simpler, more predictable, and more affordable."
+      "title": "Our goal",
+      "body": "Every home in New Zealand with a garden — no more mowing stress, no more overpaying."
     },
     "problems": {
-      "title": "Problems we obsess over",
+      "title": "Three problems we're solving",
       "p1": {
-        "title": "Fragmented knowledge, hero-dependent ops",
-        "body": "Boundaries, slopes, vegetation, and fleet health live across paper trails and chats—hard to audit or hand off."
+        "title": "Mowing costs too much and needs rebooking every time",
+        "body": "Every new mower needs a full briefing. No record of your garden, everything from memory."
       },
       "p2": {
-        "title": "Mowing is costly to scale",
-        "body": "NZ spring growth is relentless—crews fluctuate, and robots idle without disciplined ops. We close the loop with mapping, scheduling, and remote operations that are repeatable and measurable."
+        "title": "Manual mowing is unreliable",
+        "body": "Grass grows fast in spring, last-minute bookings are expensive, and buying your own machine means maintenance."
       },
       "p3": {
-        "title": "Subscriptions need a trustworthy backbone",
-        "body": "Moving from one-off sales to recurring care demands transparent job logs, predictable windows, and accountable remote operations."
+        "title": "You paid, but you don't know if it was done",
+        "body": "No way to check whether the lawn was mowed today, or done properly."
       }
     },
     "values": {
-      "title": "What we will not compromise",
+      "title": "Three things we promise you",
       "v1": {
-        "title": "Safety and compliance first",
-        "body": "Outdoor robotics must respect boundaries, privacy, and local rules before feature velocity."
+        "title": "Your garden data belongs to you",
+        "body": "The robot works in your garden. Safety first, and you have full control of all data."
       },
       "v2": {
-        "title": "Data should serve the owner",
-        "body": "Mapping and mowing telemetry stay within the scope you authorize for optimization—not a lock-in ransom."
+        "title": "Transparent pricing, no hidden fees",
+        "body": "Your subscription price is clear upfront. Lock it in when you join — it won't go up."
       },
       "v3": {
-        "title": "Co-build with the community",
-        "body": "Early users, property partners, and builders shape the roadmap with grounded field feedback."
-      }
-    },
-    "changelogTitle": "Recent updates (for the curious)",
-    "changelog": {
-      "rel1": {
-        "title": "v0.4 — Subscription billing preview",
-        "body": "Draft pricing by parcel size and cadence with exportable reconciliation reports (test data)."
-      },
-      "rel2": {
-        "title": "v0.3 — Boundary regression toolkit",
-        "body": "Compare remapping deltas and auto-generate review task lists."
-      },
-      "rel3": {
-        "title": "v0.2 — Remote ops console",
-        "body": "Searchable job logs, explainable fault codes, and remote safe-stop controls."
+        "title": "Your feedback shapes what we build",
+        "body": "We're early stage. What you tell us directly decides what we do next."
       }
     },
     "cta": {
-      "title": "Exploring pilots or partnerships?",
-      "body": "Start with how to participate, or create a membership to get updates and invites.",
-      "primary": "How to participate",
-      "secondary": "Create membership"
+      "title": "Want a robot mowing your lawn?",
+      "body": "Join free now — first 200 members get a professional 3D garden scan and lock in their early price.",
+      "primary": "Join Free",
+      "secondary": "Learn More"
     }
   },
   "participate": {
