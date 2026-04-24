@@ -58,27 +58,6 @@ export default async function ParticipatePage({ params }: Props) {
         </ol>
       </section>
 
-      <section
-        aria-labelledby="req-heading"
-        className="rounded-2xl border border-garden-200 bg-gradient-to-b from-white to-garden-50/80 px-6 py-8 shadow-sm sm:px-8 sm:py-10"
-      >
-        <h2
-          id="req-heading"
-          className="text-lg font-semibold tracking-tight text-garden-950 sm:text-xl"
-        >
-          {t("reqTitle")}
-        </h2>
-        <p className="mt-3 max-w-3xl text-sm leading-relaxed text-garden-800 sm:text-base">
-          {t("reqIntro")}
-        </p>
-        <ul className="mt-6 max-w-3xl list-disc space-y-3 pl-5 text-sm leading-relaxed text-garden-800 sm:text-base">
-          <li>{t("req1")}</li>
-          <li>{t("req2")}</li>
-          <li>{t("req3")}</li>
-          <li>{t("req4")}</li>
-        </ul>
-      </section>
-
       <section aria-labelledby="schedule-heading">
         <div className="rounded-2xl border border-dashed border-garden-300 bg-garden-50/60 px-6 py-6 sm:px-8 sm:py-8">
           <h2

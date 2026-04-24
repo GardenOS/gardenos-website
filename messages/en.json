@@ -100,30 +100,24 @@
     }
   },
   "participate": {
-    "metaTitle": "How to participate",
-    "metaDescription": "Three ways to engage, baseline requirements, and sample cadence for GardenOS pilots and co-creation.",
+    "metaTitle": "Join us",
+    "metaDescription": "Three ways to join GardenOS: register free, book a garden scan, join a live mowing demo — earlier is cheaper.",
     "badge": "Co-creation",
-    "title": "Join the GardenOS early build",
+    "title": "Three ways to join — the earlier, the cheaper",
     "lead": "Homeowners, property operators, and technical partners can all contribute—the paths below turn your signal into roadmap decisions.",
     "pathsTitle": "Three ways to engage",
     "step1": {
-      "title": "Try it out",
-      "body": "Get early access to the experience and see how it feels in a real yard. You’ll get guidance and updates as we iterate."
+      "title": "Register free, lock in your price",
+      "body": "Join the waitlist for price-drop alerts, events, and your early-bird rate."
     },
     "step2": {
-      "title": "Give feedback",
-      "body": "Tell us what matters in your situation—your yard, your schedule, your constraints. We’ll turn that into clearer priorities and better product decisions."
+      "title": "Book your free garden scan",
+      "body": "First 200 members can book a professional 3D scan—slots and timing confirmed by email."
     },
     "step3": {
-      "title": "Run a pilot",
-      "body": "Work with us on a real pilot so you can evaluate results over time. You’ll get structured check-ins, reporting, and a clear plan for next steps."
+      "title": "Join a live mowing demo",
+      "body": "Watch the robot mow in public sessions—we’ll send RSVP and watch links when dates are set."
     },
-    "reqTitle": "Here’s what to expect",
-    "reqIntro": "We keep participation lightweight and respectful of your time. A few helpful basics make the experience smoother for everyone.",
-    "req1": "We’ll confirm what access (if any) is needed for mapping and testing before anything happens.",
-    "req2": "If your site has special constraints (gates, steep slopes, complex edges), tell us early so we plan around them.",
-    "req3": "Feedback can be as simple as “what worked / what didn’t.” If you have time, screenshots and short notes help a lot.",
-    "req4": "Dates can shift as we test; members get the fastest updates when schedules are confirmed.",
     "scheduleTitle": "Near-term cadence (sample)",
     "scheduleBody": "Q2: prototype revisit + boundary regression week. Q3: expand pilot metros and billing dry-runs. Official dates publish on Live & testing.",
     "ctaTitle": "What to do next",
@@ -132,10 +126,10 @@
     "ctaRegister": "Create membership"
   },
   "live": {
-    "metaTitle": "Live & testing",
-    "metaDescription": "Public prototype windows, how to watch, replays, and release notes for GardenOS field tests.",
+    "metaTitle": "Live demo",
+    "metaDescription": "Watch the robot mow live, catch replays, and read what’s new for GardenOS public tests.",
     "badge": "Public calendar",
-    "title": "Live tests and how to join",
+    "title": "Watch the robot mow — live",
     "lead": "We run open prototype tests on a rolling schedule. Register once, and we’ll notify you the moment a date is confirmed.",
     "windowEyebrow": "Next up",
     "windowTitle": "Prototype public test window",
@@ -143,29 +137,16 @@
     "windowNote": "If you register, you’ll get notified when it’s official. If you can’t make it live, we’ll post the recap and replay link here.",
     "channelsTitle": "How to watch and download assets",
     "ch1": {
-      "title": "Live broadcast",
+      "title": "Live stream",
       "body": "Public sessions include multi-camera streams and captions—join five minutes early for the safety briefing."
     },
     "ch2": {
-      "title": "Replays & write-ups",
+      "title": "Watch replay",
       "body": "Edited replays and written recaps ship within 48 hours, including parameter ranges and known limitations."
     },
     "ch3": {
-      "title": "Technical briefs",
+      "title": "What's new",
       "body": "Each release ships with a changelog and migration notes; breaking behavior is called out explicitly."
-    },
-    "releasesTitle": "Recent capability drops (sample)",
-    "rel1": {
-      "title": "v0.4 — Subscription billing preview",
-      "body": "Draft pricing by parcel size and cadence with exportable reconciliation reports (test data)."
-    },
-    "rel2": {
-      "title": "v0.3 — Boundary regression toolkit",
-      "body": "Compare remapping deltas and auto-generate review task lists."
-    },
-    "rel3": {
-      "title": "v0.2 — Remote ops console",
-      "body": "Searchable job logs, explainable fault codes, and remote safe-stop controls."
     },
     "bannerTitle": "Never miss a public test",
     "bannerBody": "Create a membership and enable email alerts to get RSVP and watch links the moment a schedule drops.",
