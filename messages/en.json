@@ -12,40 +12,99 @@
     "dashboard": "Dashboard"
   },
   "home": {
-    "badge": "mygardenos.com",
-    "pointCloudCaption": "This will be your garden's digital file",
-    "headline": "Your garden, digitized. Your lawn care, automated.",
-    "sub": "The more people subscribe, the lower the price for everyone. Let's get robot lawn mowing to $29/month — together.",
-    "crowdfundingTitle": "Let's get robot lawn mowing to $29/month — together",
-    "crowdfundingSubtitle": "As more members join, everyone unlocks lower pricing.",
-    "crowdfundingUnlockHeadline": "$29/month unlocks when we reach 2,000 members",
-    "ctaPrimary": "Join Us",
-    "ctaSecondary": "Join Free",
-    "highlights": {
-      "title": "Product highlights",
-      "col1": {
-        "title": "Your garden gets its own digital file",
-        "body": "See boundaries, key areas, and what's happening over time—so decisions are simple and surprises are rare."
+    "hero": {
+      "title": "It's the AI era — why is mowing still so expensive and such a hassle?",
+      "subtitle": "Hire someone: expensive, and you still have to wait. DIY: tiring, and it eats your weekend. Buy a robot: expensive, and it might not fit your garden.",
+      "thirdLine": "GardenOS is running real-garden tests in Auckland. We test for you — if it's good, we buy together; if not, we keep looking. Free to join.",
+      "cta": "Free RSVP: Auckland's first real test live stream →"
+    },
+    "stats": {
+      "ariaLabel": "Project status",
+      "item1": {
+        "label": "Prototype status",
+        "value": "Shenzhen → on the way by sea, ETA Auckland ~40 days"
       },
-      "col2": {
-        "title": "Robot mows on schedule. You just relax.",
-        "body": "Set it and forget it. Regular mowing keeps things tidy without the last‑minute scramble before guests arrive."
+      "item2": {
+        "label": "Homes reserved",
+        "value": "Dynamic: show registration count"
       },
-      "col3": {
-        "title": "One yard or ten properties — same simple setup",
-        "body": "Whether you have one property or ten, you get the same consistent setup, visibility, and results."
+      "item3": {
+        "label": "Garden area covered",
+        "value": "Dynamic"
       }
     },
-    "prototype": {
-      "eyebrow": "Prototype field tests",
-      "title": "Want to see the robot mow? Come in person or watch live",
-      "body": "We'll run public mowing demos, boundary tests, and live walkthroughs. Add your name now — we'll email you as soon as time and place are confirmed.",
-      "cta": "Live demo"
+    "pitfalls": {
+      "title": "We take the risks for you",
+      "body": "There are plenty of robot mowers out there — and some look cheap online. But Auckland gardens have slopes, trees, narrow passages, and complex boundaries. Buying a robot isn't hard. The hard part is whether it can work reliably in real Auckland gardens. We'll buy them, test them, and you watch. If it's good enough, we buy together. If not, we keep looking. No edits. No polishing. No hiding failures. If it gets stuck, you'll see it. If it can't handle boundaries, you'll see it. If battery life falls short, you'll see it."
     },
-    "registerBlock": {
-      "title": "Join free now and lock in your early-bird pricing",
-      "primaryCta": "Join Free",
-      "secondaryCta": "Join Us"
+    "scenarios": {
+      "title": "Six real scenarios that match Auckland's most common garden challenges",
+      "subtitle": "Test location: a real home garden in Botany, Auckland (two different terrains) | Format: live stream, viewers ask questions in real time",
+      "s1": {
+        "title": "Slope test",
+        "body": "Typical Auckland sloped lawns — can it climb and descend without slipping?"
+      },
+      "s2": {
+        "title": "Obstacle test",
+        "body": "Garden beds, roots, stones, kids' toys — real obstacles and avoidance behavior"
+      },
+      "s3": {
+        "title": "Narrow passage test",
+        "body": "Tight corridors between fences or walls — can it pass through cleanly?"
+      },
+      "s4": {
+        "title": "Complex boundaries",
+        "body": "Irregular garden shapes — boundary accuracy and edge cutting quality"
+      },
+      "s5": {
+        "title": "Real battery life",
+        "body": "Does real coverage match the manufacturer's claims?"
+      },
+      "s6": {
+        "title": "Noise test",
+        "body": "Will neighbors tolerate it? We'll measure dB live."
+      },
+      "ending": "After the live test, viewers vote: is it good enough? If yes, we organize a group buy. If no, we move on to the next brand."
+    },
+    "priorityPlan": {
+      "title": "Priority trial program: your garden decides what we test",
+      "body": "Want this robot to enter your garden for a trial after the live stream? Complete three steps to apply for priority trial access:",
+      "p1": {
+        "title": "Leave your contact",
+        "body": "We'll notify you first before the live stream starts."
+      },
+      "p2": {
+        "title": "Submit your garden info",
+        "body": "Tell us about size, slope, trees, garden beds, narrow passages, and anything else."
+      },
+      "p3": {
+        "title": "Upload garden data",
+        "body": "You can upload photos, videos, floor plans, or 3D scan files. If you have an iPhone Pro / iPad Pro, you can also upload your garden scan data."
+      },
+      "cta": "Apply for priority trials — submit my garden info →",
+      "note": "This isn't for collecting privacy. It's to build your garden's digital file. The more the robot understands your garden, the more stable autonomous mowing becomes.",
+      "aside": "Note: uploads live in the dashboard. If you're not signed in, you'll be prompted first."
+    },
+    "alliance": {
+      "title": "Homeowner alliance logic: people helping people",
+      "body": "GardenOS isn't a marketplace that sells robots. We're an Auckland homeowner alliance. We use collective effort to test this properly. We use real garden data to find robot setups that fit Auckland. And we use more participation to negotiate better prices and service. The more people use it, the more real the tests. The more real the tests, the more confidently everyone can buy.",
+      "a1": {
+        "title": "Free to join",
+        "body": "Registration, live-stream RSVPs, and test feedback are free"
+      },
+      "a2": {
+        "title": "Your garden shapes the tests",
+        "body": "If you submit garden info, you directly influence the live test scenarios"
+      },
+      "a3": {
+        "title": "Collective negotiation power",
+        "body": "The larger the alliance, the stronger we negotiate with manufacturers"
+      },
+      "a4": {
+        "title": "Ongoing upgrade plan",
+        "body": "As the tech improves, we keep evaluating better robot options"
+      },
+      "cta": "RSVP now and lock in priority trial access →"
     }
   },
   "about": {
