@@ -1,5 +1,6 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/routing";
+import { HomeMowingCostSurvey } from "@/components/home/HomeMowingCostSurvey";
 
 type Props = { params: Promise<{ locale: string }> };
 
@@ -74,6 +75,8 @@ export default async function HomePage({ params }: Props) {
             </dl>
           </section>
       </section>
+
+      <HomeMowingCostSurvey />
 
       <section aria-labelledby="section-pitfalls" className="bg-white">
         <div className="mx-auto max-w-5xl px-4 py-12 sm:px-6 lg:px-8 sm:py-16">

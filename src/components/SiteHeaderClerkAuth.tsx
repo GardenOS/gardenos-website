@@ -7,8 +7,11 @@ import {
   UserButton,
 } from "@clerk/nextjs";
 import { Show } from "@clerk/react";
+import { useTranslations } from "next-intl";
 
 export function SiteHeaderClerkAuth() {
+  const t = useTranslations("nav");
+
   return (
     <div className="flex h-9 shrink-0 items-center">
       <ClerkLoading>
@@ -24,7 +27,7 @@ export function SiteHeaderClerkAuth() {
               type="button"
               className="rounded-full border border-garden-300 bg-white px-4 py-2 text-sm font-semibold text-garden-800 shadow-sm transition hover:border-garden-400 hover:bg-garden-50"
             >
-              登录
+              {t("signIn")}
             </button>
           </SignInButton>
         </Show>

@@ -9,14 +9,15 @@
     "participate": "Join Us",
     "live": "Live Demo",
     "register": "Join Free",
-    "dashboard": "Dashboard"
+    "dashboard": "Dashboard",
+    "signIn": "Sign In"
   },
   "home": {
     "hero": {
       "title": "It's the AI era — why is mowing still so expensive and such a hassle?",
       "subtitle": "Hire someone: expensive, and you still have to wait. DIY: tiring, and it eats your weekend. Buy a robot: expensive, and it might not fit your garden.",
       "thirdLine": "GardenOS is running real-garden tests in Auckland. We test for you — if it's good, we buy together; if not, we keep looking. Free to join.",
-      "cta": "Free RSVP: Auckland's first real test live stream →"
+      "cta": "Reserve My Spot for the Live Test →"
     },
     "stats": {
       "ariaLabel": "Project status",
@@ -26,12 +27,25 @@
       },
       "item2": {
         "label": "Homes reserved",
-        "value": "Dynamic: show registration count"
+        "value": "Updating live"
       },
       "item3": {
         "label": "Garden area covered",
-        "value": "Dynamic"
+        "value": "Updating live"
       }
+    },
+    "survey": {
+      "title": "How much do you spend on mowing each month?",
+      "subtitle": "Tell us — we'll notify you first before the stream.",
+      "options": {
+        "o1": "I mow myself — but it's exhausting",
+        "o2": "Under $50",
+        "o3": "$50–100",
+        "o4": "$100–200",
+        "o5": "Over $200"
+      },
+      "thanks": "Thank you! We'll notify you first before the live stream starts.",
+      "error": "Something went wrong. Please try again."
     },
     "pitfalls": {
       "title": "We take the risks for you",
