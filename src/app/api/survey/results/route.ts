@@ -1,8 +1,17 @@
 import { NextResponse } from "next/server";
+import { answerToSurveySlot, type SurveySlotId } from "../surveySlots";
 
 type AirtableListResponse = {
   records?: Array<{ fields?: Record<string, unknown> }>;
   offset?: string;
+};
+
+const EMPTY_SLOTS: Record<SurveySlotId, number> = {
+  o1: 0,
+  o2: 0,
+  o3: 0,
+  o4: 0,
+  o5: 0,
 };
 
 export async function GET() {
@@ -17,7 +26,8 @@ export async function GET() {
     );
   }
 
-  const counts: Record<string, number> = {};
+  const bySlot: Record<SurveySlotId, number> = { ...EMPTY_SLOTS };
+  let total = 0;
   let offset: string | undefined;
 
   try {
@@ -44,14 +54,15 @@ export async function GET() {
       for (const rec of data.records ?? []) {
         const ans = String(rec.fields?.answer ?? "").trim();
         if (!ans) continue;
-        counts[ans] = (counts[ans] ?? 0) + 1;
+        const slot = answerToSurveySlot(ans);
+        if (!slot) continue;
+        bySlot[slot]++;
+        total++;
       }
       offset = data.offset;
     } while (offset);
 
-    const total = Object.values(counts).reduce((sum, n) => sum + n, 0);
-
-    return NextResponse.json({ ok: true, total, counts });
+    return NextResponse.json({ ok: true, total, bySlot });
   } catch {
     return NextResponse.json({ ok: false, error: "Unexpected server error." }, { status: 500 });
   }

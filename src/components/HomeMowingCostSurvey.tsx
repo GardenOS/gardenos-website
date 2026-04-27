@@ -1,38 +1,22 @@
 "use client";
 
-import { useRouter } from "@/i18n/routing";
 import { useLocale, useTranslations } from "next-intl";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useState } from "react";
 
 const OPTION_KEYS = ["o1", "o2", "o3", "o4", "o5"] as const;
 
-type SurveyResults = { total: number; counts: Record<string, number> };
+type SurveySlotId = (typeof OPTION_KEYS)[number];
 
-const REDIRECT_MS = 6000;
+type SurveyResults = { total: number; bySlot: Record<SurveySlotId, number> };
 
 export function HomeMowingCostSurvey() {
   const t = useTranslations("home.survey");
   const locale = useLocale();
-  const router = useRouter();
   const [phase, setPhase] = useState<"idle" | "thanks" | "error">("idle");
   const [busy, setBusy] = useState(false);
   const [results, setResults] = useState<SurveyResults | null>(null);
   const [resultsLoading, setResultsLoading] = useState(false);
   const [resultsError, setResultsError] = useState(false);
-  const redirectTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  const scheduleRedirect = useCallback(() => {
-    if (redirectTimer.current) clearTimeout(redirectTimer.current);
-    redirectTimer.current = setTimeout(() => {
-      router.push("/register");
-    }, REDIRECT_MS);
-  }, [router]);
-
-  useEffect(() => {
-    return () => {
-      if (redirectTimer.current) clearTimeout(redirectTimer.current);
-    };
-  }, []);
 
   const loadResults = useCallback(async () => {
     setResultsLoading(true);
@@ -41,13 +25,20 @@ export function HomeMowingCostSurvey() {
     try {
       const res = await fetch("/api/survey/results", { cache: "no-store" });
       const data = (await res.json().catch(() => null)) as
-        | { ok?: boolean; total?: number; counts?: Record<string, number> }
+        | { ok?: boolean; total?: number; bySlot?: Record<string, number> }
         | null;
-      if (!res.ok || !data?.ok || typeof data.total !== "number" || !data.counts) {
+      if (!res.ok || !data?.ok || typeof data.total !== "number" || !data.bySlot) {
         setResultsError(true);
         return;
       }
-      setResults({ total: data.total, counts: data.counts });
+      const bySlot = OPTION_KEYS.reduce(
+        (acc, key) => {
+          acc[key] = Number(data.bySlot![key]) || 0;
+          return acc;
+        },
+        {} as Record<SurveySlotId, number>
+      );
+      setResults({ total: data.total, bySlot });
     } catch {
       setResultsError(true);
     } finally {
@@ -72,7 +63,6 @@ export function HomeMowingCostSurvey() {
           return;
         }
         setPhase("thanks");
-        scheduleRedirect();
         void loadResults();
       } catch {
         setPhase("error");
@@ -80,7 +70,7 @@ export function HomeMowingCostSurvey() {
         setBusy(false);
       }
     },
-    [busy, phase, locale, loadResults, scheduleRedirect]
+    [busy, phase, locale, loadResults]
   );
 
   return (
@@ -120,7 +110,7 @@ export function HomeMowingCostSurvey() {
                   <ul className="mt-5 space-y-4" aria-label={t("resultsTitle")}>
                     {OPTION_KEYS.map((key) => {
                       const label = t(`options.${key}`);
-                      const votes = results.counts[label] ?? 0;
+                      const votes = results.bySlot[key] ?? 0;
                       const percent = results.total > 0 ? Math.round((votes / results.total) * 100) : 0;
                       return (
                         <li key={key} className="space-y-1.5">
