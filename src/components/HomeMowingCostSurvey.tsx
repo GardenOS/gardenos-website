@@ -6,18 +6,53 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 const OPTION_KEYS = ["o1", "o2", "o3", "o4", "o5"] as const;
 
+type SurveyResults = { total: number; counts: Record<string, number> };
+
+const REDIRECT_MS = 6000;
+
 export function HomeMowingCostSurvey() {
   const t = useTranslations("home.survey");
   const locale = useLocale();
   const router = useRouter();
   const [phase, setPhase] = useState<"idle" | "thanks" | "error">("idle");
   const [busy, setBusy] = useState(false);
+  const [results, setResults] = useState<SurveyResults | null>(null);
+  const [resultsLoading, setResultsLoading] = useState(false);
+  const [resultsError, setResultsError] = useState(false);
   const redirectTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const scheduleRedirect = useCallback(() => {
+    if (redirectTimer.current) clearTimeout(redirectTimer.current);
+    redirectTimer.current = setTimeout(() => {
+      router.push("/register");
+    }, REDIRECT_MS);
+  }, [router]);
 
   useEffect(() => {
     return () => {
       if (redirectTimer.current) clearTimeout(redirectTimer.current);
     };
+  }, []);
+
+  const loadResults = useCallback(async () => {
+    setResultsLoading(true);
+    setResultsError(false);
+    setResults(null);
+    try {
+      const res = await fetch("/api/survey/results", { cache: "no-store" });
+      const data = (await res.json().catch(() => null)) as
+        | { ok?: boolean; total?: number; counts?: Record<string, number> }
+        | null;
+      if (!res.ok || !data?.ok || typeof data.total !== "number" || !data.counts) {
+        setResultsError(true);
+        return;
+      }
+      setResults({ total: data.total, counts: data.counts });
+    } catch {
+      setResultsError(true);
+    } finally {
+      setResultsLoading(false);
+    }
   }, []);
 
   const submit = useCallback(
@@ -37,17 +72,15 @@ export function HomeMowingCostSurvey() {
           return;
         }
         setPhase("thanks");
-        if (redirectTimer.current) clearTimeout(redirectTimer.current);
-        redirectTimer.current = setTimeout(() => {
-          router.push("/register");
-        }, 2000);
+        scheduleRedirect();
+        void loadResults();
       } catch {
         setPhase("error");
       } finally {
         setBusy(false);
       }
     },
-    [busy, phase, locale, router]
+    [busy, phase, locale, loadResults, scheduleRedirect]
   );
 
   return (
@@ -65,9 +98,58 @@ export function HomeMowingCostSurvey() {
           </p>
 
           {phase === "thanks" ? (
-            <p className="mt-8 text-center text-base font-semibold text-green-800" role="status" aria-live="polite">
-              {t("thanks")}
-            </p>
+            <div className="mt-8 space-y-6">
+              <p className="text-center text-base font-semibold text-green-800" role="status" aria-live="polite">
+                {t("thanks")}
+              </p>
+
+              {resultsLoading ? (
+                <p className="text-center text-sm text-garden-700">{t("resultsLoading")}</p>
+              ) : null}
+
+              {resultsError && !resultsLoading ? (
+                <p className="text-center text-sm text-amber-800">{t("resultsLoadError")}</p>
+              ) : null}
+
+              {results && !resultsLoading ? (
+                <div className="rounded-xl border border-green-200/80 bg-white/90 px-4 py-5 sm:px-5">
+                  <h3 className="text-center text-lg font-bold text-garden-950">{t("resultsTitle")}</h3>
+                  <p className="mt-1 text-center text-xs text-garden-700 sm:text-sm">
+                    {t("resultsSubtitle", { count: results.total })}
+                  </p>
+                  <ul className="mt-5 space-y-4" aria-label={t("resultsTitle")}>
+                    {OPTION_KEYS.map((key) => {
+                      const label = t(`options.${key}`);
+                      const votes = results.counts[label] ?? 0;
+                      const percent = results.total > 0 ? Math.round((votes / results.total) * 100) : 0;
+                      return (
+                        <li key={key} className="space-y-1.5">
+                          <div className="flex flex-wrap items-baseline justify-between gap-x-2 gap-y-1 text-sm text-garden-900">
+                            <span className="min-w-0 flex-1 font-medium leading-snug">{label}</span>
+                            <span className="shrink-0 tabular-nums text-garden-700">
+                              {t("resultsRow", { percent, votes })}
+                            </span>
+                          </div>
+                          <div
+                            className="h-2.5 overflow-hidden rounded-full bg-green-100"
+                            role="progressbar"
+                            aria-valuenow={percent}
+                            aria-valuemin={0}
+                            aria-valuemax={100}
+                            aria-label={label}
+                          >
+                            <div
+                              className="h-full min-w-0 rounded-full bg-green-600 transition-[width] duration-300"
+                              style={{ width: `${percent}%` }}
+                            />
+                          </div>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
+              ) : null}
+            </div>
           ) : (
             <>
               {phase === "error" ? (

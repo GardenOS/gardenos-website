@@ -45,7 +45,12 @@
         "o5": "Over $200"
       },
       "thanks": "Thank you! We'll notify you first before the live stream starts.",
-      "error": "Something went wrong. Please try again."
+      "error": "Something went wrong. Please try again.",
+      "resultsTitle": "What are Auckland homeowners saying?",
+      "resultsSubtitle": "{count} homeowners have participated so far",
+      "resultsLoadError": "Live results could not be loaded.",
+      "resultsLoading": "Loading results…",
+      "resultsRow": "{percent}% ({votes} votes)"
     },
     "pitfalls": {
       "title": "We take the risks for you",

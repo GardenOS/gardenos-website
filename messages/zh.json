@@ -45,7 +45,12 @@
         "o5": "$200 以上"
       },
       "thanks": "谢谢！直播开始前第一时间通知你。",
-      "error": "提交失败，请稍后重试。"
+      "error": "提交失败，请稍后重试。",
+      "resultsTitle": "Auckland 房主怎么说？",
+      "resultsSubtitle": "已有 {count} 位房主参与",
+      "resultsLoadError": "投票统计暂时无法加载。",
+      "resultsLoading": "正在加载投票…",
+      "resultsRow": "{percent}%（{votes} 票）"
     },
     "pitfalls": {
       "title": "我们替你踩坑",
