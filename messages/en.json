@@ -86,44 +86,44 @@
       "ending": "After the live test, viewers vote: is it good enough? If yes, we organize a group buy. If no, we move on to the next brand."
     },
     "priorityPlan": {
-      "title": "Priority trial program: your garden decides what we test",
-      "body": "Want this robot to enter your garden for a trial after the live stream? Complete three steps to apply for priority trial access:",
+      "title": "Test participation plan: your garden decides what we test",
+      "body": "Want GardenOS to test closer to your real garden? Complete three steps to help shape the next live test:",
       "p1": {
-        "title": "Leave your contact",
+        "title": "Reserve the live stream",
         "body": "We'll notify you first before the live stream starts."
       },
       "p2": {
-        "title": "Submit your garden info",
-        "body": "Tell us about size, slope, trees, garden beds, narrow passages, and anything else."
+        "title": "Share your garden details",
+        "body": "Tell us about area, slope, trees, garden beds, narrow passages, and complex boundaries."
       },
       "p3": {
-        "title": "Upload garden data",
-        "body": "You can upload photos, videos, floor plans, or 3D scan files. If you have an iPhone Pro / iPad Pro, you can also upload your garden scan data."
+        "title": "Co-design the next test",
+        "body": "Want to see wet grass, tall grass, slopes, obstacle avoidance, noise, or a specific brand? Your feedback will shape what we test next. You can also upload photos, videos, floor plans, or 3D scan files."
       },
-      "cta": "Apply for priority trials — submit my garden info →",
-      "note": "This isn't for collecting privacy. It's to build your garden's digital file. The more the robot understands your garden, the more stable autonomous mowing becomes.",
+      "cta": "Submit my garden details — help shape the next test →",
+      "note": "This info isn't for collecting privacy. It's to help us design test scenarios that better match real home gardens.",
       "aside": "Note: uploads live in the dashboard. If you're not signed in, you'll be prompted first."
     },
     "alliance": {
       "title": "Homeowner alliance logic: people helping people",
-      "body": "GardenOS isn't a marketplace that sells robots. We're an Auckland homeowner alliance. We use collective effort to test this properly. We use real garden data to find robot setups that fit Auckland. And we use more participation to negotiate better prices and service. The more people use it, the more real the tests. The more real the tests, the more confidently everyone can buy.",
+      "body": "GardenOS isn't a platform that sells robots.\nWe're a real-test alliance built with Auckland homeowners.\nWhich mower truly fits Auckland gardens?\nNot the manufacturers — and not us — but real-world tests decide.",
       "a1": {
-        "title": "Free to join",
-        "body": "Registration, live-stream RSVPs, and test feedback are free"
+        "title": "Free to participate",
+        "body": "Live-stream RSVPs, test suggestions, and feedback are free."
       },
       "a2": {
         "title": "Your garden shapes the tests",
-        "body": "If you submit garden info, you directly influence the live test scenarios"
+        "body": "Slopes, narrow passages, roots, complex boundaries? What you share influences what we test next."
       },
       "a3": {
-        "title": "Collective negotiation power",
-        "body": "The larger the alliance, the stronger we negotiate with manufacturers"
+        "title": "Recommend brands to test",
+        "body": "Heard of a robot mower worth trying? Tell us — popular recommendations enter the shortlist for future tests."
       },
       "a4": {
-        "title": "Ongoing upgrade plan",
-        "body": "As the tech improves, we keep evaluating better robot options"
+        "title": "Find the right Auckland setup together",
+        "body": "Every piece of feedback and every garden scenario helps us get closer to a truly local-fit robot mowing solution."
       },
-      "cta": "RSVP now and lock in priority trial access →"
+      "cta": "Reserve the live stream — help shape the next test →"
     }
   },
   "about": {
