@@ -57,12 +57,16 @@ export default async function AboutPage({ params }: Props) {
         <div className="rounded-2xl border border-garden-200/90 bg-white p-6 shadow-sm ring-1 ring-garden-100/80 sm:p-8">
           <span className="mb-4 block h-1 w-10 rounded-full bg-garden-500" aria-hidden />
           <h3 className="text-lg font-semibold text-garden-950">{t("mission.title")}</h3>
-          <p className="mt-3 text-sm leading-relaxed text-garden-800 sm:text-base">{t("mission.body")}</p>
+          <p className="mt-3 whitespace-pre-line text-sm leading-relaxed text-garden-800 sm:text-base">
+            {t("mission.body")}
+          </p>
         </div>
         <div className="rounded-2xl border border-garden-200/90 bg-white p-6 shadow-sm ring-1 ring-garden-100/80 sm:p-8">
           <span className="mb-4 block h-1 w-10 rounded-full bg-garden-400" aria-hidden />
           <h3 className="text-lg font-semibold text-garden-950">{t("vision.title")}</h3>
-          <p className="mt-3 text-sm leading-relaxed text-garden-800 sm:text-base">{t("vision.body")}</p>
+          <p className="mt-3 whitespace-pre-line text-sm leading-relaxed text-garden-800 sm:text-base">
+            {t("vision.body")}
+          </p>
         </div>
       </section>
 
