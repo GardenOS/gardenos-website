@@ -3,8 +3,6 @@
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 
-type Props = { params: { locale: string } };
-
 interface LiveStreamConfig {
   youtubeUrl?: string;
   title?: string;
@@ -44,8 +42,7 @@ function toYoutubeEmbedUrl(rawUrl?: string): string | null {
   }
 }
 
-export default function LiveTestPage({ params }: Props) {
-  const locale = params.locale;
+export default function LiveTestPage() {
   const t = useTranslations("liveTest");
 
   const [configUrl, setConfigUrl] = useState<string>("");
@@ -89,7 +86,6 @@ export default function LiveTestPage({ params }: Props) {
     setDraftUrl(configUrl);
     setLiveUrl(configUrl);
   }
-
 
   return (
     <div className="space-y-12 sm:space-y-16">

@@ -5,7 +5,8 @@ export type NotificationDispatchResult = {
   reason?: string;
 };
 
-export async function queueRsvpConfirmation(_rsvp: RsvpRecord): Promise<NotificationDispatchResult> {
+export async function queueRsvpConfirmation(rsvp: RsvpRecord): Promise<NotificationDispatchResult> {
+  void rsvp;
   // Placeholder for future email/SMS integration.
   return {
     queued: false,

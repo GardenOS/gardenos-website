@@ -2,7 +2,6 @@ import { Pool } from "pg";
 import { AppError } from "@/backend/common/errors";
 
 declare global {
-  // eslint-disable-next-line no-var
   var __gardenPgPool: Pool | undefined;
 }
 
