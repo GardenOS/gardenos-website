@@ -8,6 +8,7 @@
     "about": "我们是谁",
     "participate": "怎么加入",
     "live": "现场演示",
+    "liveTest": "直播测试",
     "register": "免费注册",
     "dashboard": "控制台",
     "signIn": "登录"
@@ -227,6 +228,27 @@
     "bannerTitle": "不错过任何一场公开测试",
     "bannerBody": "注册会员并打开邮件提醒，即可在日程发布时第一时间收到报名与观看链接。",
     "bannerCta": "免费注册"
+  },
+  "liveTest": {
+    "metaTitle": "YouTube 直播测试",
+    "metaDescription": "用于内部接入测试的 YouTube 直播页面，支持配置直播地址。",
+    "badge": "内部测试",
+    "title": "YouTube 直播接入测试",
+    "lead": "在发布公开活动前，可在本页验证 YouTube 直播链接是否可正常嵌入与播放。",
+    "configTitle": "直播地址配置",
+    "configBody": "测试时可直接在下方输入地址即时切换；也可修改 public/config/live-stream.json 作为默认地址。",
+    "envLabel": "当前直播地址",
+    "envEmpty": "当前还没有生效的直播地址。",
+    "inputLabel": "测试直播地址",
+    "inputPlaceholder": "粘贴 YouTube 观看/分享/嵌入链接",
+    "inputHint": "点击“应用地址”即可立即切换，无需重启服务。",
+    "applyButton": "应用地址",
+    "useConfigButton": "恢复默认配置",
+    "previewTitle": "直播预览",
+    "previewHint": "支持示例：https://www.youtube.com/watch?v=VIDEO_ID、https://youtu.be/VIDEO_ID 或 https://www.youtube.com/embed/VIDEO_ID。",
+    "previewUnavailable": "由于未配置直播地址，当前无法预览。",
+    "fallbackTitle": "快速检查",
+    "fallbackBody": "设置地址后刷新本页，确认可播放并检查分享链接是否正确。"
   },
   "register": {
     "metaTitle": "免费注册 GardenOS",

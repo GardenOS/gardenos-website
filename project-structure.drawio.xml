@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="app.diagrams.net" modified="2026-04-30T00:00:00.000Z" agent="GitHub Copilot" etag=""> 
+  <diagram name="Project Structure"> 
+    <mxGraphModel dx="800" dy="600" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169"> 
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <!-- Top-level folders -->
+        <mxCell id="2" value="src/app" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D0E6A5;strokeColor=#6AA84F;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="40" width="180" height="80" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="3" value="src/components" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#A9D0F5;strokeColor=#2E75B6;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="260" y="40" width="180" height="80" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="4" value="src/api" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F9CB9C;strokeColor=#B45F06;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="480" y="40" width="180" height="80" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="5" value="src/lib" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EAD1DC;strokeColor=#A64D79;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="700" y="40" width="140" height="60" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="6" value="public / images / videos" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F6CEEC;strokeColor=#8E7CC3;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="160" width="240" height="60" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="7" value="messages (i18n)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFE599;strokeColor=#BF9000;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="320" y="160" width="180" height="60" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="8" value="components/ (root)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D9D2E9;strokeColor=#6D57A4;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="560" y="160" width="220" height="60" as="geometry"/>
+        </mxCell>
+
+        <!-- Detailed nodes under src/app -->
+        <mxCell id="app-locale" value="[locale]/ (routes)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#CFE2F3;strokeColor=#3C78D8;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="60" y="260" width="340" height="120" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="api-list" value="api routes:\n- register\n- scans\n- survey (+results)\n- upload-url\n- webhooks/clerk" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FDE9D9;strokeColor=#D97115;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="430" y="260" width="380" height="140" as="geometry"/>
+        </mxCell>
+
+        <!-- Edges / Relations -->
+        <mxCell id="e1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#666666;endArrow=none;" edge="1" parent="1" source="2" target="3">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="e2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#666666;endArrow=none;" edge="1" parent="1" source="2" target="4">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="e3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#666666;endArrow=none;" edge="1" parent="1" source="4" target="5">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="e4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#666666;endArrow=none;" edge="1" parent="1" source="3" target="app-locale">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="e5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#666666;endArrow=none;" edge="1" parent="1" source="app-locale" target="api-list">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="e6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#666666;endArrow=none;" edge="1" parent="1" source="7" target="app-locale">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="e7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#666666;endArrow=none;" edge="1" parent="1" source="8" target="app-locale">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

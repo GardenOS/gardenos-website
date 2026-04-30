@@ -8,6 +8,7 @@
     "about": "Who We Are",
     "participate": "Join Us",
     "live": "Live Demo",
+    "liveTest": "Live Test",
     "register": "Join Free",
     "dashboard": "Dashboard",
     "signIn": "Sign In"
@@ -227,6 +228,27 @@
     "bannerTitle": "Never miss a public test",
     "bannerBody": "Create a membership and enable email alerts to get RSVP and watch links the moment a schedule drops.",
     "bannerCta": "Join Free"
+  },
+  "liveTest": {
+    "metaTitle": "YouTube live test",
+    "metaDescription": "Internal YouTube live integration testing page with a configurable stream URL.",
+    "badge": "Internal testing",
+    "title": "YouTube Live Integration Test",
+    "lead": "Use this page to verify YouTube live stream embedding before publishing public events.",
+    "configTitle": "Live URL configuration",
+    "configBody": "You can edit the URL below for instant switching during tests, or update public/config/live-stream.json as the default source.",
+    "envLabel": "Current stream URL",
+    "envEmpty": "No stream URL is active yet.",
+    "inputLabel": "Test stream URL",
+    "inputPlaceholder": "Paste a YouTube watch/share/embed URL",
+    "inputHint": "Click Apply to switch immediately without restarting the service.",
+    "applyButton": "Apply URL",
+    "useConfigButton": "Reset to default config",
+    "previewTitle": "Live preview",
+    "previewHint": "Supported examples: https://www.youtube.com/watch?v=VIDEO_ID, https://youtu.be/VIDEO_ID, or https://www.youtube.com/embed/VIDEO_ID.",
+    "previewUnavailable": "Preview unavailable because the stream URL is not configured.",
+    "fallbackTitle": "Quick setup",
+    "fallbackBody": "After setting the URL, reload this page to verify playback and sharing links."
   },
   "register": {
     "metaTitle": "Join GardenOS — free",

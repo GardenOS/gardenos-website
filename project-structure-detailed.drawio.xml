@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="app.diagrams.net" modified="2026-04-30T00:00:00.000Z" agent="GitHub Copilot" etag="">
+  <diagram name="Project Structure - Detailed">
+    <mxGraphModel dx="1200" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <!-- Top-level src group -->
+        <mxCell id="src" value="src" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F2F2F2;strokeColor=#999999;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="20" y="20" width="1120" height="760" as="geometry"/>
+        </mxCell>
+
+        <!-- app folder -->
+        <mxCell id="app" value="app (routes)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D0E6A5;strokeColor=#6AA84F;fontSize=12;" vertex="1" parent="src">
+          <mxGeometry x="40" y="40" width="520" height="240" as="geometry"/>
+        </mxCell>
+
+        <!-- app: locale routes -->
+        <mxCell id="locale" value="[locale]/ (localized routes)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#CFE2F3;strokeColor=#3C78D8;fontSize=11;" vertex="1" parent="app">
+          <mxGeometry x="60" y="70" width="480" height="150" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="route-home" value="page.tsx (home)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#3C78D8;fontSize=11;" vertex="1" parent="locale">
+          <mxGeometry x="10" y="10" width="200" height="28" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="route-about" value="about/page.tsx" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#3C78D8;fontSize=11;" vertex="1" parent="locale">
+          <mxGeometry x="220" y="10" width="120" height="28" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="route-live" value="live/page.tsx" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#3C78D8;fontSize=11;" vertex="1" parent="locale">
+          <mxGeometry x="350" y="10" width="100" height="28" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="route-participate" value="participate/page.tsx" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#3C78D8;fontSize=11;" vertex="1" parent="locale">
+          <mxGeometry x="10" y="48" width="140" height="28" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="route-register" value="register/page.tsx" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#3C78D8;fontSize=11;" vertex="1" parent="locale">
+          <mxGeometry x="160" y="48" width="140" height="28" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="route-dashboard" value="dashboard/page.tsx" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#B45F06;fontSize=11;" vertex="1" parent="locale">
+          <mxGeometry x="310" y="48" width="150" height="28" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="route-dashboard-scan" value="dashboard/scan/page.tsx" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#B45F06;fontSize=11;" vertex="1" parent="route-dashboard">
+          <mxGeometry x="10" y="48" width="200" height="28" as="geometry"/>
+        </mxCell>
+
+        <!-- api folder -->
+        <mxCell id="api" value="app/api (server routes)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F9CB9C;strokeColor=#B45F06;fontSize=12;" vertex="1" parent="src">
+          <mxGeometry x="600" y="40" width="480" height="260" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="api-register" value="register/route.ts" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#D97115;fontSize=11;" vertex="1" parent="api">
+          <mxGeometry x="20" y="16" width="160" height="28" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="api-scans" value="scans/route.ts" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#D97115;fontSize=11;" vertex="1" parent="api">
+          <mxGeometry x="200" y="16" width="160" height="28" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="api-survey" value="survey/route.ts" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#D97115;fontSize=11;" vertex="1" parent="api">
+          <mxGeometry x="380" y="16" width="160" height="28" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="api-survey-results" value="survey/results/route.ts" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#D97115;fontSize=11;" vertex="1" parent="api">
+          <mxGeometry x="380" y="56" width="200" height="28" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="api-upload" value="upload-url/route.ts" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#D97115;fontSize=11;" vertex="1" parent="api">
+          <mxGeometry x="20" y="56" width="160" height="28" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="api-webhook" value="webhooks/clerk/route.ts" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#D97115;fontSize=11;" vertex="1" parent="api">
+          <mxGeometry x="200" y="56" width="200" height="28" as="geometry"/>
+        </mxCell>
+
+        <!-- components folder -->
+        <mxCell id="components" value="components (UI)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#A9D0F5;strokeColor=#2E75B6;fontSize=12;" vertex="1" parent="src">
+          <mxGeometry x="40" y="320" width="520" height="220" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="comp-header" value="SiteHeader.tsx" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#2E75B6;fontSize=11;" vertex="1" parent="components">
+          <mxGeometry x="20" y="16" width="160" height="28" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="comp-footer" value="SiteFooter.tsx" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#2E75B6;fontSize=11;" vertex="1" parent="components">
+          <mxGeometry x="200" y="16" width="160" height="28" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="comp-registerform" value="RegisterForm.tsx" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#2E75B6;fontSize=11;" vertex="1" parent="components">
+          <mxGeometry x="380" y="16" width="160" height="28" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="comp-lang" value="LanguageSwitcher.tsx" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#2E75B6;fontSize=11;" vertex="1" parent="components">
+          <mxGeometry x="20" y="56" width="160" height="28" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="comp-home-hero" value="home/HomePointCloudHero.tsx" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#2E75B6;fontSize=11;" vertex="1" parent="components">
+          <mxGeometry x="200" y="56" width="200" height="28" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="comp-pointcloud" value="PointCloudShowcase.jsx" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#2E75B6;fontSize=11;" vertex="1" parent="components">
+          <mxGeometry x="420" y="56" width="200" height="28" as="geometry"/>
+        </mxCell>
+
+        <!-- dashboard subcomponents -->
+        <mxCell id="comp-dashboard" value="components/dashboard" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D9D2E9;strokeColor=#6D57A4;fontSize=12;" vertex="1" parent="components">
+          <mxGeometry x="40" y="96" width="580" height="110" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="dash-panel" value="DashboardPanel.tsx" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#6D57A4;fontSize=11;" vertex="1" parent="comp-dashboard">
+          <mxGeometry x="10" y="10" width="160" height="28" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="dash-las-canvas" value="LasScanCanvas.tsx" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#6D57A4;fontSize=11;" vertex="1" parent="comp-dashboard">
+          <mxGeometry x="180" y="10" width="180" height="28" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="dash-viewer" value="LasScanViewerPage.tsx" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#6D57A4;fontSize=11;" vertex="1" parent="comp-dashboard">
+          <mxGeometry x="380" y="10" width="200" height="28" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="dash-edlpass" value="EdlPass.ts" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6D57A4;fontSize=11;" vertex="1" parent="comp-dashboard">
+          <mxGeometry x="10" y="44" width="160" height="28" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="dash-edlshader" value="edlShader.ts" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6D57A4;fontSize=11;" vertex="1" parent="comp-dashboard">
+          <mxGeometry x="180" y="44" width="160" height="28" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="dash-lasmesh" value="lasMeshToBufferGeometry.ts" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6D57A4;fontSize=11;" vertex="1" parent="comp-dashboard">
+          <mxGeometry x="360" y="44" width="240" height="28" as="geometry"/>
+        </mxCell>
+
+        <!-- lib, middleware, i18n -->
+        <mxCell id="lib" value="lib" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EAD1DC;strokeColor=#A64D79;fontSize=12;" vertex="1" parent="src">
+          <mxGeometry x="600" y="320" width="240" height="96" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="r2s3" value="r2-s3.ts" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#A64D79;fontSize=11;" vertex="1" parent="lib">
+          <mxGeometry x="20" y="16" width="200" height="28" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="middleware" value="middleware.ts" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EDEDED;strokeColor=#7F7F7F;fontSize=11;" vertex="1" parent="src">
+          <mxGeometry x="880" y="320" width="240" height="28" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="i18n" value="i18n (routing/request)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFE599;strokeColor=#BF9000;fontSize=12;" vertex="1" parent="src">
+          <mxGeometry x="600" y="432" width="360" height="96" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="i18n-request" value="request.ts" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BF9000;fontSize=11;" vertex="1" parent="i18n">
+          <mxGeometry x="20" y="16" width="160" height="28" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="i18n-routing" value="routing.ts" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#BF9000;fontSize=11;" vertex="1" parent="i18n">
+          <mxGeometry x="200" y="16" width="160" height="28" as="geometry"/>
+        </mxCell>
+
+        <!-- edges: relationships -->
+        <mxCell id="edge-app-components" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#666666;endArrow=none;" edge="1" parent="src" source="app" target="components">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="edge-app-api" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#666666;endArrow=none;" edge="1" parent="src" source="app" target="api">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="edge-api-lib" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#666666;endArrow=none;" edge="1" parent="src" source="api" target="lib">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="edge-middleware-app" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#666666;endArrow=none;" edge="1" parent="src" source="middleware" target="app">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="edge-i18n-locale" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeColor=#666666;endArrow=none;" edge="1" parent="src" source="i18n" target="locale">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
