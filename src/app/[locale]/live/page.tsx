@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/routing";
 import { FeatureCard } from "@/components/content/FeatureCard";
+import { LivePublicPanel } from "@/components/live/LivePublicPanel";
 
 type Props = { params: Promise<{ locale: string }> };
 
@@ -33,6 +34,8 @@ export default async function LivePage({ params }: Props) {
         </h1>
         <p className="max-w-3xl text-pretty text-lg leading-relaxed text-garden-800">{t("lead")}</p>
       </header>
+
+      <LivePublicPanel />
 
       <section aria-labelledby="window-heading">
         <div className="overflow-hidden rounded-2xl border border-garden-700/30 bg-gradient-to-br from-garden-800 via-garden-700 to-garden-600 px-6 py-8 text-garden-50 shadow-lg sm:px-10 sm:py-10">
