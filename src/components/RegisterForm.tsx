@@ -55,11 +55,7 @@ export function RegisterForm({ locale, copy }: Props) {
         | null;
 
       if (!response.ok || !data?.ok) {
-        const message =
-          data?.error ===
-          "Server is missing AIRTABLE_API_KEY / AIRTABLE_BASE_ID / AIRTABLE_TABLE_NAME environment variables."
-            ? copy.submitMissingConfig
-            : data?.error || copy.submitError;
+        const message = data?.error || copy.submitError;
 
         setErrorMessage(message);
         return;

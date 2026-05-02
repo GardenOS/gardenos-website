@@ -1,26 +1,23 @@
-"use client";
-
-import type { ReactNode } from "react";
-import { Show } from "@clerk/react";
 import { Link } from "@/i18n/routing";
-import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
+import { isCurrentUserInternal } from "@/backend/auth/admin";
 
-/** Clerk v7: signed-in gate via `Show when="signed-in"`. */
-function SignedIn({ children }: { children: ReactNode }) {
-  return <Show when="signed-in">{children}</Show>;
-}
+export async function SiteHeaderDashboardLink() {
+  const [t, isInternal] = await Promise.all([
+    getTranslations("nav"),
+    isCurrentUserInternal(),
+  ]);
 
-export function SiteHeaderDashboardLink() {
-  const t = useTranslations("nav");
+  if (!isInternal) {
+    return null;
+  }
 
   return (
-    <SignedIn>
-      <Link
-        href="/dashboard"
-        className="rounded-md px-1 py-0.5 transition hover:text-garden-600"
-      >
-        {t("dashboard")}
-      </Link>
-    </SignedIn>
+    <Link
+      href="/dashboard"
+      className="rounded-md px-1 py-0.5 transition hover:text-garden-600"
+    >
+      {t("dashboard")}
+    </Link>
   );
 }
