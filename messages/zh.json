@@ -397,7 +397,27 @@
     "errorList": "无法加载扫描列表。",
     "errorPresign": "无法准备上传，请检查网络后重试。",
     "liveManageHint": "需要管理直播场次和预约用户吗？",
-    "liveManageCta": "打开直播管理"
+    "liveManageCta": "打开直播管理",
+    "whitelistCta": "管理内部白名单"
+  },
+  "dashboardWhitelist": {
+    "metaTitle": "内部白名单",
+    "metaDescription": "管理内部人员邮箱白名单。",
+    "title": "内部白名单",
+    "lead": "只有白名单中的邮箱才可访问内部控制台和管理页面。",
+    "addTitle": "添加内部邮箱",
+    "emailPlaceholder": "name@company.com",
+    "addButton": "添加",
+    "addSuccess": "邮箱已加入内部白名单。",
+    "addError": "添加邮箱失败。",
+    "listTitle": "当前内部邮箱",
+    "refreshButton": "刷新",
+    "loading": "加载中...",
+    "empty": "暂无内部邮箱。",
+    "removeButton": "移除",
+    "removeSuccess": "邮箱已从内部白名单移除。",
+    "removeError": "移除邮箱失败。",
+    "loadError": "加载内部白名单失败。"
   },
   "footer": {
     "rights": "保留所有权利。"

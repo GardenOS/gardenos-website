@@ -397,7 +397,27 @@
     "errorList": "Could not load your scan list.",
     "errorPresign": "Could not prepare upload. Please try again.",
     "liveManageHint": "Need to manage live events and RSVP users?",
-    "liveManageCta": "Open live admin"
+    "liveManageCta": "Open live admin",
+    "whitelistCta": "Manage internal whitelist"
+  },
+  "dashboardWhitelist": {
+    "metaTitle": "Internal whitelist",
+    "metaDescription": "Manage internal staff email whitelist.",
+    "title": "Internal whitelist",
+    "lead": "Only emails in this list can access internal dashboard and management pages.",
+    "addTitle": "Add internal email",
+    "emailPlaceholder": "name@company.com",
+    "addButton": "Add",
+    "addSuccess": "Email added to internal whitelist.",
+    "addError": "Failed to add email.",
+    "listTitle": "Current internal emails",
+    "refreshButton": "Refresh",
+    "loading": "Loading...",
+    "empty": "No internal emails found.",
+    "removeButton": "Remove",
+    "removeSuccess": "Email removed from internal whitelist.",
+    "removeError": "Failed to remove email.",
+    "loadError": "Failed to load internal whitelist."
   },
   "footer": {
     "rights": "All rights reserved."
