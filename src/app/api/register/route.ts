@@ -1,35 +1,95 @@
 import { NextResponse } from "next/server";
+import { createAirtableRegistration } from "@/backend/intake/airtable";
 import { insertRegisterIntake } from "@/backend/intake/repository";
 
 export const runtime = "nodejs";
 
+function normalizeGardenFeatures(value: unknown): string[] {
+  if (Array.isArray(value)) {
+    return value.map((item) => String(item).trim()).filter(Boolean);
+  }
+
+  if (typeof value === "string") {
+    return value
+      .split(",")
+      .map((item) => item.trim())
+      .filter(Boolean);
+  }
+
+  return [];
+}
+
 export async function POST(request: Request) {
   try {
-    const formData = await request.formData();
-    const fullName = String(formData.get("fullName") ?? "").trim();
-    const email = String(formData.get("email") ?? "").trim();
-    const organization = String(formData.get("organization") ?? "").trim();
-    const optionalContact = String(formData.get("optionalContact") ?? "").trim();
-    const registerLocale = String(formData.get("registerLocale") ?? "").trim();
-    const scenarioNeeds = String(formData.get("scenarioNeeds") ?? "").trim();
+    const contentType = request.headers.get("content-type") ?? "";
+    let payload: Record<string, unknown>;
 
-    if (!email) {
-      return NextResponse.json({ ok: false, error: "Email is required." }, { status: 400 });
+    if (contentType.includes("application/json")) {
+      payload = ((await request.json().catch(() => ({}))) as Record<string, unknown>) ?? {};
+    } else {
+      const formData = await request.formData();
+      payload = {
+        name: formData.get("name"),
+        email: formData.get("email"),
+        phone: formData.get("phone"),
+        region: formData.get("region"),
+        wechat: formData.get("wechat"),
+        notes: formData.get("notes"),
+        lang: formData.get("lang"),
+        timestamp: formData.get("timestamp"),
+        gardenFeatures: formData.getAll("gardenFeatures"),
+      };
     }
 
-    await insertRegisterIntake({
-      fullName,
+    const name = String(payload.name ?? "").trim();
+    const email = String(payload.email ?? "").trim();
+    const phone = String(payload.phone ?? "").trim();
+    const region = String(payload.region ?? "").trim();
+    const wechat = String(payload.wechat ?? "").trim();
+    const notes = String(payload.notes ?? "").trim();
+    const lang = String(payload.lang ?? "").trim() || "en";
+    const timestamp = String(payload.timestamp ?? new Date().toISOString()).trim() || new Date().toISOString();
+    const gardenFeatures = normalizeGardenFeatures(payload.gardenFeatures);
+
+    if (!name || !email || !region) {
+      return NextResponse.json({ ok: false, error: "Name, email, and region are required." }, { status: 400 });
+    }
+
+    const airtable = await createAirtableRegistration({
+      name,
       email,
-      organization,
-      scenarioNeeds,
-      registerLocale,
-      optionalContact,
+      phone: phone || null,
+      region,
+      wechat: wechat || null,
+      gardenFeatures,
+      notes: notes || null,
+      timestamp,
+      lang,
+    });
+
+    await insertRegisterIntake({
+      name,
+      email,
+      phone: phone || null,
+      region,
+      wechat: wechat || null,
+      gardenFeatures,
+      notes: notes || null,
+      lang,
+      timestamp,
+      airtableRecordId: airtable.recordId,
     });
 
     return NextResponse.json({ ok: true });
-  } catch {
+  } catch (error) {
     return NextResponse.json(
-      { ok: false, error: "Unexpected server error while submitting registration." },
+      {
+        ok: false,
+        error:
+          error instanceof Error
+            ? error.message
+            : "Unexpected server error while submitting registration.",
+      },
       { status: 500 }
     );
   }

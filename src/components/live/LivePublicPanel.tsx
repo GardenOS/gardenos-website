@@ -14,6 +14,8 @@ type LiveEvent = {
   status: "prelive" | "live" | "replay";
   visibility: "draft" | "published" | "archived";
   locale: string;
+  promoVideoUrl: string | null;
+  posterUrl: string | null;
   warmupUrl: string | null;
   liveUrl: string | null;
   replayUrl: string | null;
@@ -160,6 +162,46 @@ export function LivePublicPanel() {
 
   return (
     <div className="space-y-8">
+      {/* Promo video and poster for the nearest upcoming / current event */}
+      {(() => {
+        const promoEvent = currentEvent ?? nextUpcomingEvent;
+        if (!promoEvent) return null;
+        const promoEmbed = toYoutubeEmbedUrl(promoEvent.promoVideoUrl);
+        const isDirectVideo = promoEvent.promoVideoUrl && !promoEmbed;
+        const hasPoster = Boolean(promoEvent.posterUrl);
+        if (!promoEmbed && !isDirectVideo && !hasPoster) return null;
+        return (
+          <section className="space-y-4">
+            {promoEmbed ? (
+              <div className="overflow-hidden rounded-2xl border border-garden-200 bg-black shadow-sm">
+                <iframe
+                  title="Promo video"
+                  src={promoEmbed}
+                  className="aspect-video w-full"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  referrerPolicy="strict-origin-when-cross-origin"
+                  allowFullScreen
+                />
+              </div>
+            ) : isDirectVideo ? (
+              <div className="overflow-hidden rounded-2xl border border-garden-200 bg-black shadow-sm">
+                <video
+                  src={promoEvent.promoVideoUrl!}
+                  controls
+                  className="aspect-video w-full"
+                />
+              </div>
+            ) : null}
+            {hasPoster ? (
+              <img
+                src={promoEvent.posterUrl!}
+                alt={promoEvent.title}
+                className="w-full rounded-2xl border border-garden-200 object-cover shadow-sm"
+              />
+            ) : null}
+          </section>
+        );
+      })()}
       <section className="rounded-2xl border border-garden-200 bg-white px-6 py-6 shadow-sm sm:px-8">
         <div className="flex flex-wrap items-center gap-3">
           <span className="rounded-full border border-garden-300 bg-garden-50 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-garden-700">

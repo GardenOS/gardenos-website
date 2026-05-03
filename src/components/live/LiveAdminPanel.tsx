@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 
 type LiveEvent = {
@@ -10,6 +10,8 @@ type LiveEvent = {
   status: "prelive" | "live" | "replay";
   visibility: "draft" | "published" | "archived";
   scheduledStartAt: string | null;
+  promoVideoUrl: string | null;
+  posterUrl: string | null;
   warmupUrl: string | null;
   liveUrl: string | null;
   replayUrl: string | null;
@@ -29,15 +31,23 @@ export function LiveAdminPanel() {
   const [createScheduledAt, setCreateScheduledAt] = useState("");
   const [createStatus, setCreateStatus] = useState<"prelive" | "live" | "replay">("prelive");
   const [createVisibility, setCreateVisibility] = useState<"published" | "draft">("published");
+  const [createPromoVideoUrl, setCreatePromoVideoUrl] = useState("");
+  const [createPosterUrl, setCreatePosterUrl] = useState("");
   const [createWarmupUrl, setCreateWarmupUrl] = useState("");
   const [createLiveUrl, setCreateLiveUrl] = useState("");
   const [createReplayUrl, setCreateReplayUrl] = useState("");
+  const [createPosterUploading, setCreatePosterUploading] = useState(false);
+  const createPosterInputRef = useRef<HTMLInputElement>(null);
 
   // Edit form state (synced from selectedId)
   const [editStatus, setEditStatus] = useState<"prelive" | "live" | "replay">("prelive");
+  const [editPromoVideoUrl, setEditPromoVideoUrl] = useState("");
+  const [editPosterUrl, setEditPosterUrl] = useState("");
   const [editWarmupUrl, setEditWarmupUrl] = useState("");
   const [editLiveUrl, setEditLiveUrl] = useState("");
   const [editReplayUrl, setEditReplayUrl] = useState("");
+  const [editPosterUploading, setEditPosterUploading] = useState(false);
+  const editPosterInputRef = useRef<HTMLInputElement>(null);
 
   async function loadEvents() {
     setError("");
@@ -63,6 +73,8 @@ export function LiveAdminPanel() {
     const target = events.find((event) => event.id === selectedId);
     if (!target) return;
     setEditStatus(target.status);
+    setEditPromoVideoUrl(target.promoVideoUrl ?? "");
+    setEditPosterUrl(target.posterUrl ?? "");
     setEditWarmupUrl(target.warmupUrl ?? "");
     setEditLiveUrl(target.liveUrl ?? "");
     setEditReplayUrl(target.replayUrl ?? "");
@@ -72,6 +84,11 @@ export function LiveAdminPanel() {
     event.preventDefault();
     setError("");
     setNotice("");
+
+    if (!createPromoVideoUrl.trim() && !createPosterUrl.trim()) {
+      setError(t("promoAtLeastOne"));
+      return;
+    }
 
     try {
       const response = await fetch("/api/live/events/create", {
@@ -83,6 +100,8 @@ export function LiveAdminPanel() {
           status: createStatus,
           visibility: createVisibility,
           scheduledStartAt: createScheduledAt ? new Date(createScheduledAt).toISOString() : undefined,
+          promoVideoUrl: createPromoVideoUrl || undefined,
+          posterUrl: createPosterUrl || undefined,
           warmupUrl: createWarmupUrl || undefined,
           liveUrl: createLiveUrl || undefined,
           replayUrl: createReplayUrl || undefined,
@@ -100,6 +119,8 @@ export function LiveAdminPanel() {
       setCreateTitle("");
       setCreateSlug("");
       setCreateScheduledAt("");
+      setCreatePromoVideoUrl("");
+      setCreatePosterUrl("");
       setCreateWarmupUrl("");
       setCreateLiveUrl("");
       setCreateReplayUrl("");
@@ -142,6 +163,8 @@ export function LiveAdminPanel() {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          promoVideoUrl: editPromoVideoUrl || null,
+          posterUrl: editPosterUrl || null,
           warmupUrl: editWarmupUrl || null,
           liveUrl: editLiveUrl || null,
           replayUrl: editReplayUrl || null,
@@ -157,6 +180,41 @@ export function LiveAdminPanel() {
       setEvents((prev) => prev.map((item) => (item.id === data.event!.id ? data.event! : item)));
     } catch {
       setError(t("updateLinksError"));
+    }
+  }
+
+  async function uploadPoster(
+    file: File,
+    setUrl: (url: string) => void,
+    setUploading: (v: boolean) => void
+  ) {
+    setUploading(true);
+    setError("");
+    try {
+      const metaRes = await fetch("/api/admin/upload-url", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ filename: file.name, contentType: file.type }),
+      });
+      const meta = (await metaRes.json()) as { uploadUrl?: string; publicUrl?: string; error?: string };
+      if (!metaRes.ok || !meta.uploadUrl || !meta.publicUrl) {
+        setError(meta.error || t("posterUploadError"));
+        return;
+      }
+      const uploadRes = await fetch(meta.uploadUrl, {
+        method: "PUT",
+        headers: { "Content-Type": file.type },
+        body: file,
+      });
+      if (!uploadRes.ok) {
+        setError(t("posterUploadError"));
+        return;
+      }
+      setUrl(meta.publicUrl);
+    } catch {
+      setError(t("posterUploadError"));
+    } finally {
+      setUploading(false);
     }
   }
 
@@ -190,9 +248,45 @@ export function LiveAdminPanel() {
               <option value="draft">draft</option>
             </select>
           </div>
+          {/* Promo video URL */}
+          <input value={createPromoVideoUrl} onChange={(e) => setCreatePromoVideoUrl(e.target.value)} placeholder={t("promoVideoPlaceholder")} className="sm:col-span-2 rounded-lg border border-garden-200 px-3 py-2 text-sm" />
+          {/* Poster URL + upload */}
+          <div className="sm:col-span-2 space-y-2">
+            <div className="flex gap-2">
+              <input
+                value={createPosterUrl}
+                onChange={(e) => setCreatePosterUrl(e.target.value)}
+                placeholder={t("posterUrlPlaceholder")}
+                className="flex-1 rounded-lg border border-garden-200 px-3 py-2 text-sm"
+              />
+              <button
+                type="button"
+                disabled={createPosterUploading}
+                onClick={() => createPosterInputRef.current?.click()}
+                className="rounded-lg border border-garden-300 px-3 py-2 text-xs font-semibold text-garden-700 hover:bg-garden-50 disabled:opacity-50"
+              >
+                {createPosterUploading ? t("posterUploading") : t("posterUploadButton")}
+              </button>
+              <input
+                ref={createPosterInputRef}
+                type="file"
+                accept="image/jpeg,image/png,image/webp,image/gif"
+                className="hidden"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) void uploadPoster(file, setCreatePosterUrl, setCreatePosterUploading);
+                  e.target.value = "";
+                }}
+              />
+            </div>
+            {createPosterUrl ? (
+              <img src={createPosterUrl} alt="poster preview" className="h-24 rounded-lg border border-garden-200 object-cover" />
+            ) : null}
+          </div>
           <input value={createWarmupUrl} onChange={(e) => setCreateWarmupUrl(e.target.value)} placeholder={t("warmupPlaceholder")} className="sm:col-span-2 rounded-lg border border-garden-200 px-3 py-2 text-sm" />
           <input value={createLiveUrl} onChange={(e) => setCreateLiveUrl(e.target.value)} placeholder={t("livePlaceholder")} className="sm:col-span-2 rounded-lg border border-garden-200 px-3 py-2 text-sm" />
           <input value={createReplayUrl} onChange={(e) => setCreateReplayUrl(e.target.value)} placeholder={t("replayPlaceholder")} className="sm:col-span-2 rounded-lg border border-garden-200 px-3 py-2 text-sm" />
+          <p className="sm:col-span-2 text-xs text-garden-600">{t("promoAtLeastOneHint")}</p>
           <button type="submit" className="sm:col-span-2 rounded-full bg-garden-600 px-5 py-2 text-sm font-semibold text-white hover:bg-garden-700">{t("createButton")}</button>
         </form>
       </section>
@@ -273,6 +367,41 @@ export function LiveAdminPanel() {
               <button type="button" onClick={() => void updateStatus()} className="rounded-full bg-garden-700 px-4 py-2 text-sm font-semibold text-white">{t("updateStatusButton")}</button>
             </div>
             <button type="button" onClick={() => void updateLinks()} className="rounded-full bg-garden-600 px-4 py-2 text-sm font-semibold text-white">{t("updateLinksButton")}</button>
+            {/* Promo video URL */}
+            <input value={editPromoVideoUrl} onChange={(e) => setEditPromoVideoUrl(e.target.value)} placeholder={t("promoVideoPlaceholder")} className="sm:col-span-2 rounded-lg border border-garden-200 px-3 py-2 text-sm" />
+            {/* Poster URL + upload */}
+            <div className="sm:col-span-2 space-y-2">
+              <div className="flex gap-2">
+                <input
+                  value={editPosterUrl}
+                  onChange={(e) => setEditPosterUrl(e.target.value)}
+                  placeholder={t("posterUrlPlaceholder")}
+                  className="flex-1 rounded-lg border border-garden-200 px-3 py-2 text-sm"
+                />
+                <button
+                  type="button"
+                  disabled={editPosterUploading}
+                  onClick={() => editPosterInputRef.current?.click()}
+                  className="rounded-lg border border-garden-300 px-3 py-2 text-xs font-semibold text-garden-700 hover:bg-garden-50 disabled:opacity-50"
+                >
+                  {editPosterUploading ? t("posterUploading") : t("posterUploadButton")}
+                </button>
+                <input
+                  ref={editPosterInputRef}
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp,image/gif"
+                  className="hidden"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) void uploadPoster(file, setEditPosterUrl, setEditPosterUploading);
+                    e.target.value = "";
+                  }}
+                />
+              </div>
+              {editPosterUrl ? (
+                <img src={editPosterUrl} alt="poster preview" className="h-24 rounded-lg border border-garden-200 object-cover" />
+              ) : null}
+            </div>
             <input value={editWarmupUrl} onChange={(e) => setEditWarmupUrl(e.target.value)} placeholder={t("warmupPlaceholder")} className="sm:col-span-2 rounded-lg border border-garden-200 px-3 py-2 text-sm" />
             <input value={editLiveUrl} onChange={(e) => setEditLiveUrl(e.target.value)} placeholder={t("livePlaceholder")} className="sm:col-span-2 rounded-lg border border-garden-200 px-3 py-2 text-sm" />
             <input value={editReplayUrl} onChange={(e) => setEditReplayUrl(e.target.value)} placeholder={t("replayPlaceholder")} className="sm:col-span-2 rounded-lg border border-garden-200 px-3 py-2 text-sm" />

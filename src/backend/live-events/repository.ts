@@ -17,6 +17,8 @@ function mapRow(row: Record<string, unknown>): LiveEvent {
     status: String(row.status) as LiveEventStatus,
     visibility: String(row.visibility) as LiveEventVisibility,
     locale: String(row.locale ?? "en"),
+    promoVideoUrl: row.promo_video_url ? String(row.promo_video_url) : null,
+    posterUrl: row.poster_url ? String(row.poster_url) : null,
     warmupUrl: row.warmup_url ? String(row.warmup_url) : null,
     liveUrl: row.live_url ? String(row.live_url) : null,
     replayUrl: row.replay_url ? String(row.replay_url) : null,
@@ -36,10 +38,11 @@ export async function createLiveEvent(input: CreateLiveEventInput, actorUserId: 
     `
       INSERT INTO live_events (
         slug, title, description, locale, visibility, status,
+        promo_video_url, poster_url,
         warmup_url, live_url, replay_url, scheduled_start_at,
         created_by, updated_by
       )
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
       RETURNING *
     `,
     [
@@ -49,6 +52,8 @@ export async function createLiveEvent(input: CreateLiveEventInput, actorUserId: 
       input.locale ?? "en",
       input.visibility ?? "draft",
       input.status ?? "prelive",
+      input.promoVideoUrl ?? null,
+      input.posterUrl ?? null,
       input.warmupUrl ?? null,
       input.liveUrl ?? null,
       input.replayUrl ?? null,
@@ -172,6 +177,14 @@ export async function updateLiveEventLinks(
   const sets: string[] = [];
   const values: unknown[] = [eventId];
 
+  if (Object.prototype.hasOwnProperty.call(links, "promoVideoUrl")) {
+    values.push(links.promoVideoUrl ?? null);
+    sets.push(`promo_video_url = $${values.length}`);
+  }
+  if (Object.prototype.hasOwnProperty.call(links, "posterUrl")) {
+    values.push(links.posterUrl ?? null);
+    sets.push(`poster_url = $${values.length}`);
+  }
   if (Object.prototype.hasOwnProperty.call(links, "warmupUrl")) {
     values.push(links.warmupUrl ?? null);
     sets.push(`warmup_url = $${values.length}`);

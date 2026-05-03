@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 
 type WhitelistResponse = {
@@ -19,6 +19,14 @@ export function WhitelistAdminPanel() {
   const [error, setError] = useState("");
   const [editingEmail, setEditingEmail] = useState<string | null>(null);
   const [editValue, setEditValue] = useState("");
+  const [confirmingEmail, setConfirmingEmail] = useState<string | null>(null);
+  const noticeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  function showNotice(message: string) {
+    setNotice(message);
+    if (noticeTimerRef.current) clearTimeout(noticeTimerRef.current);
+    noticeTimerRef.current = setTimeout(() => setNotice(""), 4000);
+  }
 
   async function loadEmails() {
     setLoading(true);
@@ -64,7 +72,7 @@ export function WhitelistAdminPanel() {
       }
       setEmails(data.emails);
       setNewEmail("");
-      setNotice(t("addSuccess"));
+      showNotice(t("addSuccess"));
     } catch {
       setError(t("addError"));
     } finally {
@@ -76,8 +84,10 @@ export function WhitelistAdminPanel() {
     setError("");
     setNotice("");
     try {
-      const response = await fetch(`/api/admin/whitelist/${encodeURIComponent(email)}`, {
+      const response = await fetch(`/api/admin/whitelist`, {
         method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
       });
       const data = (await response.json().catch(() => null)) as WhitelistResponse | null;
       if (!response.ok || !data?.ok || !Array.isArray(data.emails)) {
@@ -85,7 +95,7 @@ export function WhitelistAdminPanel() {
         return;
       }
       setEmails(data.emails);
-      setNotice(t("removeSuccess"));
+      showNotice(t("removeSuccess"));
     } catch {
       setError(t("removeError"));
     }
@@ -96,6 +106,7 @@ export function WhitelistAdminPanel() {
     setEditValue(email);
     setError("");
     setNotice("");
+    setConfirmingEmail(null);
   }
 
   function cancelEdit() {
@@ -125,8 +136,10 @@ export function WhitelistAdminPanel() {
       }
 
       // Then remove old email
-      const delRes = await fetch(`/api/admin/whitelist/${encodeURIComponent(oldEmail)}`, {
+      const delRes = await fetch(`/api/admin/whitelist`, {
         method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: oldEmail }),
       });
       const delData = (await delRes.json().catch(() => null)) as WhitelistResponse | null;
       if (!delRes.ok || !delData?.ok || !Array.isArray(delData.emails)) {
@@ -135,7 +148,7 @@ export function WhitelistAdminPanel() {
       }
 
       setEmails(delData.emails);
-      setNotice(t("editSuccess"));
+      showNotice(t("editSuccess"));
       cancelEdit();
     } catch {
       setError(t("editError"));
@@ -153,8 +166,9 @@ export function WhitelistAdminPanel() {
         <p
           role="status"
           aria-live="polite"
-          className="rounded-lg border border-garden-200 bg-garden-50 px-3 py-2 text-sm text-garden-800"
+          className="flex items-center gap-2 rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm font-medium text-green-800"
         >
+          <span aria-hidden="true">✓</span>
           {notice}
         </p>
       ) : null}
@@ -242,22 +256,42 @@ export function WhitelistAdminPanel() {
                 ) : (
                   <>
                     <span className="text-sm text-garden-900">{email}</span>
-                    <div className="flex gap-2">
-                      <button
-                        type="button"
-                        onClick={() => startEdit(email)}
-                        className="rounded-full border border-garden-300 px-3 py-1.5 text-xs font-semibold text-garden-700 hover:bg-garden-50"
-                      >
-                        {t("editButton")}
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => void removeEmail(email)}
-                        className="rounded-full border border-red-300 px-3 py-1.5 text-xs font-semibold text-red-700 hover:bg-red-50"
-                      >
-                        {t("removeButton")}
-                      </button>
-                    </div>
+                    {confirmingEmail === email ? (
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs text-red-700">{t("removeConfirm")}</span>
+                        <button
+                          type="button"
+                          onClick={() => void removeEmail(email)}
+                          className="rounded-full bg-red-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-red-700"
+                        >
+                          {t("removeConfirmYes")}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setConfirmingEmail(null)}
+                          className="rounded-full border border-garden-300 px-3 py-1.5 text-xs font-semibold text-garden-700 hover:bg-garden-50"
+                        >
+                          {t("editCancel")}
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="flex gap-2">
+                        <button
+                          type="button"
+                          onClick={() => startEdit(email)}
+                          className="rounded-full border border-garden-300 px-3 py-1.5 text-xs font-semibold text-garden-700 hover:bg-garden-50"
+                        >
+                          {t("editButton")}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setConfirmingEmail(email)}
+                          className="rounded-full border border-red-300 px-3 py-1.5 text-xs font-semibold text-red-700 hover:bg-red-50"
+                        >
+                          {t("removeButton")}
+                        </button>
+                      </div>
+                    )}
                   </>
                 )}
               </li>

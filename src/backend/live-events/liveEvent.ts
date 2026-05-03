@@ -12,6 +12,8 @@ export type LiveEvent = {
   status: LiveEventStatus;
   visibility: LiveEventVisibility;
   locale: string;
+  promoVideoUrl: string | null;
+  posterUrl: string | null;
   warmupUrl: string | null;
   liveUrl: string | null;
   replayUrl: string | null;
@@ -31,6 +33,8 @@ export type CreateLiveEventInput = {
   locale?: string;
   visibility?: LiveEventVisibility;
   status?: LiveEventStatus;
+  promoVideoUrl?: string;
+  posterUrl?: string;
   warmupUrl?: string;
   liveUrl?: string;
   replayUrl?: string;
@@ -38,6 +42,8 @@ export type CreateLiveEventInput = {
 };
 
 export type UpdateLiveEventLinksInput = {
+  promoVideoUrl?: string | null;
+  posterUrl?: string | null;
   warmupUrl?: string | null;
   liveUrl?: string | null;
   replayUrl?: string | null;

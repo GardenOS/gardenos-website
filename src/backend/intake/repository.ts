@@ -1,12 +1,16 @@
 import { getDbPool } from "@/backend/db/client";
 
 export type RegisterIntakeInput = {
-  fullName: string | null;
+  name: string;
   email: string;
-  organization: string | null;
-  scenarioNeeds: string | null;
-  registerLocale: string | null;
-  optionalContact: string | null;
+  phone: string | null;
+  region: string;
+  wechat: string | null;
+  gardenFeatures: string[];
+  notes: string | null;
+  lang: string;
+  timestamp: string;
+  airtableRecordId: string | null;
 };
 
 let ensureTablesPromise: Promise<void> | null = null;
@@ -27,6 +31,11 @@ async function ensureIntakeTables() {
       clerk_user_id text,
       phone text,
       wechat_id text,
+      contact text,
+      region text,
+      garden_features text,
+      lang text,
+      submitted_at timestamptz,
       organization text,
       register_locale text,
       intake_source text,
@@ -39,6 +48,11 @@ async function ensureIntakeTables() {
   await pool.query(`ALTER TABLE public.airtable_customers ADD COLUMN IF NOT EXISTS organization text;`);
   await pool.query(`ALTER TABLE public.airtable_customers ADD COLUMN IF NOT EXISTS register_locale text;`);
   await pool.query(`ALTER TABLE public.airtable_customers ADD COLUMN IF NOT EXISTS intake_source text;`);
+  await pool.query(`ALTER TABLE public.airtable_customers ADD COLUMN IF NOT EXISTS contact text;`);
+  await pool.query(`ALTER TABLE public.airtable_customers ADD COLUMN IF NOT EXISTS region text;`);
+  await pool.query(`ALTER TABLE public.airtable_customers ADD COLUMN IF NOT EXISTS garden_features text;`);
+  await pool.query(`ALTER TABLE public.airtable_customers ADD COLUMN IF NOT EXISTS lang text;`);
+  await pool.query(`ALTER TABLE public.airtable_customers ADD COLUMN IF NOT EXISTS submitted_at timestamptz;`);
   await pool.query(`ALTER TABLE public.airtable_customers ADD COLUMN IF NOT EXISTS created_at timestamptz NOT NULL DEFAULT NOW();`);
   await pool.query(`ALTER TABLE public.airtable_customers ADD COLUMN IF NOT EXISTS updated_at timestamptz NOT NULL DEFAULT NOW();`);
 
@@ -73,42 +87,55 @@ export async function insertRegisterIntake(input: RegisterIntakeInput): Promise<
   await ensureReady();
   const pool = getDbPool();
 
-  const locale = trimToNull(input.registerLocale);
-  const optionalContact = trimToNull(input.optionalContact);
-  const phone = locale === "en" ? optionalContact : null;
-  const wechatId = locale === "zh" ? optionalContact : null;
+  const lang = trimToNull(input.lang);
+  const name = trimToNull(input.name);
+  const email = trimToNull(input.email);
+  const phone = trimToNull(input.phone);
+  const region = trimToNull(input.region);
+  const wechatId = trimToNull(input.wechat);
+  const notes = trimToNull(input.notes);
+  const gardenFeatures = input.gardenFeatures.map((item) => item.trim()).filter(Boolean);
+  const submittedAt = Number.isNaN(Date.parse(input.timestamp)) ? new Date().toISOString() : input.timestamp;
 
   const rawFields: Record<string, string> = {
-    Email: input.email,
+    name: input.name,
+    email: input.email,
+    region: input.region,
+    timestamp: submittedAt,
+    lang: input.lang,
   };
 
-  const fullName = trimToNull(input.fullName);
-  if (fullName) rawFields["Full Name"] = fullName;
-  const organization = trimToNull(input.organization);
-  if (organization) rawFields.Organization = organization;
-  const scenarioNeeds = trimToNull(input.scenarioNeeds);
-  if (scenarioNeeds) rawFields["Scenario & Needs"] = scenarioNeeds;
-  if (phone) rawFields.Phone = phone;
-  if (wechatId) rawFields["WeChat ID"] = wechatId;
+  if (phone) rawFields.phone = phone;
+
+  if (wechatId) rawFields.wechat = wechatId;
+  if (gardenFeatures.length) rawFields.garden_features = gardenFeatures.join(", ");
+  if (notes) rawFields.notes = notes;
 
   await pool.query(
     `
       INSERT INTO public.airtable_customers (
+        airtable_record_id,
         airtable_created_time,
         full_name,
         email,
+        notes,
         scenario_needs,
         language,
         phone,
         wechat_id,
+        contact,
+        region,
+        garden_features,
+        lang,
+        submitted_at,
         organization,
         register_locale,
         intake_source,
         raw_fields
       )
       VALUES (
-        NOW(),
         $1,
+        NOW(),
         $2,
         $3,
         $4,
@@ -117,18 +144,32 @@ export async function insertRegisterIntake(input: RegisterIntakeInput): Promise<
         $7,
         $8,
         'register-form',
-        $9::jsonb
+        $10,
+        $11,
+        $12,
+        $13,
+        $14,
+        NULL,
+        $15,
+        'register-form-v2',
+        $16::jsonb
       )
     `,
     [
-      fullName,
-      input.email,
-      scenarioNeeds,
-      locale === "zh" ? "Chinese" : locale === "en" ? "English" : null,
+      input.airtableRecordId,
+      name,
+      email,
+      notes,
+      gardenFeatures.join(", "),
+      lang === "zh" ? "Chinese" : lang === "en" ? "English" : null,
       phone,
       wechatId,
-      organization,
-      locale,
+      contact,
+      region,
+      gardenFeatures.join(", "),
+      lang,
+      submittedAt,
+      lang,
       JSON.stringify(rawFields),
     ]
   );

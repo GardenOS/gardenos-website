@@ -56,14 +56,22 @@ export function validateCreateLiveEventInput(body: unknown): CreateLiveEventInpu
   const warmupUrl = toNullableTrimmed(payload.warmupUrl);
   const liveUrl = toNullableTrimmed(payload.liveUrl);
   const replayUrl = toNullableTrimmed(payload.replayUrl);
+  const promoVideoUrl = toNullableTrimmed(payload.promoVideoUrl);
+  const posterUrl = toNullableTrimmed(payload.posterUrl);
   for (const [field, value] of [
     ["warmupUrl", warmupUrl],
     ["liveUrl", liveUrl],
     ["replayUrl", replayUrl],
+    ["promoVideoUrl", promoVideoUrl],
+    ["posterUrl", posterUrl],
   ] as const) {
     if (value && !isValidUrl(value)) {
       throw new ValidationError(`${field} must be a valid URL.`);
     }
+  }
+
+  if (!promoVideoUrl && !posterUrl) {
+    throw new ValidationError("At least one of promoVideoUrl or posterUrl is required.");
   }
 
   return {
@@ -73,6 +81,8 @@ export function validateCreateLiveEventInput(body: unknown): CreateLiveEventInpu
     locale: toNullableTrimmed(payload.locale) ?? undefined,
     visibility: parseVisibility(payload.visibility),
     status: parseStatus(payload.status),
+    promoVideoUrl: promoVideoUrl ?? undefined,
+    posterUrl: posterUrl ?? undefined,
     warmupUrl: warmupUrl ?? undefined,
     liveUrl: liveUrl ?? undefined,
     replayUrl: replayUrl ?? undefined,
@@ -84,7 +94,7 @@ export function validateUpdateLiveLinksInput(body: unknown): UpdateLiveEventLink
   const payload = (body ?? {}) as Record<string, unknown>;
 
   const out: UpdateLiveEventLinksInput = {};
-  for (const key of ["warmupUrl", "liveUrl", "replayUrl"] as const) {
+  for (const key of ["promoVideoUrl", "posterUrl", "warmupUrl", "liveUrl", "replayUrl"] as const) {
     if (!(key in payload)) continue;
     const value = toNullableTrimmed(payload[key]);
     if (value && !isValidUrl(value)) {

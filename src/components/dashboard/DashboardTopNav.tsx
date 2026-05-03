@@ -1,6 +1,5 @@
 "use client";
 
-import { useTranslations } from "next-intl";
 import { usePathname } from "next/navigation";
 import { Link } from "@/i18n/routing";
 
@@ -11,21 +10,29 @@ type NavItem = {
     | "/dashboard/live-test"
     | "/dashboard/rsvp"
     | "/dashboard/whitelist";
-  labelKey: "scans" | "live" | "liveTest" | "rsvp" | "whitelist";
+  label: string;
 };
 
-const NAV_ITEMS: NavItem[] = [
-  { href: "/dashboard", labelKey: "scans" },
-  { href: "/dashboard/live", labelKey: "live" },
-  { href: "/dashboard/live-test", labelKey: "liveTest" },
-  { href: "/dashboard/rsvp", labelKey: "rsvp" },
-  { href: "/dashboard/whitelist", labelKey: "whitelist" },
-];
+type DashboardTopNavProps = {
+  labels: {
+    scans: string;
+    live: string;
+    liveTest: string;
+    rsvp: string;
+    whitelist: string;
+  };
+};
 
-export function DashboardTopNav() {
-  const t = useTranslations("dashboardNav");
-  // pathname includes locale prefix, e.g. "/zh/dashboard/live"
+export function DashboardTopNav({ labels }: DashboardTopNavProps) {
   const pathname = usePathname();
+
+  const navItems: NavItem[] = [
+    { href: "/dashboard", label: labels.scans },
+    { href: "/dashboard/live", label: labels.live },
+    { href: "/dashboard/live-test", label: labels.liveTest },
+    { href: "/dashboard/rsvp", label: labels.rsvp },
+    { href: "/dashboard/whitelist", label: labels.whitelist },
+  ];
 
   function isActive(href: string): boolean {
     if (href === "/dashboard") {
@@ -37,7 +44,7 @@ export function DashboardTopNav() {
 
   return (
     <nav className="flex flex-wrap gap-1 rounded-2xl border border-garden-200 bg-white px-3 py-3 shadow-sm">
-      {NAV_ITEMS.map((item) => (
+      {navItems.map((item) => (
         <Link
           key={item.href}
           href={item.href}
@@ -47,7 +54,7 @@ export function DashboardTopNav() {
               : "text-garden-700 hover:bg-garden-100"
           }`}
         >
-          {t(item.labelKey)}
+          {item.label}
         </Link>
       ))}
     </nav>

@@ -4,6 +4,7 @@ import { requireAdminUser } from "@/backend/auth/admin";
 import {
   addInternalWhitelistEmail,
   listInternalWhitelistEmails,
+  removeInternalWhitelistEmail,
 } from "@/backend/auth/internalWhitelist";
 import { ValidationError } from "@/backend/common/errors";
 
@@ -31,6 +32,22 @@ export async function POST(request: Request) {
     }
 
     await addInternalWhitelistEmail(email, userId);
+    const emails = await listInternalWhitelistEmails();
+    return NextResponse.json({ ok: true, emails });
+  } catch (error) {
+    return errorJson(error);
+  }
+}
+
+export async function DELETE(request: Request) {
+  try {
+    await requireAdminUser();
+    const body = (await request.json().catch(() => ({}))) as { email?: string };
+    const email = String(body.email ?? "").trim().toLowerCase();
+    if (!email || !EMAIL_REGEX.test(email)) {
+      throw new ValidationError("A valid email is required.");
+    }
+    await removeInternalWhitelistEmail(email);
     const emails = await listInternalWhitelistEmails();
     return NextResponse.json({ ok: true, emails });
   } catch (error) {
