@@ -3,13 +3,9 @@ import { Link } from "@/i18n/routing";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { SiteHeaderClerkAuth } from "./SiteHeaderClerkAuth";
 import { SiteHeaderDashboardLink } from "./SiteHeaderDashboardLink";
-import { isCurrentUserInternal } from "@/backend/auth/admin";
 
 export async function SiteHeader() {
-  const [t, isInternal] = await Promise.all([
-    getTranslations("nav"),
-    isCurrentUserInternal(),
-  ]);
+  const t = await getTranslations("nav");
 
   const links = [
     { href: "/", label: t("home") },
@@ -35,14 +31,6 @@ export async function SiteHeader() {
               {label}
             </Link>
           ))}
-          {isInternal ? (
-            <Link
-              href="/live-test"
-              className="rounded-md px-1 py-0.5 transition hover:text-garden-600"
-            >
-              {t("liveTest")}
-            </Link>
-          ) : null}
           <SiteHeaderDashboardLink />
         </nav>
         <div className="flex flex-wrap items-center gap-3 sm:ml-auto">

@@ -1,22 +1,22 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { DashboardPanel } from "@/components/dashboard/DashboardPanel";
+import { LiveTestPanel } from "@/components/live/LiveTestPanel";
 
 type Props = { params: Promise<{ locale: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
   setRequestLocale(locale);
-  const t = await getTranslations("dashboard");
+  const t = await getTranslations("liveTest");
   return {
     title: t("metaTitle"),
     description: t("metaDescription"),
   };
 }
 
-export default async function DashboardPage({ params }: Props) {
+export default async function DashboardLiveTestPage({ params }: Props) {
   const { locale } = await params;
   setRequestLocale(locale);
 
-  return <DashboardPanel scanViewerPath="/dashboard/scan" />;
+  return <LiveTestPanel />;
 }

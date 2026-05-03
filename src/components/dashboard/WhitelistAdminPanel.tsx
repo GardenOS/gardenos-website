@@ -14,8 +14,11 @@ export function WhitelistAdminPanel() {
   const [emails, setEmails] = useState<string[]>([]);
   const [newEmail, setNewEmail] = useState("");
   const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [notice, setNotice] = useState("");
   const [error, setError] = useState("");
+  const [editingEmail, setEditingEmail] = useState<string | null>(null);
+  const [editValue, setEditValue] = useState("");
 
   async function loadEmails() {
     setLoading(true);
@@ -47,6 +50,7 @@ export function WhitelistAdminPanel() {
 
     setError("");
     setNotice("");
+    setSaving(true);
     try {
       const response = await fetch("/api/admin/whitelist", {
         method: "POST",
@@ -63,6 +67,8 @@ export function WhitelistAdminPanel() {
       setNotice(t("addSuccess"));
     } catch {
       setError(t("addError"));
+    } finally {
+      setSaving(false);
     }
   }
 
@@ -85,12 +91,81 @@ export function WhitelistAdminPanel() {
     }
   }
 
+  function startEdit(email: string) {
+    setEditingEmail(email);
+    setEditValue(email);
+    setError("");
+    setNotice("");
+  }
+
+  function cancelEdit() {
+    setEditingEmail(null);
+    setEditValue("");
+  }
+
+  async function saveEdit(oldEmail: string) {
+    const newValue = editValue.trim().toLowerCase();
+    if (!newValue || newValue === oldEmail) {
+      cancelEdit();
+      return;
+    }
+    setError("");
+    setNotice("");
+    try {
+      // Add new email first
+      const addRes = await fetch("/api/admin/whitelist", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: newValue }),
+      });
+      const addData = (await addRes.json().catch(() => null)) as WhitelistResponse | null;
+      if (!addRes.ok || !addData?.ok) {
+        setError(addData?.error || t("editError"));
+        return;
+      }
+
+      // Then remove old email
+      const delRes = await fetch(`/api/admin/whitelist/${encodeURIComponent(oldEmail)}`, {
+        method: "DELETE",
+      });
+      const delData = (await delRes.json().catch(() => null)) as WhitelistResponse | null;
+      if (!delRes.ok || !delData?.ok || !Array.isArray(delData.emails)) {
+        setError(delData?.error || t("editError"));
+        return;
+      }
+
+      setEmails(delData.emails);
+      setNotice(t("editSuccess"));
+      cancelEdit();
+    } catch {
+      setError(t("editError"));
+    }
+  }
+
   return (
     <div className="space-y-6">
       <header className="space-y-2">
         <h1 className="text-3xl font-semibold tracking-tight text-garden-950">{t("title")}</h1>
         <p className="text-sm text-garden-800">{t("lead")}</p>
       </header>
+
+      {notice ? (
+        <p
+          role="status"
+          aria-live="polite"
+          className="rounded-lg border border-garden-200 bg-garden-50 px-3 py-2 text-sm text-garden-800"
+        >
+          {notice}
+        </p>
+      ) : null}
+      {error ? (
+        <p
+          role="alert"
+          className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800"
+        >
+          {error}
+        </p>
+      ) : null}
 
       <section className="rounded-2xl border border-garden-200 bg-white px-6 py-6 shadow-sm">
         <h2 className="text-lg font-semibold text-garden-900">{t("addTitle")}</h2>
@@ -105,9 +180,10 @@ export function WhitelistAdminPanel() {
           />
           <button
             type="submit"
+            disabled={saving}
             className="rounded-full bg-garden-600 px-4 py-2 text-sm font-semibold text-white hover:bg-garden-700"
           >
-            {t("addButton")}
+            {saving ? t("saving") : t("addButton")}
           </button>
         </form>
       </section>
@@ -137,30 +213,59 @@ export function WhitelistAdminPanel() {
                 key={email}
                 className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-garden-200 px-3 py-2"
               >
-                <span className="text-sm text-garden-900">{email}</span>
-                <button
-                  type="button"
-                  onClick={() => void removeEmail(email)}
-                  className="rounded-full border border-red-300 px-3 py-1.5 text-xs font-semibold text-red-700 hover:bg-red-50"
-                >
-                  {t("removeButton")}
-                </button>
+                {editingEmail === email ? (
+                  <>
+                    <input
+                      type="email"
+                      value={editValue}
+                      onChange={(e) => setEditValue(e.target.value)}
+                      className="min-w-[220px] flex-1 rounded-lg border border-garden-300 px-3 py-1.5 text-sm"
+                      autoFocus
+                    />
+                    <div className="flex gap-2">
+                      <button
+                        type="button"
+                        onClick={() => void saveEdit(email)}
+                        className="rounded-full bg-garden-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-garden-700"
+                      >
+                        {t("editSave")}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={cancelEdit}
+                        className="rounded-full border border-garden-300 px-3 py-1.5 text-xs font-semibold text-garden-700 hover:bg-garden-50"
+                      >
+                        {t("editCancel")}
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <span className="text-sm text-garden-900">{email}</span>
+                    <div className="flex gap-2">
+                      <button
+                        type="button"
+                        onClick={() => startEdit(email)}
+                        className="rounded-full border border-garden-300 px-3 py-1.5 text-xs font-semibold text-garden-700 hover:bg-garden-50"
+                      >
+                        {t("editButton")}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => void removeEmail(email)}
+                        className="rounded-full border border-red-300 px-3 py-1.5 text-xs font-semibold text-red-700 hover:bg-red-50"
+                      >
+                        {t("removeButton")}
+                      </button>
+                    </div>
+                  </>
+                )}
               </li>
             ))}
           </ul>
         ) : null}
       </section>
 
-      {notice ? (
-        <p className="rounded-lg border border-garden-200 bg-garden-50 px-3 py-2 text-sm text-garden-800">
-          {notice}
-        </p>
-      ) : null}
-      {error ? (
-        <p className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800">
-          {error}
-        </p>
-      ) : null}
     </div>
   );
 }

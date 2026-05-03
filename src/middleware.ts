@@ -7,7 +7,6 @@ const intlMiddleware = createIntlMiddleware(routing);
 
 const isProtectedRoute = createRouteMatcher([
   '/:locale/dashboard(.*)',
-  '/:locale/live-test(.*)',
 ]);
 
 export default clerkMiddleware(async (auth, req) => {
