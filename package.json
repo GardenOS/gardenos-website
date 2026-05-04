@@ -7,10 +7,10 @@
   },
   "scripts": {
     "clean": "node -e \"require('fs').rmSync('.next',{recursive:true,force:true})\"",
-    "dev": "node scripts/dev-webpack.js",
+    "dev": "node scripts/dev-webpack.js --port 9090",
     "dev:fresh": "powershell -NoProfile -Command \"if (Test-Path .next) { Remove-Item -Recurse -Force .next }\" && npm run dev",
     "build": "next build",
-    "start": "next start",
+    "start": "next start --port 9090",
     "lint": "next lint"
   },
   "dependencies": {
@@ -27,6 +27,7 @@
     "pg": "^8.20.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "resend": "^6.4.2",
     "three": "^0.171.0"
   },
   "devDependencies": {

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { insertRegisterIntake } from "@/backend/intake/repository";
 import { findCurrentRegistrableEventId } from "@/backend/live-events/repository";
+import { queueRegisterConfirmation } from "@/backend/notifications/service";
 
 export const runtime = "nodejs";
 
@@ -70,6 +71,17 @@ export async function POST(request: Request) {
       timestamp,
       liveEventId,
     });
+
+    const notifyResult = await queueRegisterConfirmation({
+      email,
+      fullName: name,
+    });
+    if (!notifyResult.queued) {
+      console.warn("[register] Confirmation email not queued", {
+        email,
+        reason: notifyResult.reason,
+      });
+    }
 
     return NextResponse.json({ ok: true });
   } catch (error) {
