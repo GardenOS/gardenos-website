@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { createAirtableRegistration } from "@/backend/intake/airtable";
 import { insertRegisterIntake } from "@/backend/intake/repository";
+import { findCurrentRegistrableEventId } from "@/backend/live-events/repository";
 
 export const runtime = "nodejs";
 
@@ -55,17 +55,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ ok: false, error: "Name, email, and region are required." }, { status: 400 });
     }
 
-    const airtable = await createAirtableRegistration({
-      name,
-      email,
-      phone: phone || null,
-      region,
-      wechat: wechat || null,
-      gardenFeatures,
-      notes: notes || null,
-      timestamp,
-      lang,
-    });
+    // Auto-link to the current registrable live event (best-effort, non-blocking)
+    const liveEventId = await findCurrentRegistrableEventId().catch(() => null);
 
     await insertRegisterIntake({
       name,
@@ -77,7 +68,7 @@ export async function POST(request: Request) {
       notes: notes || null,
       lang,
       timestamp,
-      airtableRecordId: airtable.recordId,
+      liveEventId,
     });
 
     return NextResponse.json({ ok: true });

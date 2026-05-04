@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname } from "next/navigation";
+import { useSelectedLayoutSegment } from "next/navigation";
 import { Link } from "@/i18n/routing";
 
 type NavItem = {
@@ -10,6 +10,7 @@ type NavItem = {
     | "/dashboard/live-test"
     | "/dashboard/rsvp"
     | "/dashboard/whitelist";
+  segment: string | null;
   label: string;
 };
 
@@ -24,22 +25,18 @@ type DashboardTopNavProps = {
 };
 
 export function DashboardTopNav({ labels }: DashboardTopNavProps) {
-  const pathname = usePathname();
+  const selectedSegment = useSelectedLayoutSegment();
 
   const navItems: NavItem[] = [
-    { href: "/dashboard", label: labels.scans },
-    { href: "/dashboard/live", label: labels.live },
-    { href: "/dashboard/live-test", label: labels.liveTest },
-    { href: "/dashboard/rsvp", label: labels.rsvp },
-    { href: "/dashboard/whitelist", label: labels.whitelist },
+    { href: "/dashboard", segment: null, label: labels.scans },
+    { href: "/dashboard/live", segment: "live", label: labels.live },
+    { href: "/dashboard/live-test", segment: "live-test", label: labels.liveTest },
+    { href: "/dashboard/rsvp", segment: "rsvp", label: labels.rsvp },
+    { href: "/dashboard/whitelist", segment: "whitelist", label: labels.whitelist },
   ];
 
-  function isActive(href: string): boolean {
-    if (href === "/dashboard") {
-      // only exact dashboard root (after locale)
-      return /^\/[^/]+\/dashboard$/.test(pathname);
-    }
-    return pathname.includes(href);
+  function isActive(segment: string | null): boolean {
+    return selectedSegment === segment;
   }
 
   return (
@@ -49,7 +46,7 @@ export function DashboardTopNav({ labels }: DashboardTopNavProps) {
           key={item.href}
           href={item.href}
           className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
-            isActive(item.href)
+            isActive(item.segment)
               ? "bg-garden-600 text-white"
               : "text-garden-700 hover:bg-garden-100"
           }`}

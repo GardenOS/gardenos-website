@@ -49,6 +49,27 @@ async function runMigrations() {
     await client.query(migration002);
     console.log('✓ Migration 002 completed');
 
+    // Migration 003: Promo video and poster columns
+    console.log('Running migration 003_live_events_promo.sql...');
+    const migration003Path = path.join(__dirname, '../src/backend/db/migrations/003_live_events_promo.sql');
+    const migration003 = fs.readFileSync(migration003Path, 'utf8');
+    await client.query(migration003);
+    console.log('✓ Migration 003 completed');
+
+    // Migration 004: Registrations table (replaces airtable_customers for intake)
+    console.log('Running migration 004_registrations.sql...');
+    const migration004Path = path.join(__dirname, '../src/backend/db/migrations/004_registrations.sql');
+    const migration004 = fs.readFileSync(migration004Path, 'utf8');
+    await client.query(migration004);
+    console.log('✓ Migration 004 completed');
+
+    // Migration 005: Link registrations to live_event_id
+    console.log('Running migration 005_registrations_live_event.sql...');
+    const migration005Path = path.join(__dirname, '../src/backend/db/migrations/005_registrations_live_event.sql');
+    const migration005 = fs.readFileSync(migration005Path, 'utf8');
+    await client.query(migration005);
+    console.log('✓ Migration 005 completed');
+
     console.log('\n✓ All migrations completed successfully!');
   } catch (error) {
     console.error('ERROR during migration:', error.message);

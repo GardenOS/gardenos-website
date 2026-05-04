@@ -4,6 +4,7 @@ import {
   type CreateLiveEventInput,
   type LiveEventStatus,
   type LiveEventVisibility,
+  type UpdateLiveEventInput,
   type UpdateLiveEventLinksInput,
 } from "@/backend/live-events/liveEvent";
 import { ValidationError } from "@/backend/common/errors";
@@ -108,6 +109,58 @@ export function validateUpdateLiveLinksInput(body: unknown): UpdateLiveEventLink
   }
 
   return out;
+}
+
+export function validateUpdateLiveEventInput(body: unknown): UpdateLiveEventInput {
+  const payload = (body ?? {}) as Record<string, unknown>;
+  const slug = String(payload.slug ?? "").trim();
+  const title = String(payload.title ?? "").trim();
+  const status = parseStatus(payload.status);
+  const visibility = parseVisibility(payload.visibility);
+
+  if (!slug) throw new ValidationError("slug is required.");
+  if (!title) throw new ValidationError("title is required.");
+  if (!status) throw new ValidationError("status is required.");
+  if (!visibility) throw new ValidationError("visibility is required.");
+
+  const scheduledStartAt = toNullableTrimmed(payload.scheduledStartAt);
+  if (scheduledStartAt && Number.isNaN(Date.parse(scheduledStartAt))) {
+    throw new ValidationError("scheduledStartAt must be a valid ISO date string.");
+  }
+
+  const warmupUrl = toNullableTrimmed(payload.warmupUrl);
+  const liveUrl = toNullableTrimmed(payload.liveUrl);
+  const replayUrl = toNullableTrimmed(payload.replayUrl);
+  const promoVideoUrl = toNullableTrimmed(payload.promoVideoUrl);
+  const posterUrl = toNullableTrimmed(payload.posterUrl);
+  for (const [field, value] of [
+    ["warmupUrl", warmupUrl],
+    ["liveUrl", liveUrl],
+    ["replayUrl", replayUrl],
+    ["promoVideoUrl", promoVideoUrl],
+    ["posterUrl", posterUrl],
+  ] as const) {
+    if (value && !isValidUrl(value)) {
+      throw new ValidationError(`${field} must be a valid URL.`);
+    }
+  }
+
+  if (!promoVideoUrl && !posterUrl) {
+    throw new ValidationError("At least one of promoVideoUrl or posterUrl is required.");
+  }
+
+  return {
+    slug,
+    title,
+    visibility,
+    status,
+    promoVideoUrl,
+    posterUrl,
+    warmupUrl,
+    liveUrl,
+    replayUrl,
+    scheduledStartAt,
+  };
 }
 
 export function validateStatusInput(body: unknown): LiveEventStatus {

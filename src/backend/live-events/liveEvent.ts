@@ -48,3 +48,16 @@ export type UpdateLiveEventLinksInput = {
   liveUrl?: string | null;
   replayUrl?: string | null;
 };
+
+export type UpdateLiveEventInput = {
+  slug: string;
+  title: string;
+  visibility: LiveEventVisibility;
+  status: LiveEventStatus;
+  promoVideoUrl: string | null;
+  posterUrl: string | null;
+  warmupUrl: string | null;
+  liveUrl: string | null;
+  replayUrl: string | null;
+  scheduledStartAt: string | null;
+};

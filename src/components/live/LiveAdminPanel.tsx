@@ -17,6 +17,16 @@ type LiveEvent = {
   replayUrl: string | null;
 };
 
+function toDateTimeLocalValue(value: string | null): string {
+  if (!value) return "";
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "";
+
+  const timezoneOffset = date.getTimezoneOffset() * 60_000;
+  return new Date(date.getTime() - timezoneOffset).toISOString().slice(0, 16);
+}
+
 export function LiveAdminPanel() {
   const t = useTranslations("dashboardLive");
 
@@ -40,7 +50,11 @@ export function LiveAdminPanel() {
   const createPosterInputRef = useRef<HTMLInputElement>(null);
 
   // Edit form state (synced from selectedId)
+  const [editTitle, setEditTitle] = useState("");
+  const [editSlug, setEditSlug] = useState("");
+  const [editScheduledAt, setEditScheduledAt] = useState("");
   const [editStatus, setEditStatus] = useState<"prelive" | "live" | "replay">("prelive");
+  const [editVisibility, setEditVisibility] = useState<"published" | "draft" | "archived">("published");
   const [editPromoVideoUrl, setEditPromoVideoUrl] = useState("");
   const [editPosterUrl, setEditPosterUrl] = useState("");
   const [editWarmupUrl, setEditWarmupUrl] = useState("");
@@ -52,7 +66,7 @@ export function LiveAdminPanel() {
   async function loadEvents() {
     setError("");
     try {
-      const response = await fetch("/api/live/events", { cache: "no-store" });
+      const response = await fetch("/api/admin/live/events", { cache: "no-store" });
       const data = (await response.json()) as { ok?: boolean; events?: LiveEvent[]; error?: string };
       if (!response.ok || !data.ok) {
         setError(data.error || t("loadError"));
@@ -72,7 +86,11 @@ export function LiveAdminPanel() {
   useEffect(() => {
     const target = events.find((event) => event.id === selectedId);
     if (!target) return;
+    setEditTitle(target.title);
+    setEditSlug(target.slug);
+    setEditScheduledAt(toDateTimeLocalValue(target.scheduledStartAt));
     setEditStatus(target.status);
+    setEditVisibility(target.visibility);
     setEditPromoVideoUrl(target.promoVideoUrl ?? "");
     setEditPosterUrl(target.posterUrl ?? "");
     setEditWarmupUrl(target.warmupUrl ?? "");
@@ -129,40 +147,27 @@ export function LiveAdminPanel() {
     }
   }
 
-  async function updateStatus() {
+  async function updateEvent(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
     if (!selectedId) return;
     setError("");
     setNotice("");
 
-    try {
-      const response = await fetch(`/api/live/events/${selectedId}/status`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status: editStatus }),
-      });
-      const data = (await response.json().catch(() => null)) as { ok?: boolean; event?: LiveEvent; error?: string } | null;
-      if (!response.ok || !data?.ok || !data.event) {
-        setError(data?.error || t("updateStatusError"));
-        return;
-      }
-
-      setNotice(t("updateStatusSuccess"));
-      setEvents((prev) => prev.map((item) => (item.id === data.event!.id ? data.event! : item)));
-    } catch {
-      setError(t("updateStatusError"));
+    if (!editPromoVideoUrl.trim() && !editPosterUrl.trim()) {
+      setError(t("promoAtLeastOne"));
+      return;
     }
-  }
-
-  async function updateLinks() {
-    if (!selectedId) return;
-    setError("");
-    setNotice("");
 
     try {
-      const response = await fetch(`/api/live/events/${selectedId}/links`, {
+      const response = await fetch(`/api/live/events/${selectedId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          slug: editSlug,
+          title: editTitle,
+          status: editStatus,
+          visibility: editVisibility,
+          scheduledStartAt: editScheduledAt ? new Date(editScheduledAt).toISOString() : null,
           promoVideoUrl: editPromoVideoUrl || null,
           posterUrl: editPosterUrl || null,
           warmupUrl: editWarmupUrl || null,
@@ -172,14 +177,41 @@ export function LiveAdminPanel() {
       });
       const data = (await response.json().catch(() => null)) as { ok?: boolean; event?: LiveEvent; error?: string } | null;
       if (!response.ok || !data?.ok || !data.event) {
-        setError(data?.error || t("updateLinksError"));
+        setError(data?.error || t("updateEventError"));
         return;
       }
 
-      setNotice(t("updateLinksSuccess"));
+      setNotice(t("updateEventSuccess"));
       setEvents((prev) => prev.map((item) => (item.id === data.event!.id ? data.event! : item)));
     } catch {
-      setError(t("updateLinksError"));
+      setError(t("updateEventError"));
+    }
+  }
+
+  async function deleteEvent() {
+    if (!selectedEvent) return;
+    if (!window.confirm(t("deleteConfirm", { title: selectedEvent.title }))) {
+      return;
+    }
+
+    setError("");
+    setNotice("");
+
+    try {
+      const response = await fetch(`/api/live/events/${selectedEvent.id}`, {
+        method: "DELETE",
+      });
+      const data = (await response.json().catch(() => null)) as { ok?: boolean; error?: string } | null;
+      if (!response.ok || !data?.ok) {
+        setError(data?.error || t("deleteError"));
+        return;
+      }
+
+      setEvents((prev) => prev.filter((item) => item.id !== selectedEvent.id));
+      setSelectedId("");
+      setNotice(t("deleteSuccess"));
+    } catch {
+      setError(t("deleteError"));
     }
   }
 
@@ -283,7 +315,6 @@ export function LiveAdminPanel() {
               <img src={createPosterUrl} alt="poster preview" className="h-24 rounded-lg border border-garden-200 object-cover" />
             ) : null}
           </div>
-          <input value={createWarmupUrl} onChange={(e) => setCreateWarmupUrl(e.target.value)} placeholder={t("warmupPlaceholder")} className="sm:col-span-2 rounded-lg border border-garden-200 px-3 py-2 text-sm" />
           <input value={createLiveUrl} onChange={(e) => setCreateLiveUrl(e.target.value)} placeholder={t("livePlaceholder")} className="sm:col-span-2 rounded-lg border border-garden-200 px-3 py-2 text-sm" />
           <input value={createReplayUrl} onChange={(e) => setCreateReplayUrl(e.target.value)} placeholder={t("replayPlaceholder")} className="sm:col-span-2 rounded-lg border border-garden-200 px-3 py-2 text-sm" />
           <p className="sm:col-span-2 text-xs text-garden-600">{t("promoAtLeastOneHint")}</p>
@@ -353,23 +384,31 @@ export function LiveAdminPanel() {
           <h2 className="text-lg font-semibold text-garden-900">
             {t("manageTitle")} — <span className="text-garden-600">{selectedEvent.title}</span>
           </h2>
-          <div className="grid gap-3 sm:grid-cols-2">
-            <div className="flex gap-2">
+          <form className="grid gap-3 sm:grid-cols-2" onSubmit={updateEvent}>
+            <input value={editTitle} onChange={(e) => setEditTitle(e.target.value)} required placeholder={t("titlePlaceholder")} className="rounded-lg border border-garden-200 px-3 py-2 text-sm" />
+            <input value={editSlug} onChange={(e) => setEditSlug(e.target.value)} required placeholder={t("slugPlaceholder")} className="rounded-lg border border-garden-200 px-3 py-2 text-sm" />
+            <input type="datetime-local" value={editScheduledAt} onChange={(e) => setEditScheduledAt(e.target.value)} className="rounded-lg border border-garden-200 px-3 py-2 text-sm" />
+            <div className="grid grid-cols-2 gap-2">
               <select
                 value={editStatus}
                 onChange={(e) => setEditStatus(e.target.value as "prelive" | "live" | "replay")}
-                className="w-full rounded-lg border border-garden-200 px-3 py-2 text-sm"
+                className="rounded-lg border border-garden-200 px-3 py-2 text-sm"
               >
                 <option value="prelive">prelive</option>
                 <option value="live">live</option>
                 <option value="replay">replay</option>
               </select>
-              <button type="button" onClick={() => void updateStatus()} className="rounded-full bg-garden-700 px-4 py-2 text-sm font-semibold text-white">{t("updateStatusButton")}</button>
+              <select
+                value={editVisibility}
+                onChange={(e) => setEditVisibility(e.target.value as "published" | "draft" | "archived")}
+                className="rounded-lg border border-garden-200 px-3 py-2 text-sm"
+              >
+                <option value="published">published</option>
+                <option value="draft">draft</option>
+                <option value="archived">archived</option>
+              </select>
             </div>
-            <button type="button" onClick={() => void updateLinks()} className="rounded-full bg-garden-600 px-4 py-2 text-sm font-semibold text-white">{t("updateLinksButton")}</button>
-            {/* Promo video URL */}
             <input value={editPromoVideoUrl} onChange={(e) => setEditPromoVideoUrl(e.target.value)} placeholder={t("promoVideoPlaceholder")} className="sm:col-span-2 rounded-lg border border-garden-200 px-3 py-2 text-sm" />
-            {/* Poster URL + upload */}
             <div className="sm:col-span-2 space-y-2">
               <div className="flex gap-2">
                 <input
@@ -402,10 +441,16 @@ export function LiveAdminPanel() {
                 <img src={editPosterUrl} alt="poster preview" className="h-24 rounded-lg border border-garden-200 object-cover" />
               ) : null}
             </div>
-            <input value={editWarmupUrl} onChange={(e) => setEditWarmupUrl(e.target.value)} placeholder={t("warmupPlaceholder")} className="sm:col-span-2 rounded-lg border border-garden-200 px-3 py-2 text-sm" />
             <input value={editLiveUrl} onChange={(e) => setEditLiveUrl(e.target.value)} placeholder={t("livePlaceholder")} className="sm:col-span-2 rounded-lg border border-garden-200 px-3 py-2 text-sm" />
             <input value={editReplayUrl} onChange={(e) => setEditReplayUrl(e.target.value)} placeholder={t("replayPlaceholder")} className="sm:col-span-2 rounded-lg border border-garden-200 px-3 py-2 text-sm" />
-          </div>
+            <p className="sm:col-span-2 text-xs text-garden-600">{t("promoAtLeastOneHint")}</p>
+            {notice ? <p className="sm:col-span-2 rounded-lg border border-garden-200 bg-garden-50 px-3 py-2 text-sm text-garden-800">{notice}</p> : null}
+            {error ? <p className="sm:col-span-2 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800">{error}</p> : null}
+            <div className="sm:col-span-2 flex flex-wrap gap-3">
+              <button type="submit" className="rounded-full bg-garden-700 px-5 py-2 text-sm font-semibold text-white hover:bg-garden-800">{t("updateEventButton")}</button>
+              <button type="button" onClick={() => void deleteEvent()} className="rounded-full border border-red-300 px-5 py-2 text-sm font-semibold text-red-700 hover:bg-red-50">{t("deleteButton")}</button>
+            </div>
+          </form>
         </section>
       ) : null}
     </div>

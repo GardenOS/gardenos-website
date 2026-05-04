@@ -36,8 +36,8 @@ export function RegisterReservationPanel() {
   const [gardenFeatures, setGardenFeatures] = useState<string[]>([]);
   const [notes, setNotes] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<{ name: string; email: string; region: string }>({ name: "", email: "", region: "" });
 
   const otherLabel = t("features.other");
   const featureOptions = [
@@ -62,10 +62,16 @@ export function RegisterReservationPanel() {
     event.preventDefault();
     setErrorMessage(null);
 
-    if (!name.trim() || !email.trim() || !region.trim()) {
-      setErrorMessage(t("submitValidationError"));
+    const errors = { name: "", email: "", region: "" };
+    if (!name.trim()) errors.name = t("fieldRequired");
+    if (!email.trim()) errors.email = t("fieldRequired");
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) errors.email = t("emailInvalid");
+    if (!region.trim()) errors.region = t("fieldRequired");
+    if (errors.name || errors.email || errors.region) {
+      setFieldErrors(errors);
       return;
     }
+    setFieldErrors({ name: "", email: "", region: "" });
 
     setIsSubmitting(true);
 
@@ -92,7 +98,9 @@ export function RegisterReservationPanel() {
         return;
       }
 
-      setSubmitted(true);
+      if (typeof window !== "undefined") {
+        window.alert(`${t("successTitle")}\n${t("successBody")}`);
+      }
       setName("");
       setEmail("");
       setPhone("");
@@ -107,26 +115,10 @@ export function RegisterReservationPanel() {
     }
   }
 
-  if (submitted) {
-    return (
-      <div
-        className="rounded-[1.75rem] border border-garden-300/80 bg-gradient-to-br from-garden-50 to-white px-6 py-8 shadow-sm"
-        role="status"
-        aria-live="polite"
-      >
-        <h3 className="text-balance text-xl font-semibold tracking-tight text-garden-800 sm:text-2xl">
-          {t("successTitle")}
-        </h3>
-        <p className="mt-4 max-w-lg text-pretty text-base leading-relaxed text-garden-700">
-          {t("successBody")}
-        </p>
-      </div>
-    );
-  }
-
   return (
     <form
       onSubmit={submitRegistration}
+      noValidate
       className="rounded-[1.75rem] border border-garden-200 bg-white px-5 py-5 shadow-lg sm:px-6 sm:py-6"
     >
       <div className="space-y-4">
@@ -139,13 +131,13 @@ export function RegisterReservationPanel() {
           <input
             id="reg-name"
             type="text"
-            required
             autoComplete="nickname"
             value={name}
-            onChange={(event) => setName(event.target.value)}
-            className={inputClass}
+            onChange={(event) => { setName(event.target.value); if (fieldErrors.name) setFieldErrors((e) => ({ ...e, name: "" })); }}
+            className={`${inputClass} ${fieldErrors.name ? "border-red-400 ring-1 ring-red-300" : ""}`}
             placeholder={t("placeholderName")}
           />
+          {fieldErrors.name ? <p className="mt-1 text-xs text-red-600" role="alert">{fieldErrors.name}</p> : null}
         </div>
 
         <div>
@@ -155,13 +147,13 @@ export function RegisterReservationPanel() {
           <input
             id="reg-email"
             type="email"
-            required
             autoComplete="email"
             value={email}
-            onChange={(event) => setEmail(event.target.value)}
-            className={inputClass}
+            onChange={(event) => { setEmail(event.target.value); if (fieldErrors.email) setFieldErrors((e) => ({ ...e, email: "" })); }}
+            className={`${inputClass} ${fieldErrors.email ? "border-red-400 ring-1 ring-red-300" : ""}`}
             placeholder={t("placeholderEmail")}
           />
+          {fieldErrors.email ? <p className="mt-1 text-xs text-red-600" role="alert">{fieldErrors.email}</p> : null}
         </div>
 
         <div>
@@ -185,10 +177,9 @@ export function RegisterReservationPanel() {
           </label>
           <select
             id="reg-region"
-            required
             value={region}
-            onChange={(event) => setRegion(event.target.value)}
-            className={inputClass}
+            onChange={(event) => { setRegion(event.target.value); if (fieldErrors.region) setFieldErrors((e) => ({ ...e, region: "" })); }}
+            className={`${inputClass} ${fieldErrors.region ? "border-red-400 ring-1 ring-red-300" : ""}`}
           >
             <option value="">{t("regionPlaceholder")}</option>
             {regions.map((item) => (
@@ -197,6 +188,7 @@ export function RegisterReservationPanel() {
               </option>
             ))}
           </select>
+          {fieldErrors.region ? <p className="mt-1 text-xs text-red-600" role="alert">{fieldErrors.region}</p> : null}
         </div>
 
         <div>

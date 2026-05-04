@@ -11,7 +11,8 @@ export async function GET() {
 
   const bucket = process.env.R2_BUCKET_NAME;
   if (!bucket) {
-    return NextResponse.json({ error: "Server misconfiguration" }, { status: 500 });
+    // R2 not configured — return empty list gracefully
+    return NextResponse.json({ scans: [] });
   }
 
   try {

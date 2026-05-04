@@ -1,10 +1,12 @@
 import { NotFoundError, ValidationError } from "@/backend/common/errors";
 import {
   createLiveEvent,
+  deleteLiveEvent,
   findLatestPublishedReplay,
   findPublishedByStatus,
   getLiveEventById,
   listLiveEvents,
+  updateLiveEvent,
   updateLiveEventLinks,
   updateLiveEventStatus,
 } from "@/backend/live-events/repository";
@@ -12,6 +14,7 @@ import type {
   CreateLiveEventInput,
   LiveEvent,
   LiveEventStatus,
+  UpdateLiveEventInput,
   UpdateLiveEventLinksInput,
 } from "@/backend/live-events/liveEvent";
 import { createAuditLog } from "@/backend/audit/repository";
@@ -42,6 +45,10 @@ export async function listPublicLiveEvents(status?: LiveEventStatus): Promise<Li
     limit: 50,
     offset: 0,
   });
+}
+
+export async function listAllLiveEventsAdmin(): Promise<LiveEvent[]> {
+  return listLiveEvents({ limit: 200, offset: 0 });
 }
 
 export async function createLiveEventService(input: CreateLiveEventInput, actorUserId: string): Promise<LiveEvent> {
@@ -113,6 +120,47 @@ export async function updateLiveEventLinksService(
   });
 
   return updated;
+}
+
+export async function updateLiveEventService(
+  eventId: string,
+  input: UpdateLiveEventInput,
+  actorUserId: string
+): Promise<LiveEvent> {
+  const existing = await getLiveEventById(eventId);
+  if (!existing) throw new NotFoundError("Live event not found.");
+
+  const updated = await updateLiveEvent(eventId, input, actorUserId);
+  if (!updated) throw new NotFoundError("Live event not found.");
+
+  await createAuditLog({
+    entityType: "live_event",
+    entityId: updated.id,
+    action: "updated",
+    actorUserId,
+    beforeData: existing,
+    afterData: updated,
+  });
+
+  return updated;
+}
+
+export async function deleteLiveEventService(eventId: string, actorUserId: string): Promise<LiveEvent> {
+  const existing = await getLiveEventById(eventId);
+  if (!existing) throw new NotFoundError("Live event not found.");
+
+  const deleted = await deleteLiveEvent(eventId);
+  if (!deleted) throw new NotFoundError("Live event not found.");
+
+  await createAuditLog({
+    entityType: "live_event",
+    entityId: existing.id,
+    action: "deleted",
+    actorUserId,
+    beforeData: existing,
+  });
+
+  return deleted;
 }
 
 export async function listEventRsvpsService(eventId: string, query: { limit?: number; offset?: number }) {

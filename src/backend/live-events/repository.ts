@@ -5,6 +5,7 @@ import type {
   LiveEvent,
   LiveEventStatus,
   LiveEventVisibility,
+  UpdateLiveEventInput,
   UpdateLiveEventLinksInput,
 } from "@/backend/live-events/liveEvent";
 
@@ -210,6 +211,86 @@ export async function updateLiveEventLinks(
   `;
 
   const result = await pool.query(query, values);
+  if (!result.rowCount) return null;
+  return mapRow(result.rows[0] as Record<string, unknown>);
+}
+
+export async function updateLiveEvent(
+  eventId: string,
+  input: UpdateLiveEventInput,
+  actorUserId: string
+): Promise<LiveEvent | null> {
+  const pool = getDbPool();
+  const result = await pool.query(
+    `
+      UPDATE live_events
+      SET slug = $2,
+          title = $3,
+          visibility = $4,
+          status = $5,
+          promo_video_url = $6,
+          poster_url = $7,
+          warmup_url = $8,
+          live_url = $9,
+          replay_url = $10,
+          scheduled_start_at = $11,
+          updated_by = $12,
+          updated_at = NOW()
+      WHERE id = $1
+      RETURNING *
+    `,
+    [
+      eventId,
+      input.slug,
+      input.title,
+      input.visibility,
+      input.status,
+      input.promoVideoUrl,
+      input.posterUrl,
+      input.warmupUrl,
+      input.liveUrl,
+      input.replayUrl,
+      input.scheduledStartAt,
+      actorUserId,
+    ]
+  );
+
+  if (!result.rowCount) return null;
+  return mapRow(result.rows[0] as Record<string, unknown>);
+}
+
+/**
+ * Returns the UUID of the most relevant published live event for linking to a registration.
+ * Priority: prelive → live → most recent published event.
+ * Returns null if no published event exists.
+ */
+export async function findCurrentRegistrableEventId(): Promise<string | null> {
+  const pool = getDbPool();
+  const result = await pool.query(
+    `
+      SELECT id FROM live_events
+      WHERE visibility = 'published'
+      ORDER BY
+        CASE status WHEN 'prelive' THEN 0 WHEN 'live' THEN 1 ELSE 2 END,
+        COALESCE(scheduled_start_at, created_at) ASC
+      LIMIT 1
+    `
+  );
+  if (!result.rowCount) return null;
+  return String((result.rows[0] as Record<string, unknown>).id);
+}
+
+export async function deleteLiveEvent(eventId: string): Promise<LiveEvent | null> {
+  const pool = getDbPool();
+  const result = await pool.query(
+    `
+      DELETE FROM live_events
+      WHERE id = $1
+      RETURNING *
+    `,
+    [eventId]
+  );
+
   if (!result.rowCount) return null;
   return mapRow(result.rows[0] as Record<string, unknown>);
 }
