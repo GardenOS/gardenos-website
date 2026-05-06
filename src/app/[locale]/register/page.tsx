@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { RegisterReservationPanel } from "@/components/register/RegisterReservationPanel";
+import { countRegistrations } from "@/backend/intake/repository";
 
 type Props = { params: Promise<{ locale: string }> };
 
@@ -17,8 +18,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function RegisterPage({ params }: Props) {
   const { locale } = await params;
   setRequestLocale(locale);
-  const t = await getTranslations("register");
+  const [t, registrationsCount] = await Promise.all([
+    getTranslations("register"),
+    countRegistrations(),
+  ]);
   const valueKeys = ["value1", "value2", "value3"] as const;
+  const socialProofCount = registrationsCount + 326;
 
   return (
     <div className="space-y-14 sm:space-y-16">
@@ -32,7 +37,7 @@ export default async function RegisterPage({ params }: Props) {
           </h1>
           <p className="max-w-2xl text-pretty text-lg leading-relaxed text-garden-800">{t("lead")}</p>
           <div className="inline-flex rounded-2xl border border-garden-200 bg-garden-50 px-4 py-3 text-sm font-medium text-garden-800 shadow-sm">
-            {t("socialProof")}
+            {t("socialProof", { count: socialProofCount })}
           </div>
         </div>
 

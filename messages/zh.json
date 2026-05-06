@@ -349,7 +349,7 @@
     "badge": "早期预约",
     "title": "免费预约 Auckland 首场真实花园测试直播",
     "lead": "留下联系方式，直播时间确定后我们会第一时间通知你。你也可以告诉我们你家的花园情况，帮助我们设计更真实的测试场景。",
-    "socialProof": "已有 37 位 Auckland 房主预约参与测试",
+    "socialProof": "已有 {count} 位 Auckland 房主预约参与测试直播",
     "formTitle": "留下你的信息",
     "labelName": "姓名 / 昵称（必填）",
     "placeholderName": "例如：王小明 / Mike",

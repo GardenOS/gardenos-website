@@ -349,7 +349,7 @@
     "badge": "Early reservation",
     "title": "Reserve Auckland's first real garden live test for free",
     "lead": "Leave your contact details and we will notify you as soon as the live session is confirmed. You can also tell us about your garden so we can design more realistic test scenes.",
-    "socialProof": "37 Auckland homeowners have already reserved a spot",
+    "socialProof": "{count} Auckland homeowners have already reserved a live test spot",
     "formTitle": "Leave your details",
     "labelName": "Name / nickname (required)",
     "placeholderName": "For example: Mike / Alex",

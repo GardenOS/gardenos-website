@@ -176,6 +176,26 @@ export async function listRegistrations(options?: {
   return result.rows.map((row) => mapRegistrationRow(row as Record<string, unknown>));
 }
 
+export async function countRegistrations(liveEventId?: string): Promise<number> {
+  await ensureRegistrationsSchema();
+  const pool = getDbPool();
+  const normalizedLiveEventId = liveEventId?.trim();
+
+  const result = normalizedLiveEventId
+    ? await pool.query(
+        `SELECT COUNT(*)::int AS count
+         FROM public.registrations
+         WHERE live_event_id = $1`,
+        [normalizedLiveEventId]
+      )
+    : await pool.query(
+        `SELECT COUNT(*)::int AS count
+         FROM public.registrations`
+      );
+
+  return Number(result.rows[0]?.count ?? 0);
+}
+
 export async function deleteRegistrationById(id: number): Promise<RegistrationRow | null> {
   await ensureRegistrationsSchema();
   const pool = getDbPool();
