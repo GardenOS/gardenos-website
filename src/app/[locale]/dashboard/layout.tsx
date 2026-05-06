@@ -10,10 +10,8 @@ type Props = {
 
 export default async function DashboardLayout({ children }: Props) {
   try {
-    const [_, tNav] = await Promise.all([
-      requireAdminUser(),
-      getTranslations("dashboardNav"),
-    ]);
+    await requireAdminUser();
+    const tNav = await getTranslations("dashboardNav");
 
     return (
       <div className="space-y-6">
