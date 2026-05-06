@@ -1,4 +1,5 @@
 import { getDbPool } from "@/backend/db/client";
+import { ensureRegistrationsSchema } from "@/backend/db/ensureRegistrationsSchema";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -32,6 +33,7 @@ function trimToNull(value: string | null | undefined): string | null {
 // ---------------------------------------------------------------------------
 
 export async function insertRegisterIntake(input: RegisterIntakeInput): Promise<void> {
+  await ensureRegistrationsSchema();
   const pool = getDbPool();
 
   const name = trimToNull(input.name);
@@ -146,6 +148,7 @@ export async function listRegistrations(options?: {
   limit?: number;
   offset?: number;
 }): Promise<RegistrationRow[]> {
+  await ensureRegistrationsSchema();
   const pool = getDbPool();
   const limit = options?.limit ?? 500;
   const offset = options?.offset ?? 0;
@@ -174,6 +177,7 @@ export async function listRegistrations(options?: {
 }
 
 export async function deleteRegistrationById(id: number): Promise<RegistrationRow | null> {
+  await ensureRegistrationsSchema();
   const pool = getDbPool();
   const result = await pool.query(
     `SELECT id, full_name, email, phone, region, wechat_id,

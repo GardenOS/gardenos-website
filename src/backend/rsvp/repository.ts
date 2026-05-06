@@ -1,6 +1,7 @@
 import { getDbPool } from "@/backend/db/client";
 import { normalizePage, type PaginationQuery } from "@/backend/db/types";
 import type { CreateRsvpInput, RsvpRecord } from "@/backend/rsvp/rsvp";
+import { ensureRegistrationsSchema } from "@/backend/db/ensureRegistrationsSchema";
 
 function mapRow(row: Record<string, unknown>): RsvpRecord {
   return {
@@ -75,6 +76,7 @@ export async function listRsvpsByEvent(eventId: string, pageQuery: PaginationQue
 }
 
 export async function listInviteCandidateEmailsByEvent(eventId: string): Promise<string[]> {
+  await ensureRegistrationsSchema();
   const pool = getDbPool();
   const result = await pool.query(
     `
