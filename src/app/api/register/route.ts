@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { insertRegisterIntake } from "@/backend/intake/repository";
-import { findCurrentRegistrableEventId } from "@/backend/live-events/repository";
+import { findCurrentRegistrableEventId, getLiveEventById } from "@/backend/live-events/repository";
 import { queueRegisterConfirmation } from "@/backend/notifications/service";
 
 export const runtime = "nodejs";
@@ -58,6 +58,7 @@ export async function POST(request: Request) {
 
     // Auto-link to the current registrable live event (best-effort, non-blocking)
     const liveEventId = await findCurrentRegistrableEventId().catch(() => null);
+    const liveEvent = liveEventId ? await getLiveEventById(liveEventId).catch(() => null) : null;
 
     await insertRegisterIntake({
       name,
@@ -75,7 +76,7 @@ export async function POST(request: Request) {
     const notifyResult = await queueRegisterConfirmation({
       email,
       fullName: name,
-    });
+    }, liveEvent);
     if (!notifyResult.queued) {
       console.warn("[register] Confirmation email not queued", {
         email,

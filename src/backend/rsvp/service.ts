@@ -25,7 +25,7 @@ export async function createRsvpService(input: CreateRsvpInput): Promise<RsvpRec
     },
   });
 
-  await queueRsvpConfirmation(rsvp);
+  await queueRsvpConfirmation(rsvp, event);
 
   return rsvp;
 }
