@@ -12,7 +12,6 @@ const isProtectedRoute = createRouteMatcher([
 function getCanonicalHost(): string {
   const configured = process.env.CANONICAL_HOST?.trim().toLowerCase();
   if (configured) return configured;
-  if (process.env.NODE_ENV === "production") return "mygardenos.com";
   return "";
 }
 
