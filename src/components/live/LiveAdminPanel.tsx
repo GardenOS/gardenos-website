@@ -7,7 +7,7 @@ type LiveEvent = {
   id: string;
   title: string;
   slug: string;
-  status: "prelive" | "live" | "replay";
+  status: "prelive" | "live" | "replay" | "ended";
   visibility: "draft" | "published" | "archived";
   scheduledStartAt: string | null;
   promoVideoUrl: string | null;
@@ -39,7 +39,7 @@ export function LiveAdminPanel() {
   const [createTitle, setCreateTitle] = useState("");
   const [createSlug, setCreateSlug] = useState("");
   const [createScheduledAt, setCreateScheduledAt] = useState("");
-  const [createStatus, setCreateStatus] = useState<"prelive" | "live" | "replay">("prelive");
+  const [createStatus, setCreateStatus] = useState<"prelive" | "live" | "replay" | "ended">("prelive");
   const [createVisibility, setCreateVisibility] = useState<"published" | "draft">("published");
   const [createPromoVideoUrl, setCreatePromoVideoUrl] = useState("");
   const [createPosterUrl, setCreatePosterUrl] = useState("");
@@ -53,7 +53,7 @@ export function LiveAdminPanel() {
   const [editTitle, setEditTitle] = useState("");
   const [editSlug, setEditSlug] = useState("");
   const [editScheduledAt, setEditScheduledAt] = useState("");
-  const [editStatus, setEditStatus] = useState<"prelive" | "live" | "replay">("prelive");
+  const [editStatus, setEditStatus] = useState<"prelive" | "live" | "replay" | "ended">("prelive");
   const [editVisibility, setEditVisibility] = useState<"published" | "draft" | "archived">("published");
   const [editPromoVideoUrl, setEditPromoVideoUrl] = useState("");
   const [editPosterUrl, setEditPosterUrl] = useState("");
@@ -62,6 +62,7 @@ export function LiveAdminPanel() {
   const [editReplayUrl, setEditReplayUrl] = useState("");
   const [editPosterUploading, setEditPosterUploading] = useState(false);
   const editPosterInputRef = useRef<HTMLInputElement>(null);
+  const [inviteSendingId, setInviteSendingId] = useState<string>("");
 
   async function loadEvents() {
     setError("");
@@ -215,6 +216,37 @@ export function LiveAdminPanel() {
     }
   }
 
+  async function inviteRsvp(eventId: string, title: string) {
+    setError("");
+    setNotice("");
+    setInviteSendingId(eventId);
+
+    try {
+      const response = await fetch(`/api/live/events/${eventId}/invite-rsvp`, {
+        method: "POST",
+      });
+      const data = (await response.json().catch(() => null)) as
+        | { ok?: boolean; candidateCount?: number; invitedCount?: number; error?: string }
+        | null;
+
+      if (!response.ok || !data?.ok) {
+        setError(data?.error || t("inviteError"));
+        return;
+      }
+
+      if ((data.candidateCount ?? 0) === 0) {
+        setNotice(t("inviteNoCandidates"));
+        return;
+      }
+
+      setNotice(t("inviteSuccess", { title, count: data.invitedCount ?? 0 }));
+    } catch {
+      setError(t("inviteError"));
+    } finally {
+      setInviteSendingId("");
+    }
+  }
+
   async function uploadPoster(
     file: File,
     setUrl: (url: string) => void,
@@ -270,15 +302,22 @@ export function LiveAdminPanel() {
           <input value={createSlug} onChange={(e) => setCreateSlug(e.target.value)} required placeholder={t("slugPlaceholder")} className="rounded-lg border border-garden-200 px-3 py-2 text-sm" />
           <input type="datetime-local" value={createScheduledAt} onChange={(e) => setCreateScheduledAt(e.target.value)} className="rounded-lg border border-garden-200 px-3 py-2 text-sm" />
           <div className="grid grid-cols-2 gap-2">
-            <select value={createStatus} onChange={(e) => setCreateStatus(e.target.value as "prelive" | "live" | "replay")} className="rounded-lg border border-garden-200 px-3 py-2 text-sm">
-              <option value="prelive">prelive</option>
-              <option value="live">live</option>
-              <option value="replay">replay</option>
-            </select>
-            <select value={createVisibility} onChange={(e) => setCreateVisibility(e.target.value as "published" | "draft")} className="rounded-lg border border-garden-200 px-3 py-2 text-sm">
-              <option value="published">published</option>
-              <option value="draft">draft</option>
-            </select>
+            <label className="space-y-1 text-xs font-medium text-garden-700">
+              <span>{t("statusLabel")}</span>
+              <select value={createStatus} onChange={(e) => setCreateStatus(e.target.value as "prelive" | "live" | "replay" | "ended")} className="w-full rounded-lg border border-garden-200 px-3 py-2 text-sm">
+                <option value="prelive">{t("statusPrelive")}</option>
+                <option value="live">{t("statusLive")}</option>
+                <option value="replay">{t("statusReplay")}</option>
+                <option value="ended">{t("statusEnded")}</option>
+              </select>
+            </label>
+            <label className="space-y-1 text-xs font-medium text-garden-700">
+              <span>{t("visibilityLabel")}</span>
+              <select value={createVisibility} onChange={(e) => setCreateVisibility(e.target.value as "published" | "draft")} className="w-full rounded-lg border border-garden-200 px-3 py-2 text-sm">
+                <option value="published">{t("visibilityPublished")}</option>
+                <option value="draft">{t("visibilityDraft")}</option>
+              </select>
+            </label>
           </div>
           {/* Promo video URL */}
           <input value={createPromoVideoUrl} onChange={(e) => setCreatePromoVideoUrl(e.target.value)} placeholder={t("promoVideoPlaceholder")} className="sm:col-span-2 rounded-lg border border-garden-200 px-3 py-2 text-sm" />
@@ -362,13 +401,23 @@ export function LiveAdminPanel() {
                         : "—"}
                     </td>
                     <td className="py-2">
-                      <button
-                        type="button"
-                        onClick={() => setSelectedId(selectedId === event.id ? "" : event.id)}
-                        className="rounded-full border border-garden-300 px-3 py-1 text-xs font-semibold text-garden-700 hover:bg-garden-100"
-                      >
-                        {selectedId === event.id ? t("colActionsClose") : t("editButton")}
-                      </button>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => void inviteRsvp(event.id, event.title)}
+                          disabled={inviteSendingId === event.id}
+                          className="rounded-full border border-garden-300 px-3 py-1 text-xs font-semibold text-garden-700 hover:bg-garden-100 disabled:opacity-50"
+                        >
+                          {inviteSendingId === event.id ? t("inviteSending") : t("inviteButton")}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setSelectedId(selectedId === event.id ? "" : event.id)}
+                          className="rounded-full border border-garden-300 px-3 py-1 text-xs font-semibold text-garden-700 hover:bg-garden-100"
+                        >
+                          {selectedId === event.id ? t("colActionsClose") : t("editButton")}
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -389,24 +438,31 @@ export function LiveAdminPanel() {
             <input value={editSlug} onChange={(e) => setEditSlug(e.target.value)} required placeholder={t("slugPlaceholder")} className="rounded-lg border border-garden-200 px-3 py-2 text-sm" />
             <input type="datetime-local" value={editScheduledAt} onChange={(e) => setEditScheduledAt(e.target.value)} className="rounded-lg border border-garden-200 px-3 py-2 text-sm" />
             <div className="grid grid-cols-2 gap-2">
-              <select
-                value={editStatus}
-                onChange={(e) => setEditStatus(e.target.value as "prelive" | "live" | "replay")}
-                className="rounded-lg border border-garden-200 px-3 py-2 text-sm"
-              >
-                <option value="prelive">prelive</option>
-                <option value="live">live</option>
-                <option value="replay">replay</option>
-              </select>
-              <select
-                value={editVisibility}
-                onChange={(e) => setEditVisibility(e.target.value as "published" | "draft" | "archived")}
-                className="rounded-lg border border-garden-200 px-3 py-2 text-sm"
-              >
-                <option value="published">published</option>
-                <option value="draft">draft</option>
-                <option value="archived">archived</option>
-              </select>
+              <label className="space-y-1 text-xs font-medium text-garden-700">
+                <span>{t("statusLabel")}</span>
+                <select
+                  value={editStatus}
+                  onChange={(e) => setEditStatus(e.target.value as "prelive" | "live" | "replay" | "ended")}
+                  className="w-full rounded-lg border border-garden-200 px-3 py-2 text-sm"
+                >
+                  <option value="prelive">{t("statusPrelive")}</option>
+                  <option value="live">{t("statusLive")}</option>
+                  <option value="replay">{t("statusReplay")}</option>
+                  <option value="ended">{t("statusEnded")}</option>
+                </select>
+              </label>
+              <label className="space-y-1 text-xs font-medium text-garden-700">
+                <span>{t("visibilityLabel")}</span>
+                <select
+                  value={editVisibility}
+                  onChange={(e) => setEditVisibility(e.target.value as "published" | "draft" | "archived")}
+                  className="w-full rounded-lg border border-garden-200 px-3 py-2 text-sm"
+                >
+                  <option value="published">{t("visibilityPublished")}</option>
+                  <option value="draft">{t("visibilityDraft")}</option>
+                  <option value="archived">{t("visibilityArchived")}</option>
+                </select>
+              </label>
             </div>
             <input value={editPromoVideoUrl} onChange={(e) => setEditPromoVideoUrl(e.target.value)} placeholder={t("promoVideoPlaceholder")} className="sm:col-span-2 rounded-lg border border-garden-200 px-3 py-2 text-sm" />
             <div className="sm:col-span-2 space-y-2">

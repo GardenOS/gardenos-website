@@ -1,4 +1,4 @@
-export const LIVE_EVENT_STATUSES = ["prelive", "live", "replay"] as const;
+export const LIVE_EVENT_STATUSES = ["prelive", "live", "replay", "ended"] as const;
 export type LiveEventStatus = (typeof LIVE_EVENT_STATUSES)[number];
 
 export const LIVE_EVENT_VISIBILITIES = ["draft", "published", "archived"] as const;

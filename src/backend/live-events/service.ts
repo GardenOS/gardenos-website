@@ -2,6 +2,7 @@ import { NotFoundError, ValidationError } from "@/backend/common/errors";
 import {
   createLiveEvent,
   deleteLiveEvent,
+  findLatestPublishedEnded,
   findLatestPublishedReplay,
   findPublishedByStatus,
   getLiveEventById,
@@ -18,10 +19,11 @@ import type {
   UpdateLiveEventLinksInput,
 } from "@/backend/live-events/liveEvent";
 import { createAuditLog } from "@/backend/audit/repository";
-import { listRsvpsByEvent } from "@/backend/rsvp/repository";
+import { listInviteCandidateEmailsByEvent, listRsvpsByEvent } from "@/backend/rsvp/repository";
+import { queueRsvpInvite } from "@/backend/notifications/service";
 
 export type CurrentLiveContext = {
-  stage: "prelive" | "live" | "replay" | "none";
+  stage: "prelive" | "live" | "replay" | "ended" | "none";
   event: LiveEvent | null;
 };
 
@@ -34,6 +36,9 @@ export async function getCurrentLiveContext(): Promise<CurrentLiveContext> {
 
   const replay = await findLatestPublishedReplay();
   if (replay) return { stage: "replay", event: replay };
+
+  const ended = await findLatestPublishedEnded();
+  if (ended) return { stage: "ended", event: ended };
 
   return { stage: "none", event: null };
 }
@@ -168,4 +173,44 @@ export async function listEventRsvpsService(eventId: string, query: { limit?: nu
   if (!existing) throw new NotFoundError("Live event not found.");
 
   return listRsvpsByEvent(eventId, query);
+}
+
+export async function sendRsvpInviteEmailsService(eventId: string, actorUserId: string): Promise<{
+  candidateCount: number;
+  invitedCount: number;
+  sentTo: string[];
+}> {
+  const event = await getLiveEventById(eventId);
+  if (!event) throw new NotFoundError("Live event not found.");
+
+  const candidateEmails = await listInviteCandidateEmailsByEvent(eventId);
+
+  const sentTo: string[] = [];
+  for (const email of candidateEmails) {
+    const result = await queueRsvpInvite({
+      email,
+      event,
+    });
+    if (result.queued) {
+      sentTo.push(email);
+    }
+  }
+
+  await createAuditLog({
+    entityType: "live_event",
+    entityId: eventId,
+    action: "invite_rsvp_sent",
+    actorUserId,
+    afterData: {
+      candidateCount: candidateEmails.length,
+      invitedCount: sentTo.length,
+      sentTo,
+    },
+  });
+
+  return {
+    candidateCount: candidateEmails.length,
+    invitedCount: sentTo.length,
+    sentTo,
+  };
 }

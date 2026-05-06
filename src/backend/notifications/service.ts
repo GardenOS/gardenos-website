@@ -2,6 +2,7 @@ import { Resend } from "resend";
 import type { RsvpRecord } from "@/backend/rsvp/rsvp";
 import { createAuditLog } from "@/backend/audit/repository";
 import type { LiveEvent } from "@/backend/live-events/liveEvent";
+import { createRsvpInviteToken } from "@/backend/rsvp/inviteToken";
 
 export type NotificationDispatchResult = {
   queued: boolean;
@@ -14,6 +15,11 @@ export type RegisterConfirmationInput = {
 };
 
 export type NotificationEventDetails = Pick<LiveEvent, "id" | "title" | "description" | "scheduledStartAt">;
+
+export type InviteRsvpInput = {
+  email: string;
+  event: NotificationEventDetails;
+};
 
 const apiKey = process.env.RESEND_API_KEY;
 const emailFrom = process.env.EMAIL_FROM ?? "onboarding@resend.dev";
@@ -35,6 +41,17 @@ function formatEventTime(value: string): string {
   }).format(new Date(value));
 }
 
+function getSiteUrl(): string {
+  const configured = process.env.NEXT_PUBLIC_SITE_URL?.trim() || process.env.SITE_URL?.trim();
+  if (configured) return configured;
+
+  if (process.env.NODE_ENV !== "production") {
+    return "http://localhost:9090";
+  }
+
+  return "https://mygardenos.com";
+}
+
 function buildCalendarSection(event: NotificationEventDetails | null | undefined): string {
   if (!event?.scheduledStartAt) {
     return "";
@@ -51,7 +68,7 @@ function buildCalendarSection(event: NotificationEventDetails | null | undefined
     .replace(/[-:]|\.\d{3}/g, "")}`;
   const eventTitle = event.title.trim() || "GardenOS 活动";
   const description = event.description?.trim() || "GardenOS 活动预约确认";
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim() || "https://mygardenos.com";
+  const siteUrl = getSiteUrl();
   const icsUrl = `${siteUrl.replace(/\/$/, "")}/api/calendar/live-event/${encodeURIComponent(event.id)}`;
   const googleUrl = new URL("https://calendar.google.com/calendar/render");
   googleUrl.searchParams.set("action", "TEMPLATE");
@@ -161,5 +178,72 @@ export async function queueRegisterConfirmation(
     return { queued: false, reason: error.message };
   }
 
+  return { queued: true };
+}
+
+export async function queueRsvpInvite(input: InviteRsvpInput): Promise<NotificationDispatchResult> {
+  if (!apiKey) {
+    console.warn("[notifications] RESEND_API_KEY not configured, skipping invite email.");
+    return { queued: false, reason: "notification-provider-not-configured" };
+  }
+
+  const to = String(input.email ?? "").trim().toLowerCase();
+  if (!to) {
+    return { queued: false, reason: "missing-recipient-email" };
+  }
+
+  const siteUrl = getSiteUrl().replace(/\/$/, "");
+  const token = createRsvpInviteToken({
+    email: to,
+    eventId: input.event.id,
+    expiresInSeconds: 7 * 24 * 60 * 60,
+  });
+  const oneClickUrl = `${siteUrl}/api/live/rsvp/one-click?token=${encodeURIComponent(token)}`;
+  const title = escapeHtml(input.event.title || "GardenOS 直播活动");
+  const time = input.event.scheduledStartAt ? escapeHtml(formatEventTime(input.event.scheduledStartAt)) : "时间待确认";
+
+  const html = `
+    <div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:32px;">
+      <h2 style="color:#2d6a2d;margin-bottom:24px;">直播预约邀请</h2>
+      <p style="font-size:15px;line-height:1.6;color:#1f2937;margin:0 0 12px;">我们准备了新的直播场次：</p>
+      <p style="font-size:16px;font-weight:600;color:#2d6a2d;margin:0 0 12px;">${title}</p>
+      <p style="font-size:14px;color:#6b7280;margin:0 0 32px;">预计时间：${time}</p>
+      
+      <div style="text-align:center;margin:32px 0;">
+        <a href="${oneClickUrl}" style="display:inline-block;padding:14px 32px;border-radius:8px;background:#2d6a2d;color:#ffffff;text-decoration:none;font-weight:700;font-size:16px;line-height:1.5;">预约这场直播</a>
+      </div>
+      
+      <p style="font-size:13px;color:#6b7280;margin:24px 0 0;">无法点击按钮？复制下方链接到浏览器打开：</p>
+      <p style="font-size:12px;color:#2d6a2d;word-break:break-all;margin:8px 0;padding:12px;background:#f5faf2;border-radius:6px;font-family:monospace;">${oneClickUrl}</p>
+      
+      <p style="color:#888;font-size:12px;margin-top:32px;border-top:1px solid #e5e7eb;padding-top:16px;">— MYGARDENOS.COM</p>
+    </div>
+  `;
+
+  const resend = new Resend(apiKey);
+  const result = await resend.emails.send({
+    from: emailFrom,
+    to,
+    subject: `邀请预约直播：${input.event.title}`,
+    html,
+  });
+
+  if (result.error) {
+    console.error("[notifications] Failed to send RSVP invite email:", result.error);
+    await createAuditLog({
+      entityType: "live_event",
+      entityId: input.event.id,
+      action: "invite_email_failed",
+      afterData: {
+        to,
+        subject: `邀请预约直播：${input.event.title}`,
+        error: result.error.message,
+      },
+    }).catch((dbErr) => console.error("[notifications] Failed to write invite failure audit log:", dbErr));
+
+    return { queued: false, reason: result.error.message };
+  }
+
+  console.log(`[notifications] Invite email sent from ${emailFrom} to ${to} for event ${input.event.id}`);
   return { queued: true };
 }

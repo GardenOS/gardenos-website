@@ -1,4 +1,4 @@
-export type AuditEntityType = "live_event" | "rsvp";
+export type AuditEntityType = "live_event" | "rsvp" | "registration";
 
 export type AuditLogRecord = {
   id: number;

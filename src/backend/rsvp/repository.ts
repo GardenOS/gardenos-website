@@ -73,3 +73,36 @@ export async function listRsvpsByEvent(eventId: string, pageQuery: PaginationQue
 
   return result.rows.map((row) => mapRow(row as Record<string, unknown>));
 }
+
+export async function listInviteCandidateEmailsByEvent(eventId: string): Promise<string[]> {
+  const pool = getDbPool();
+  const result = await pool.query(
+    `
+      WITH candidate_emails AS (
+        SELECT LOWER(TRIM(email)) AS email
+        FROM public.registrations
+        WHERE email IS NOT NULL
+        UNION
+        SELECT LOWER(TRIM(email)) AS email
+        FROM live_rsvps
+        WHERE email IS NOT NULL
+      )
+      SELECT c.email
+      FROM candidate_emails c
+      WHERE c.email <> ''
+        AND NOT EXISTS (
+          SELECT 1
+          FROM live_rsvps r
+          WHERE r.event_id = $1
+            AND LOWER(r.email) = c.email
+            AND r.status = 'registered'
+        )
+      ORDER BY c.email ASC
+    `,
+    [eventId]
+  );
+
+  return result.rows
+    .map((row) => String((row as Record<string, unknown>).email ?? "").trim().toLowerCase())
+    .filter(Boolean);
+}

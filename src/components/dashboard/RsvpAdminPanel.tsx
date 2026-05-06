@@ -9,7 +9,7 @@ type LiveEvent = {
   id: string;
   title: string;
   slug: string;
-  status: "prelive" | "live" | "replay";
+  status: "prelive" | "live" | "replay" | "ended";
   visibility: "draft" | "published" | "archived";
   scheduledStartAt: string | null;
 };
@@ -86,6 +86,8 @@ export function RsvpAdminPanel() {
   const [allRegistrations, setAllRegistrations] = useState<RegistrationRow[]>([]);
   const [allLoaded, setAllLoaded] = useState(false);
   const [allError, setAllError] = useState("");
+  const [deleteError, setDeleteError] = useState("");
+  const [deletingId, setDeletingId] = useState<number | null>(null);
   const [page, setPage] = useState(0);
 
   // Load events on mount, then auto-select nearest
@@ -110,7 +112,7 @@ export function RsvpAdminPanel() {
 
         const now = Date.now();
         const upcoming = all
-          .filter((e) => e.status !== "replay")
+          .filter((e) => e.status !== "replay" && e.status !== "ended")
           .sort((a, b) => {
             const ta = a.scheduledStartAt ? new Date(a.scheduledStartAt).getTime() : Infinity;
             const tb = b.scheduledStartAt ? new Date(b.scheduledStartAt).getTime() : Infinity;
@@ -181,6 +183,7 @@ export function RsvpAdminPanel() {
   async function loadAllRegistrations() {
     setAllLoaded(false);
     setAllError("");
+    setDeleteError("");
     try {
       const res = await fetch("/api/admin/registrations?limit=500&offset=0", { cache: "no-store" });
       const data = (await res.json().catch(() => null)) as {
@@ -198,6 +201,37 @@ export function RsvpAdminPanel() {
       setPage(0);
     } catch {
       setAllError(t("registrationsLoadError"));
+    }
+  }
+
+  async function handleDeleteRegistration(row: RegistrationRow) {
+    const confirmed = window.confirm(t("deleteConfirm", { email: row.email }));
+    if (!confirmed) return;
+
+    setDeleteError("");
+    setDeletingId(row.id);
+
+    try {
+      const res = await fetch(`/api/admin/registrations/${row.id}`, { method: "DELETE" });
+      const data = (await res.json().catch(() => null)) as { ok?: boolean; error?: string } | null;
+
+      if (!res.ok || !data?.ok) {
+        setDeleteError(data?.error || t("deleteError"));
+        return;
+      }
+
+      setAllRegistrations((prev) => {
+        const next = prev.filter((item) => item.id !== row.id);
+        setPage((currentPage) => {
+          const nextTotalPages = Math.max(1, Math.ceil(next.length / PAGE_SIZE));
+          return Math.min(currentPage, nextTotalPages - 1);
+        });
+        return next;
+      });
+    } catch {
+      setDeleteError(t("deleteError"));
+    } finally {
+      setDeletingId(null);
     }
   }
 
@@ -313,6 +347,7 @@ export function RsvpAdminPanel() {
             <p className="mb-3 text-xs text-garden-600">
               {t("registrationsTotal", { count: allRegistrations.length })}
             </p>
+            {deleteError ? <p className="mb-3 text-sm text-red-700">{deleteError}</p> : null}
 
             <div className="overflow-x-auto">
               <table className="w-full text-left text-sm">
@@ -322,7 +357,8 @@ export function RsvpAdminPanel() {
                     <th className="py-2 pr-4">{t("colEmail")}</th>
                     <th className="py-2 pr-4">{t("colPhone")}</th>
                     <th className="py-2 pr-4">{t("colRegion")}</th>
-                    <th className="py-2">{t("colSubmittedAt")}</th>
+                    <th className="py-2 pr-4">{t("colSubmittedAt")}</th>
+                    <th className="py-2">{t("colActions")}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -332,7 +368,17 @@ export function RsvpAdminPanel() {
                       <td className="py-2 pr-4">{row.email}</td>
                       <td className="py-2 pr-4">{row.phone || "—"}</td>
                       <td className="py-2 pr-4">{row.region || "—"}</td>
-                      <td className="py-2 text-garden-600">{new Date(row.submittedAt).toLocaleString()}</td>
+                      <td className="py-2 pr-4 text-garden-600">{new Date(row.submittedAt).toLocaleString()}</td>
+                      <td className="py-2">
+                        <button
+                          type="button"
+                          onClick={() => void handleDeleteRegistration(row)}
+                          disabled={deletingId === row.id}
+                          className="rounded-md border border-red-300 px-3 py-1.5 text-xs font-semibold text-red-700 hover:bg-red-50 disabled:opacity-50"
+                        >
+                          {deletingId === row.id ? t("deleting") : t("deleteButton")}
+                        </button>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
