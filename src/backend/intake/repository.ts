@@ -125,6 +125,22 @@ export type RegistrationRow = {
   liveEventId: string | null;
 };
 
+function mapRegistrationRow(row: Record<string, unknown>): RegistrationRow {
+  return {
+    id: Number(row.id),
+    fullName: String(row.full_name ?? ""),
+    email: String(row.email ?? ""),
+    phone: row.phone ? String(row.phone) : null,
+    region: String(row.region ?? ""),
+    wechatId: row.wechat_id ? String(row.wechat_id) : null,
+    gardenFeatures: Array.isArray(row.garden_features) ? (row.garden_features as string[]) : [],
+    notes: row.notes ? String(row.notes) : null,
+    lang: String(row.lang ?? ""),
+    submittedAt: new Date(String(row.submitted_at)).toISOString(),
+    liveEventId: row.live_event_id ? String(row.live_event_id) : null,
+  };
+}
+
 export async function listRegistrations(options?: {
   liveEventId?: string;
   limit?: number;
@@ -154,17 +170,25 @@ export async function listRegistrations(options?: {
         [limit, offset]
       );
 
-  return result.rows.map((row) => ({
-    id: Number(row.id),
-    fullName: String(row.full_name ?? ""),
-    email: String(row.email ?? ""),
-    phone: row.phone ? String(row.phone) : null,
-    region: String(row.region ?? ""),
-    wechatId: row.wechat_id ? String(row.wechat_id) : null,
-    gardenFeatures: Array.isArray(row.garden_features) ? (row.garden_features as string[]) : [],
-    notes: row.notes ? String(row.notes) : null,
-    lang: String(row.lang ?? ""),
-    submittedAt: new Date(String(row.submitted_at)).toISOString(),
-    liveEventId: row.live_event_id ? String(row.live_event_id) : null,
-  }));
+  return result.rows.map((row) => mapRegistrationRow(row as Record<string, unknown>));
+}
+
+export async function deleteRegistrationById(id: number): Promise<RegistrationRow | null> {
+  const pool = getDbPool();
+  const result = await pool.query(
+    `SELECT id, full_name, email, phone, region, wechat_id,
+            garden_features, notes, lang, submitted_at, live_event_id
+     FROM public.registrations
+     WHERE id = $1`,
+    [id]
+  );
+
+  if (result.rowCount === 0) {
+    return null;
+  }
+
+  const existing = mapRegistrationRow(result.rows[0] as Record<string, unknown>);
+
+  await pool.query(`DELETE FROM public.registrations WHERE id = $1`, [id]);
+  return existing;
 }

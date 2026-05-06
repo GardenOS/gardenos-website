@@ -140,6 +140,22 @@ export async function findLatestPublishedReplay(): Promise<LiveEvent | null> {
   return mapRow(result.rows[0] as Record<string, unknown>);
 }
 
+export async function findLatestPublishedEnded(): Promise<LiveEvent | null> {
+  const pool = getDbPool();
+  const result = await pool.query(
+    `
+      SELECT *
+      FROM live_events
+      WHERE visibility = 'published' AND status = 'ended'
+      ORDER BY COALESCE(actual_end_at, updated_at) DESC
+      LIMIT 1
+    `
+  );
+
+  if (!result.rowCount) return null;
+  return mapRow(result.rows[0] as Record<string, unknown>);
+}
+
 export async function updateLiveEventStatus(
   eventId: string,
   status: LiveEventStatus,
@@ -148,7 +164,7 @@ export async function updateLiveEventStatus(
   const pool = getDbPool();
 
   const setActualStart = status === "live" ? `, actual_start_at = COALESCE(actual_start_at, NOW())` : "";
-  const setActualEnd = status === "replay" ? `, actual_end_at = COALESCE(actual_end_at, NOW())` : "";
+  const setActualEnd = status === "replay" || status === "ended" ? `, actual_end_at = COALESCE(actual_end_at, NOW())` : "";
 
   const result = await pool.query(
     `
@@ -261,7 +277,7 @@ export async function updateLiveEvent(
 
 /**
  * Returns the UUID of the most relevant published live event for linking to a registration.
- * Priority: prelive → live → most recent published event.
+ * Priority: prelive → live → replay → ended.
  * Returns null if no published event exists.
  */
 export async function findCurrentRegistrableEventId(): Promise<string | null> {
@@ -271,7 +287,13 @@ export async function findCurrentRegistrableEventId(): Promise<string | null> {
       SELECT id FROM live_events
       WHERE visibility = 'published'
       ORDER BY
-        CASE status WHEN 'prelive' THEN 0 WHEN 'live' THEN 1 ELSE 2 END,
+        CASE status
+          WHEN 'prelive' THEN 0
+          WHEN 'live' THEN 1
+          WHEN 'replay' THEN 2
+          WHEN 'ended' THEN 3
+          ELSE 4
+        END,
         COALESCE(scheduled_start_at, created_at) ASC
       LIMIT 1
     `

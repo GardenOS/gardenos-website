@@ -4,14 +4,14 @@ import { useEffect, useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/routing";
 
-type LiveStage = "prelive" | "live" | "replay" | "none";
+type LiveStage = "prelive" | "live" | "replay" | "ended" | "none";
 
 type LiveEvent = {
   id: string;
   slug: string;
   title: string;
   description: string | null;
-  status: "prelive" | "live" | "replay";
+  status: "prelive" | "live" | "replay" | "ended";
   visibility: "draft" | "published" | "archived";
   locale: string;
   promoVideoUrl: string | null;
@@ -76,6 +76,7 @@ function pickStageUrl(stage: LiveStage, event: LiveEvent | null): string | null 
   if (stage === "live") return event.liveUrl ?? event.warmupUrl ?? event.replayUrl;
   if (stage === "prelive") return event.warmupUrl ?? event.liveUrl ?? event.replayUrl;
   if (stage === "replay") return event.replayUrl ?? event.liveUrl ?? event.warmupUrl;
+  if (stage === "ended") return event.replayUrl ?? null;
   return null;
 }
 
@@ -149,6 +150,7 @@ export function LivePublicPanel() {
     if (stage === "live") return t("stageLive");
     if (stage === "prelive") return t("stagePrelive");
     if (stage === "replay") return t("stageReplay");
+    if (stage === "ended") return t("stageEnded");
     return t("stageNone");
   }, [stage, t]);
 
@@ -159,6 +161,7 @@ export function LivePublicPanel() {
   const preliveEvents = events.filter((event) => event.status === "prelive");
   const liveEvents = events.filter((event) => event.status === "live");
   const replayEvents = events.filter((event) => event.status === "replay");
+  const endedEvents = events.filter((event) => event.status === "ended");
 
   return (
     <div className="space-y-8">
@@ -272,7 +275,7 @@ export function LivePublicPanel() {
         </div>
       </section>
 
-      <section className="grid gap-4 lg:grid-cols-3">
+      <section className="grid gap-4 lg:grid-cols-4">
         <div className="rounded-2xl border border-garden-200 bg-white px-5 py-5 shadow-sm">
           <h3 className="text-sm font-semibold uppercase tracking-wide text-garden-700">{t("upcomingTitle")}</h3>
           <ul className="mt-3 space-y-3 text-sm text-garden-800">
@@ -317,6 +320,22 @@ export function LivePublicPanel() {
               ))
             ) : (
               <li className="text-garden-600">{t("emptyReplay")}</li>
+            )}
+          </ul>
+        </div>
+
+        <div className="rounded-2xl border border-garden-200 bg-white px-5 py-5 shadow-sm">
+          <h3 className="text-sm font-semibold uppercase tracking-wide text-garden-700">{t("endedTitle")}</h3>
+          <ul className="mt-3 space-y-3 text-sm text-garden-800">
+            {endedEvents.length ? (
+              endedEvents.map((event) => (
+                <li key={event.id}>
+                  <p className="font-medium text-garden-900">{event.title}</p>
+                  <p className="text-xs text-garden-600">{formatDate(event.actualEndAt ?? event.updatedAt, event.locale)}</p>
+                </li>
+              ))
+            ) : (
+              <li className="text-garden-600">{t("emptyEnded")}</li>
             )}
           </ul>
         </div>
