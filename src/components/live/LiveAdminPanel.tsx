@@ -351,6 +351,7 @@ export function LiveAdminPanel() {
               />
             </div>
             {createPosterUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
               <img src={createPosterUrl} alt="poster preview" className="h-24 rounded-lg border border-garden-200 object-cover" />
             ) : null}
           </div>
@@ -494,6 +495,7 @@ export function LiveAdminPanel() {
                 />
               </div>
               {editPosterUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
                 <img src={editPosterUrl} alt="poster preview" className="h-24 rounded-lg border border-garden-200 object-cover" />
               ) : null}
             </div>

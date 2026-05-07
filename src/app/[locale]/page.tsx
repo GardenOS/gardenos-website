@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/routing";
 import { HomeMowingCostSurvey } from "@/components/HomeMowingCostSurvey";
@@ -17,10 +18,12 @@ export default async function HomePage({ params }: Props) {
     <div className="space-y-0">
       <section className="bg-black">
         <div className="relative overflow-hidden bg-black min-h-[600px]">
-            <img
+            <Image
               src="/images/hero-lawn.jpg"
               alt=""
+              fill
               className="absolute inset-0 h-full w-full object-cover"
+              sizes="100vw"
               aria-hidden
             />
             <div className="absolute inset-0 bg-black/60" aria-hidden />

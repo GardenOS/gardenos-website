@@ -70,6 +70,13 @@ async function runMigrations() {
     await client.query(migration005);
     console.log('✓ Migration 005 completed');
 
+    // Migration 006: Extend live_events.status with ended
+    console.log('Running migration 006_live_event_status_ended.sql...');
+    const migration006Path = path.join(__dirname, '../src/backend/db/migrations/006_live_event_status_ended.sql');
+    const migration006 = fs.readFileSync(migration006Path, 'utf8');
+    await client.query(migration006);
+    console.log('✓ Migration 006 completed');
+
     console.log('\n✓ All migrations completed successfully!');
   } catch (error) {
     console.error('ERROR during migration:', error.message);

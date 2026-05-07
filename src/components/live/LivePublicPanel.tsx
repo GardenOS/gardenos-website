@@ -196,6 +196,7 @@ export function LivePublicPanel() {
               </div>
             ) : null}
             {hasPoster ? (
+              // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={promoEvent.posterUrl!}
                 alt={promoEvent.title}
