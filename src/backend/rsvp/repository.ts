@@ -83,7 +83,7 @@ export async function listInviteCandidateEmailsByEvent(eventId: string): Promise
       WITH candidate_emails AS (
         SELECT LOWER(TRIM(email)) AS email
         FROM public.registrations
-        WHERE email IS NOT NULL
+        WHERE email IS NOT NULL AND is_active = true
         UNION
         SELECT LOWER(TRIM(email)) AS email
         FROM live_rsvps

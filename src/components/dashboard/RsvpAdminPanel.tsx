@@ -68,6 +68,7 @@ type RegistrationRow = {
   lang: string;
   submittedAt: string;
   liveEventId: string | null;
+  isActive: boolean;
 };
 
 export function RsvpAdminPanel() {
@@ -358,17 +359,25 @@ export function RsvpAdminPanel() {
                     <th className="py-2 pr-4">{t("colPhone")}</th>
                     <th className="py-2 pr-4">{t("colRegion")}</th>
                     <th className="py-2 pr-4">{t("colSubmittedAt")}</th>
+                    <th className="py-2 pr-4">状态</th>
                     <th className="py-2">{t("colActions")}</th>
                   </tr>
                 </thead>
                 <tbody>
                   {pagedRows.map((row) => (
-                    <tr key={row.id} className="border-t border-garden-100">
+                    <tr key={row.id} className={`border-t border-garden-100 ${row.isActive ? "" : "opacity-50"}`}>
                       <td className="py-2 pr-4">{row.fullName || "—"}</td>
                       <td className="py-2 pr-4">{row.email}</td>
                       <td className="py-2 pr-4">{row.phone || "—"}</td>
                       <td className="py-2 pr-4">{row.region || "—"}</td>
                       <td className="py-2 pr-4 text-garden-600">{new Date(row.submittedAt).toLocaleString()}</td>
+                      <td className="py-2 pr-4">
+                        {row.isActive ? (
+                          <span className="inline-flex items-center rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700">生效</span>
+                        ) : (
+                          <span className="inline-flex items-center rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-500">已弃用</span>
+                        )}
+                      </td>
                       <td className="py-2">
                         <button
                           type="button"
