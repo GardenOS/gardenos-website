@@ -154,18 +154,28 @@ export async function queueRsvpConfirmation(
 }
 
 async function sendRegisterImageMail(
-  to: string
+  to: string,
+  name?: string | null
 ): Promise<{ error?: { message: string } }> {
   const resend = new Resend(apiKey);
   const siteUrl = getSiteUrl().replace(/\/$/, "");
   const imageUrl = `${siteUrl}/images/email%20template.jpg`;
+  const safeName = escapeHtml(String(name ?? "").trim()) || "朋友";
 
-  const html = `
-    <div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:0;">
-      <img src="${imageUrl}" alt="GardenOS 预约确认" style="width:100%;display:block;border:0;" />
-      <p style="text-align:center;color:#888;font-size:12px;padding:16px 0;margin:0;">— MYGARDENOS.COM</p>
-    </div>
-  `;
+  const html = `<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#f5f5f5;">
+  <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f5f5f5;">
+    <tr>
+      <td style="padding:24px 32px;">
+        <p style="margin:0 0 14px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:18px;line-height:1.5;color:#1f2937;">你好，${safeName}</p>
+        <img src="${imageUrl}" alt="GardenOS 预约确认" width="100%" style="display:block;width:100%;border-radius:12px;border:0;line-height:0;" />
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
 
   const result = await resend.emails.send({
     from: emailFrom,
@@ -198,7 +208,7 @@ export async function queueRegisterConfirmation(
     return { queued: false, reason: "missing-recipient-email" };
   }
 
-  const { error } = await sendRegisterImageMail(to);
+  const { error } = await sendRegisterImageMail(to, input.fullName);
   if (error) {
     console.error("[notifications] Failed to send register confirmation email:", {
       to,
