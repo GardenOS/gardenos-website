@@ -1,3 +1,5 @@
+import fs from "fs";
+import path from "path";
 import { Resend } from "resend";
 import type { RsvpRecord } from "@/backend/rsvp/rsvp";
 import { createAuditLog } from "@/backend/audit/repository";
@@ -12,6 +14,7 @@ export type NotificationDispatchResult = {
 export type RegisterConfirmationInput = {
   email: string;
   fullName?: string | null;
+  lang?: string | null;
 };
 
 export type NotificationEventDetails = Pick<LiveEvent, "id" | "title" | "description" | "scheduledStartAt">;
@@ -153,40 +156,63 @@ export async function queueRsvpConfirmation(
   return { queued: true };
 }
 
+const EMAIL_I18N = {
+  zh: {
+    subject: "恭喜预约成功 — MYGARDENOS.COM",
+    title: "恭喜预约成功",
+    greetingWithName: (n: string) => `<p class="text greeting">您好，<strong>${n}</strong>，</p>`,
+    greetingNoName: `<p class="text greeting">您好，</p>`,
+    intro: "您已成功预约GardenOS割草机器人演示直播！",
+    notice: `<strong>演示时间地点确认后，</strong>我们将第一时间发邮件通知您。请留意来自 <span class="email">info@mygardenos.com</span> 的邮件。`,
+    reply: "如有任何问题，欢迎直接回复此邮件。",
+    expect: "期待与您相见",
+    signature: "— GardenOS 团队",
+    text: "感谢您预约 GardenOS 活动！请访问 mygardenos.com 了解更多。",
+  },
+  en: {
+    subject: "Registration Confirmed — MYGARDENOS.COM",
+    title: "Registration Confirmed",
+    greetingWithName: (n: string) => `<p class="text greeting">Hello, <strong>${n}</strong>,</p>`,
+    greetingNoName: `<p class="text greeting">Hello,</p>`,
+    intro: "You've successfully registered for the GardenOS mowing robot demonstration!",
+    notice: `<strong>Once the demo time and location are confirmed,</strong> we'll notify you by email right away. Please watch for emails from <span class="email">info@mygardenos.com</span>.`,
+    reply: "If you have any questions, feel free to reply to this email.",
+    expect: "Looking forward to meeting you",
+    signature: "— The GardenOS Team",
+    text: "Thank you for registering for a GardenOS event! Visit mygardenos.com to learn more.",
+  },
+} as const;
+
 async function sendRegisterImageMail(
   to: string,
-  name?: string | null
+  name?: string | null,
+  lang?: string | null
 ): Promise<{ error?: { message: string } }> {
   const resend = new Resend(apiKey);
   const siteUrl = getSiteUrl().replace(/\/$/, "");
-  const imageUrl = `${siteUrl}/images/email%20template.jpg`;
-  const safeName = escapeHtml(String(name ?? "").trim()) || "朋友";
+  const assetsUrl = `${siteUrl}/email/rsvp/assets`;
+  const safeName = escapeHtml(String(name ?? "").trim());
+  const i18n = lang === "en" ? EMAIL_I18N.en : EMAIL_I18N.zh;
+  const greetingLine = safeName ? i18n.greetingWithName(safeName) : i18n.greetingNoName;
 
-  const html = `<!DOCTYPE html>
-<html>
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
-<body style="margin:0;padding:0;background:#ffffff;">
-  <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0;padding:0;">
-    <tr>
-      <td style="padding:16px 24px 0;">
-        <p style="margin:0 0 12px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:18px;line-height:1.5;color:#1f2937;">你好，${safeName}</p>
-      </td>
-    </tr>
-    <tr>
-      <td style="padding:0;margin:0;">
-        <img src="${imageUrl}" alt="GardenOS 预约确认" width="100%" style="display:block;width:100%;max-width:100%;border:0;line-height:0;" />
-      </td>
-    </tr>
-  </table>
-</body>
-</html>`;
+  const templatePath = path.join(process.cwd(), "public", "email", "rsvp", "index.html");
+  let html = fs.readFileSync(templatePath, "utf-8");
+  html = html
+    .replaceAll("{{ASSETS_URL}}", assetsUrl)
+    .replaceAll("{{TITLE}}", i18n.title)
+    .replaceAll("{{GREETING_LINE}}", greetingLine)
+    .replaceAll("{{INTRO}}", i18n.intro)
+    .replaceAll("{{NOTICE}}", i18n.notice)
+    .replaceAll("{{REPLY}}", i18n.reply)
+    .replaceAll("{{EXPECT}}", i18n.expect)
+    .replaceAll("{{SIGNATURE}}", i18n.signature);
 
   const result = await resend.emails.send({
     from: emailFrom,
     to,
-    subject: "恭喜预约成功 — MYGARDENOS.COM",
+    subject: i18n.subject,
     html,
-    text: "感谢您预约 GardenOS 活动！详情请查看邮件中的图片，或访问 mygardenos.com",
+    text: i18n.text,
   });
 
   if (result.error) {
@@ -212,7 +238,7 @@ export async function queueRegisterConfirmation(
     return { queued: false, reason: "missing-recipient-email" };
   }
 
-  const { error } = await sendRegisterImageMail(to, input.fullName);
+  const { error } = await sendRegisterImageMail(to, input.fullName, input.lang);
   if (error) {
     console.error("[notifications] Failed to send register confirmation email:", {
       to,

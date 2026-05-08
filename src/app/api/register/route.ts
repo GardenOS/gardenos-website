@@ -76,6 +76,7 @@ export async function POST(request: Request) {
     const notifyResult = await queueRegisterConfirmation({
       email,
       fullName: name,
+      lang,
     }, liveEvent);
     if (!notifyResult.queued) {
       console.warn("[register] Confirmation email not queued", {
