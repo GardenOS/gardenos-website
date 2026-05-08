@@ -77,6 +77,13 @@ async function runMigrations() {
     await client.query(migration006);
     console.log('✓ Migration 006 completed');
 
+    // Migration 007: Page views tracking table
+    console.log('Running migration 007_page_views.sql...');
+    const migration007Path = path.join(__dirname, '../src/backend/db/migrations/007_page_views.sql');
+    const migration007 = fs.readFileSync(migration007Path, 'utf8');
+    await client.query(migration007);
+    console.log('✓ Migration 007 completed');
+
     console.log('\n✓ All migrations completed successfully!');
   } catch (error) {
     console.error('ERROR during migration:', error.message);
