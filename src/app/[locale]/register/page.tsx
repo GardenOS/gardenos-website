@@ -18,10 +18,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function RegisterPage({ params }: Props) {
   const { locale } = await params;
   setRequestLocale(locale);
-  const [t, registrationsCount] = await Promise.all([
-    getTranslations("register"),
-    countRegistrations(),
-  ]);
+  const t = await getTranslations("register");
+  let registrationsCount = 0;
+
+  try {
+    registrationsCount = await countRegistrations();
+  } catch (error) {
+    console.warn("[register-page] Failed to load registrations count, using fallback.", error);
+  }
   const valueKeys = ["value1", "value2", "value3"] as const;
   const socialProofCount = registrationsCount + 326;
 

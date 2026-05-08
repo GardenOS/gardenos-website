@@ -153,6 +153,37 @@ export async function queueRsvpConfirmation(
   return { queued: true };
 }
 
+async function sendRegisterImageMail(
+  to: string
+): Promise<{ error?: { message: string } }> {
+  const resend = new Resend(apiKey);
+  const siteUrl = getSiteUrl().replace(/\/$/, "");
+  const imageUrl = `${siteUrl}/images/email%20template.jpg`;
+
+  const html = `
+    <div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:0;">
+      <img src="${imageUrl}" alt="GardenOS 预约确认" style="width:100%;display:block;border:0;" />
+      <p style="text-align:center;color:#888;font-size:12px;padding:16px 0;margin:0;">— MYGARDENOS.COM</p>
+    </div>
+  `;
+
+  const result = await resend.emails.send({
+    from: emailFrom,
+    to,
+    subject: "恭喜预约成功 — MYGARDENOS.COM",
+    html,
+    text: "感谢您预约 GardenOS 活动！详情请查看邮件中的图片，或访问 mygardenos.com",
+  });
+
+  if (result.error) {
+    console.warn(`[notifications] Send from ${emailFrom} failed: ${result.error.message}`);
+    return { error: result.error };
+  }
+
+  console.log(`[notifications] Register confirmation email sent from ${emailFrom} to ${to}`);
+  return {};
+}
+
 export async function queueRegisterConfirmation(
   input: RegisterConfirmationInput,
   event?: NotificationEventDetails | null
@@ -163,12 +194,11 @@ export async function queueRegisterConfirmation(
   }
 
   const to = String(input.email ?? "").trim();
-  const name = String(input.fullName ?? "").trim() || to;
   if (!to) {
     return { queued: false, reason: "missing-recipient-email" };
   }
 
-  const { error } = await sendSuccessMail(to, name, event);
+  const { error } = await sendRegisterImageMail(to);
   if (error) {
     console.error("[notifications] Failed to send register confirmation email:", {
       to,
