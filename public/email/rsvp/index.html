@@ -1,227 +1,128 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>GardenOS 预约成功</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --slide-w: 1280;
-      --slide-h: 720;
-      --green: #0c6a34;
-      --ink: #1e293b;
-      --muted: #475569;
-    }
-
-    * { box-sizing: border-box; }
-
-    body {
-      margin: 0;
-      min-height: 100vh;
-      display: grid;
-      place-items: center;
-      background: #eef2f0;
-      font-family: "Noto Sans SC", "Microsoft YaHei", "PingFang SC", "Heiti SC", Arial, sans-serif;
-    }
-
-    .stage {
-      width: min(100vw, 1280px);
-      aspect-ratio: 16 / 9;
-      position: relative;
-      overflow: hidden;
-      background: #fff;
-      box-shadow: 0 18px 60px rgba(15, 23, 42, .16);
-    }
-
-    /* Scale the fixed 1280×720 slide while keeping real HTML text selectable. */
-    .slide {
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      width: 1280px;
-      height: 720px;
-      transform: translate(-50%, -50%) scale(var(--scale, 1));
-      transform-origin: center;
-      background: #fff;
-      overflow: hidden;
-    }
-
-    .slide img,
-    .text {
-      position: absolute;
-    }
-
-    .text { margin: 0; }
-
-    .hero-bg {
-      left: 200px;
-      top: 0;
-      width: 1080px;
-      height: 720px;
-      object-fit: cover;
-    }
-
-    .logo-mark {
-      left: 66.29px;
-      top: -10.49px;
-      width: 98.02px;
-      height: 147.03px;
-      object-fit: contain;
-    }
-
-    .brand {
-      left: 155px;
-      top: 43.10px;
-      width: 130px;
-      height: 37px;
-      color: var(--ink);
-      font-size: 26px;
-      line-height: 1.22;
-      font-weight: 700;
-      white-space: nowrap;
-    }
-
-    .title {
-      left: 125px;
-      top: 132px;
-      width: 530px;
-      height: 75px;
-      color: var(--green);
-      font-size: 52px;
-      line-height: 1.15;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      white-space: nowrap;
-      letter-spacing: -0.02em;
-    }
-
-    .check {
-      left: 446px;
-      top: 148px;
-      width: 30px;
-      height: 30px;
-      object-fit: contain;
-    }
-
-    .greeting {
-      left: 80px;
-      top: 245.50px;
-      width: 550px;
-      height: 33px;
-      color: var(--ink);
-      font-size: 22px;
-      line-height: 1.35;
-      white-space: nowrap;
-    }
-
-    .intro {
-      left: 80px;
-      top: 288.50px;
-      width: 550px;
-      color: var(--ink);
-      font-size: 18px;
-      line-height: 1.35;
-      white-space: nowrap;
-    }
-
-    .icon-calendar {
-      left: 75.73px;
-      top: 345.86px;
-      width: 49.27px;
-      height: 49.53px;
-      object-fit: contain;
-    }
-
-    .notice {
-      left: 140px;
-      top: 345.50px;
-      width: 490px;
-      color: var(--muted);
-      font-size: 18px;
-      line-height: 1.45;
-    }
-
-    .notice strong { color: var(--ink); }
-    .notice .email { color: #000; font-weight: 700; }
-
-    .icon-mail {
-      left: 75.93px;
-      top: 447.33px;
-      width: 49.07px;
-      height: 49.80px;
-      object-fit: contain;
-    }
-
-    .reply {
-      left: 140px;
-      top: 453.50px;
-      width: 306px;
-      color: var(--muted);
-      font-size: 18px;
-      line-height: 1.35;
-      white-space: nowrap;
-    }
-
-    .icon-heart {
-      left: 75.93px;
-      top: 525.80px;
-      width: 49.27px;
-      height: 50.33px;
-      object-fit: contain;
-    }
-
-    .expect {
-      left: 134.07px;
-      top: 535.20px;
-      width: 235px;
-      color: var(--muted);
-      font-size: 18px;
-      line-height: 1.35;
-      white-space: nowrap;
-    }
-
-    .signature {
-      left: 80px;
-      top: 647.50px;
-      width: 550px;
-      color: var(--muted);
-      font-size: 18px;
-      line-height: 1.35;
-      font-weight: 700;
-      white-space: nowrap;
-    }
-
-    @media (max-width: 1280px) {
-      .slide { --scale: calc(100vw / 1280); }
-    }
-  </style>
+  <title>GardenOS</title>
 </head>
-<body>
-  <main class="stage" aria-label="GardenOS 预约成功页面">
-    <section class="slide">
-      <!-- Images stay as images; text below stays as selectable/editable DOM text. -->
-      <img class="hero-bg" src="{{ASSETS_URL}}/image1.png" alt="阳光花园背景" />
-      <img class="logo-mark" src="{{ASSETS_URL}}/image3.png" alt="GardenOS 标志" />
-      <img class="check" src="{{ASSETS_URL}}/image2.png" alt="成功" />
-      <img class="icon-calendar" src="{{ASSETS_URL}}/image6.png" alt="时间通知" />
-      <img class="icon-mail" src="{{ASSETS_URL}}/image5.png" alt="邮件" />
-      <img class="icon-heart" src="{{ASSETS_URL}}/image4.png" alt="期待相见" />
+<body style="margin:0;padding:0;background:#eef2f0;font-family:'PingFang SC','Microsoft YaHei',Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#eef2f0;">
+    <tr>
+      <td align="center" style="padding:32px 16px;">
 
-      <div class="text brand">GardenOS</div>
-      <h1 class="text title">{{TITLE}}</h1>
-      {{GREETING_LINE}}
-      <p class="text intro">{{INTRO}}</p>
+        <table width="1024" cellpadding="0" cellspacing="0" border="0" style="max-width:1024px;width:100%;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
 
-      <p class="text notice">{{NOTICE}}</p>
+          <tr>
+            <td style="padding:0;background:#ffffff;background-image:url('{{ASSETS_URL}}/image1.png');background-size:cover;background-position:center right;background-repeat:no-repeat;">
+              <!--[if gte mso 9]><v:rect xmlns:v="urn:schemas-microsoft-com:vml" fill="true" stroke="false" style="width:1024px;height:520px;"><v:fill type="frame" src="{{ASSETS_URL}}/image1.png" color="#ffffff" /><v:textbox inset="0,0,0,0"><![endif]-->
+              <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td style="padding:28px 24px 26px 56px;">
+                    <table width="115px" cellpadding="0" cellspacing="0" border="0">
+                      <tr>
+                        <td style="vertical-align:middle;padding-right:8px;">
+                          <img src="{{ASSETS_URL}}/image3.png" alt="GardenOS" width="34" height="50" style="display:block;width:34px;height:50px;border:0;" />
+                        </td>
+                        <td style="vertical-align:middle;">
+                          <span style="font-size:17px;line-height:1;font-weight:700;color:#1e293b;">GardenOS</span>
+                        </td>
+                      </tr>
+                    </table>
 
-      <p class="text reply">{{REPLY}}</p>
-      <p class="text expect">{{EXPECT}}</p>
-      <p class="text signature">{{SIGNATURE}}</p>
-    </section>
-  </main>
+                    <table width="350px" cellpadding="0" cellspacing="0" border="0" style="margin-top:26px;">
+                      <tr>
+                        <td>
+                          <h1 style="margin:0;font-size:52px;font-weight:700;color:#0c6a34;line-height:1.08;">{{TITLE}}</h1>
+                        </td>
+                        <td style="vertical-align:bottom;padding-left:8px;padding-bottom:17px;">
+                          <img src="{{ASSETS_URL}}/image2.png" alt="" width="30" height="30" style="display:block;width:30px;height:30px;border:0;" />
+                        </td>
+                      </tr>
+                    </table>
+                    <div style="margin-top:14px;width:52px;height:4px;background:#0c6a34;border-radius:3px;"></div>
+
+                    <table width="56%" cellpadding="0" cellspacing="0" border="0" style="margin-top:32px;">
+                      <tr>
+                        <td>
+                          {{GREETING_LINE}}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="padding-top:10px;">
+                          <p style="margin:0;font-size:18px;color:#1e293b;line-height:1.55;">{{INTRO}}</p>
+                        </td>
+                      </tr>
+                    </table>
+
+                    <table width="56%" cellpadding="0" cellspacing="0" border="0" style="margin-top:24px;">
+                      <tr>
+                        <td style="padding-bottom:18px;">
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                            <tr>
+                              <td width="45" style="vertical-align:top;padding-top:2px;">
+                                <img src="{{ASSETS_URL}}/image6.png" alt="" width="32" height="32" style="display:block;width:32px;height:32px;border:0;" />
+                              </td>
+                              <td style="vertical-align:top;">
+                                <p style="margin:0;font-size:16px;color:#475569;line-height:1.6;">{{NOTICE}}</p>
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="padding-top:14px;">
+                          <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                            <tr>
+                              <td width="45" style="vertical-align:top;padding-top:2px;">
+                                <img src="{{ASSETS_URL}}/image5.png" alt="" width="32" height="32" style="display:block;width:32px;height:32px;border:0;" />
+                              </td>
+                              <td style="vertical-align:top;">
+                                <p style="margin:0;font-size:16px;color:#475569;line-height:1.6;">{{REPLY}}</p>
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="padding-top:14px;">
+                          <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                            <tr>
+                              <td width="45" style="vertical-align:top;padding-top:2px;">
+                                <img src="{{ASSETS_URL}}/image4.png" alt="" width="32" height="32" style="display:block;width:32px;height:32px;border:0;" />
+                              </td>
+                              <td style="vertical-align:top;">
+                                <p style="margin:1px;font-size:16px;color:#475569;line-height:1.6;">{{EXPECT}}</p>
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="padding-top:22px;">
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="padding-top:16px;">
+                          <p style="margin:0 0 4px;font-size:15px;font-weight:700;color:#475569;">{{SIGNATURE}}</p>
+                          <p style="margin:0;font-size:12px;color:#94a3b8;">mygardenos.com</p>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+              <!--[if gte mso 9]></v:textbox></v:rect><![endif]-->
+            </td>
+          </tr>
+
+        </table>
+
+      </td>
+    </tr>
+  </table>
 </body>
 </html>

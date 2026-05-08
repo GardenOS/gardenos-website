@@ -158,10 +158,11 @@ export async function queueRsvpConfirmation(
 
 const EMAIL_I18N = {
   zh: {
-    subject: "恭喜预约成功 — MYGARDENOS.COM",
+    baseSubject: "恭喜预约成功",
+    fallbackEventTitle: "GardenOS 直播",
     title: "恭喜预约成功",
-    greetingWithName: (n: string) => `<p class="text greeting">您好，<strong>${n}</strong>，</p>`,
-    greetingNoName: `<p class="text greeting">您好，</p>`,
+    greetingWithName: (n: string) => `<p style="margin:0;font-size:18px;color:#1e293b;line-height:1.6;">您好，<strong style="color:#0c6a34;">${n}</strong>，</p>`,
+    greetingNoName: `<p style="margin:0;font-size:18px;color:#1e293b;line-height:1.6;">您好，</p>`,
     intro: "您已成功预约GardenOS割草机器人演示直播！",
     notice: `<strong>演示时间地点确认后，</strong>我们将第一时间发邮件通知您。请留意来自 <span class="email">info@mygardenos.com</span> 的邮件。`,
     reply: "如有任何问题，欢迎直接回复此邮件。",
@@ -170,10 +171,11 @@ const EMAIL_I18N = {
     text: "感谢您预约 GardenOS 活动！请访问 mygardenos.com 了解更多。",
   },
   en: {
-    subject: "Registration Confirmed — MYGARDENOS.COM",
+    baseSubject: "Registration Confirmed",
+    fallbackEventTitle: "GardenOS Live Demo",
     title: "Registration Confirmed",
-    greetingWithName: (n: string) => `<p class="text greeting">Hello, <strong>${n}</strong>,</p>`,
-    greetingNoName: `<p class="text greeting">Hello,</p>`,
+    greetingWithName: (n: string) => `<p style="margin:0;font-size:18px;color:#1e293b;line-height:1.6;">Hello, <strong style="color:#0c6a34;">${n}</strong>,</p>`,
+    greetingNoName: `<p style="margin:0;font-size:18px;color:#1e293b;line-height:1.6;">Hello,</p>`,
     intro: "You've successfully registered for the GardenOS mowing robot demonstration!",
     notice: `<strong>Once the demo time and location are confirmed,</strong> we'll notify you by email right away. Please watch for emails from <span class="email">info@mygardenos.com</span>.`,
     reply: "If you have any questions, feel free to reply to this email.",
@@ -183,17 +185,75 @@ const EMAIL_I18N = {
   },
 } as const;
 
+function formatSubjectDateTime(value: string, lang: "zh" | "en"): string | null {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return null;
+  }
+
+  if (lang === "zh") {
+    const parts = new Intl.DateTimeFormat("zh-CN", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+      timeZone: "Pacific/Auckland",
+    }).formatToParts(date);
+
+    const pick = (type: Intl.DateTimeFormatPartTypes) => parts.find((p) => p.type === type)?.value ?? "";
+    return `${pick("year")}年${pick("month")}月${pick("day")}日 ${pick("hour")}:${pick("minute")}`;
+  }
+
+  return new Intl.DateTimeFormat("en-US", {
+    dateStyle: "medium",
+    timeStyle: "short",
+    timeZone: "Pacific/Auckland",
+  }).format(date);
+}
+
+function buildRegisterMailSubject(
+  lang: "zh" | "en",
+  event?: NotificationEventDetails | null
+): string {
+  const i18n = EMAIL_I18N[lang];
+  const eventTitle = event?.title?.trim() || i18n.fallbackEventTitle;
+  const eventTime = event?.scheduledStartAt ? formatSubjectDateTime(event.scheduledStartAt, lang) : null;
+
+  if (!eventTime) {
+    return `${i18n.baseSubject} - ${eventTitle}`;
+  }
+
+  if (lang === "zh") {
+    return `${i18n.baseSubject} - ${eventTitle}【${eventTime}】`;
+  }
+
+  return `${i18n.baseSubject} - ${eventTitle} [${eventTime}]`;
+}
+
+function extractUsernameFromEmail(email: string): string {
+  const localPart = email.split("@")[0] ?? "";
+  const username = localPart.split(".")[0] ?? "";
+  return username.charAt(0).toUpperCase() + username.slice(1).toLowerCase();
+}
+
 async function sendRegisterImageMail(
   to: string,
   name?: string | null,
-  lang?: string | null
+  lang?: string | null,
+  event?: NotificationEventDetails | null
 ): Promise<{ error?: { message: string } }> {
   const resend = new Resend(apiKey);
   const siteUrl = getSiteUrl().replace(/\/$/, "");
-  const assetsUrl = `${siteUrl}/email/rsvp/assets`;
-  const safeName = escapeHtml(String(name ?? "").trim());
-  const i18n = lang === "en" ? EMAIL_I18N.en : EMAIL_I18N.zh;
+  const assetsUrl = "https://pub-02cc13bc15314870b396f792dc2ec072.r2.dev/email/rsvp/assets";
+  const providedName = String(name ?? "").trim();
+  const displayName = providedName || extractUsernameFromEmail(to);
+  const safeName = escapeHtml(displayName);
+  const resolvedLang: "zh" | "en" = lang === "en" ? "en" : "zh";
+  const i18n = EMAIL_I18N[resolvedLang];
   const greetingLine = safeName ? i18n.greetingWithName(safeName) : i18n.greetingNoName;
+  const subject = buildRegisterMailSubject(resolvedLang, event);
 
   const templatePath = path.join(process.cwd(), "public", "email", "rsvp", "index.html");
   let html = fs.readFileSync(templatePath, "utf-8");
@@ -210,7 +270,7 @@ async function sendRegisterImageMail(
   const result = await resend.emails.send({
     from: emailFrom,
     to,
-    subject: i18n.subject,
+    subject,
     html,
     text: i18n.text,
   });
@@ -238,7 +298,7 @@ export async function queueRegisterConfirmation(
     return { queued: false, reason: "missing-recipient-email" };
   }
 
-  const { error } = await sendRegisterImageMail(to, input.fullName, input.lang);
+  const { error } = await sendRegisterImageMail(to, input.fullName, input.lang, event);
   if (error) {
     console.error("[notifications] Failed to send register confirmation email:", {
       to,
