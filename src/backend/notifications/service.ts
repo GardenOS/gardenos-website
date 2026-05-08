@@ -160,12 +160,19 @@ async function sendRegisterImageMail(
   const siteUrl = getSiteUrl().replace(/\/$/, "");
   const imageUrl = `${siteUrl}/images/email%20template.jpg`;
 
-  const html = `
-    <div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:0;">
-      <img src="${imageUrl}" alt="GardenOS 预约确认" style="width:100%;display:block;border:0;" />
-      <p style="text-align:center;color:#888;font-size:12px;padding:16px 0;margin:0;">— MYGARDENOS.COM</p>
-    </div>
-  `;
+  const html = `<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#ffffff;">
+  <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0;padding:0;">
+    <tr>
+      <td style="padding:0;margin:0;">
+        <img src="${imageUrl}" alt="GardenOS 预约确认" width="100%" style="display:block;width:100%;max-width:100%;border:0;line-height:0;" />
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
 
   const result = await resend.emails.send({
     from: emailFrom,
