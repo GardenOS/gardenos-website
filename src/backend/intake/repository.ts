@@ -50,11 +50,17 @@ export async function insertRegisterIntake(input: RegisterIntakeInput): Promise<
 
   const liveEventId = input.liveEventId ?? null;
 
+  // Mark any existing active registrations with the same email as voided
+  await pool.query(
+    `UPDATE public.registrations SET is_active = false WHERE lower(email) = lower($1) AND is_active = true`,
+    [email]
+  );
+
   await pool.query(
     `
       INSERT INTO public.registrations
-        (full_name, email, phone, region, wechat_id, garden_features, notes, lang, submitted_at, live_event_id)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+        (full_name, email, phone, region, wechat_id, garden_features, notes, lang, submitted_at, live_event_id, is_active)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, true)
     `,
     [name, email, phone, region, wechatId, gardenFeatures, notes, lang, submittedAt, liveEventId]
   );
@@ -125,6 +131,7 @@ export type RegistrationRow = {
   lang: string;
   submittedAt: string;
   liveEventId: string | null;
+  isActive: boolean;
 };
 
 function mapRegistrationRow(row: Record<string, unknown>): RegistrationRow {
@@ -140,6 +147,7 @@ function mapRegistrationRow(row: Record<string, unknown>): RegistrationRow {
     lang: String(row.lang ?? ""),
     submittedAt: new Date(String(row.submitted_at)).toISOString(),
     liveEventId: row.live_event_id ? String(row.live_event_id) : null,
+    isActive: row.is_active !== false,
   };
 }
 
@@ -156,19 +164,19 @@ export async function listRegistrations(options?: {
 
   const result = liveEventId
     ? await pool.query(
-        `SELECT id, full_name, email, phone, region, wechat_id,
-                garden_features, notes, lang, submitted_at, live_event_id
+      `SELECT id, full_name, email, phone, region, wechat_id,
+        garden_features, notes, lang, submitted_at, live_event_id, is_active
          FROM public.registrations
          WHERE live_event_id = $1
-         ORDER BY submitted_at DESC
+       ORDER BY is_active DESC, submitted_at DESC
          LIMIT $2 OFFSET $3`,
         [liveEventId, limit, offset]
       )
     : await pool.query(
-        `SELECT id, full_name, email, phone, region, wechat_id,
-                garden_features, notes, lang, submitted_at, live_event_id
+      `SELECT id, full_name, email, phone, region, wechat_id,
+        garden_features, notes, lang, submitted_at, live_event_id, is_active
          FROM public.registrations
-         ORDER BY submitted_at DESC
+       ORDER BY is_active DESC, submitted_at DESC
          LIMIT $1 OFFSET $2`,
         [limit, offset]
       );

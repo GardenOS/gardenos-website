@@ -49,6 +49,17 @@ async function ensureOnce(): Promise<void> {
     CREATE INDEX IF NOT EXISTS idx_registrations_live_event_id
       ON public.registrations (live_event_id)
   `);
+
+  // is_active: false = voided (superseded by a newer registration with same email)
+  await pool.query(`
+    ALTER TABLE public.registrations
+      ADD COLUMN IF NOT EXISTS is_active BOOLEAN NOT NULL DEFAULT true
+  `);
+
+  await pool.query(`
+    CREATE INDEX IF NOT EXISTS idx_registrations_is_active
+      ON public.registrations (is_active)
+  `);
 }
 
 export async function ensureRegistrationsSchema(): Promise<void> {
