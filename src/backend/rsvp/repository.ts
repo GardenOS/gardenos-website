@@ -120,7 +120,7 @@ export async function listInviteCandidateEmailsByEvent(eventId: string): Promise
     .map((row) => {
       const mapped = row as Record<string, unknown>;
       const email = String(mapped.email ?? "").trim().toLowerCase();
-      const lang = String(mapped.lang ?? "zh") === "en" ? "en" : "zh";
+      const lang: InviteCandidate["lang"] = String(mapped.lang ?? "zh") === "en" ? "en" : "zh";
       return { email, lang };
     })
     .filter((row) => Boolean(row.email));

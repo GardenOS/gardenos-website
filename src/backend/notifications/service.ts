@@ -197,7 +197,6 @@ async function sendRegisterImageMail(
   event?: NotificationEventDetails | null
 ): Promise<{ error?: { message: string } }> {
   const resend = new Resend(apiKey);
-  const siteUrl = getSiteUrl().replace(/\/$/, "");
   const assetsUrl = "https://pub-02cc13bc15314870b396f792dc2ec072.r2.dev/email/rsvp/assets";
   const providedName = String(name ?? "").trim();
   const displayName = providedName || extractUsernameFromEmail(to);

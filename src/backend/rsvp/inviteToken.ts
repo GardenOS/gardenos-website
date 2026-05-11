@@ -48,7 +48,7 @@ export function createRsvpInviteToken(input: CreateInviteTokenInput): string {
   return `${payloadBase64}.${signature}`;
 }
 
-export function verifyRsvpInviteToken(token: string): { email: string; eventId: string } | null {
+export function verifyRsvpInviteToken(token: string): { email: string; eventId: string; lang?: "zh" | "en" } | null {
   const [payloadBase64, signature] = String(token ?? "").split(".");
   if (!payloadBase64 || !signature) return null;
 

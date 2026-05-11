@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/routing";
@@ -12,7 +12,20 @@ type RsvpState = {
   errorMessage?: string;
 };
 
-export default function RsvpPage() {
+function LoadingView() {
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-green-50 to-white flex items-center justify-center">
+      <div className="text-center">
+        <div className="flex justify-center mb-4">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-garden-600"></div>
+        </div>
+        <p className="text-garden-700 font-medium">正在处理...</p>
+      </div>
+    </div>
+  );
+}
+
+function RsvpPageContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const locale = useLocale();
@@ -171,14 +184,13 @@ export default function RsvpPage() {
   }
 
   // Loading State
+  return <LoadingView />;
+}
+
+export default function RsvpPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-green-50 to-white flex items-center justify-center">
-      <div className="text-center">
-        <div className="flex justify-center mb-4">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-garden-600"></div>
-        </div>
-        <p className="text-garden-700 font-medium">{t("loading")}</p>
-      </div>
-    </div>
+    <Suspense fallback={<LoadingView />}>
+      <RsvpPageContent />
+    </Suspense>
   );
 }
