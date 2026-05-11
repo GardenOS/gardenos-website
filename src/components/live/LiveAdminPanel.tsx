@@ -1,11 +1,12 @@
 "use client";
 
 import { FormEvent, useEffect, useRef, useState } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 type LiveEvent = {
   id: string;
   title: string;
+  titleEn: string | null;
   slug: string;
   status: "prelive" | "live" | "replay" | "ended";
   visibility: "draft" | "published" | "archived";
@@ -27,8 +28,16 @@ function toDateTimeLocalValue(value: string | null): string {
   return new Date(date.getTime() - timezoneOffset).toISOString().slice(0, 16);
 }
 
+function getDisplayTitle(event: LiveEvent, locale: string): string {
+  if (locale === "en") {
+    return event.titleEn?.trim() || event.title;
+  }
+  return event.title;
+}
+
 export function LiveAdminPanel() {
   const t = useTranslations("dashboardLive");
+  const locale = useLocale();
 
   const [events, setEvents] = useState<LiveEvent[]>([]);
   const [selectedId, setSelectedId] = useState("");
@@ -37,6 +46,7 @@ export function LiveAdminPanel() {
 
   // Create form state
   const [createTitle, setCreateTitle] = useState("");
+  const [createTitleEn, setCreateTitleEn] = useState("");
   const [createSlug, setCreateSlug] = useState("");
   const [createScheduledAt, setCreateScheduledAt] = useState("");
   const [createStatus, setCreateStatus] = useState<"prelive" | "live" | "replay" | "ended">("prelive");
@@ -51,6 +61,7 @@ export function LiveAdminPanel() {
 
   // Edit form state (synced from selectedId)
   const [editTitle, setEditTitle] = useState("");
+  const [editTitleEn, setEditTitleEn] = useState("");
   const [editSlug, setEditSlug] = useState("");
   const [editScheduledAt, setEditScheduledAt] = useState("");
   const [editStatus, setEditStatus] = useState<"prelive" | "live" | "replay" | "ended">("prelive");
@@ -88,6 +99,7 @@ export function LiveAdminPanel() {
     const target = events.find((event) => event.id === selectedId);
     if (!target) return;
     setEditTitle(target.title);
+    setEditTitleEn(target.titleEn ?? target.title);
     setEditSlug(target.slug);
     setEditScheduledAt(toDateTimeLocalValue(target.scheduledStartAt));
     setEditStatus(target.status);
@@ -116,6 +128,7 @@ export function LiveAdminPanel() {
         body: JSON.stringify({
           slug: createSlug,
           title: createTitle,
+          titleEn: createTitleEn,
           status: createStatus,
           visibility: createVisibility,
           scheduledStartAt: createScheduledAt ? new Date(createScheduledAt).toISOString() : undefined,
@@ -136,6 +149,7 @@ export function LiveAdminPanel() {
       setEvents((prev) => [data.event!, ...prev]);
       setSelectedId(data.event.id);
       setCreateTitle("");
+      setCreateTitleEn("");
       setCreateSlug("");
       setCreateScheduledAt("");
       setCreatePromoVideoUrl("");
@@ -166,6 +180,7 @@ export function LiveAdminPanel() {
         body: JSON.stringify({
           slug: editSlug,
           title: editTitle,
+          titleEn: editTitleEn,
           status: editStatus,
           visibility: editVisibility,
           scheduledStartAt: editScheduledAt ? new Date(editScheduledAt).toISOString() : null,
@@ -191,7 +206,7 @@ export function LiveAdminPanel() {
 
   async function deleteEvent() {
     if (!selectedEvent) return;
-    if (!window.confirm(t("deleteConfirm", { title: selectedEvent.title }))) {
+    if (!window.confirm(t("deleteConfirm", { title: getDisplayTitle(selectedEvent, locale) }))) {
       return;
     }
 
@@ -255,26 +270,21 @@ export function LiveAdminPanel() {
     setUploading(true);
     setError("");
     try {
-      const metaRes = await fetch("/api/admin/upload-url", {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const uploadRes = await fetch("/api/admin/upload-poster", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ filename: file.name, contentType: file.type }),
+        body: formData,
       });
-      const meta = (await metaRes.json()) as { uploadUrl?: string; publicUrl?: string; error?: string };
-      if (!metaRes.ok || !meta.uploadUrl || !meta.publicUrl) {
-        setError(meta.error || t("posterUploadError"));
+
+      const data = (await uploadRes.json()) as { publicUrl?: string; error?: string };
+      if (!uploadRes.ok || !data.publicUrl) {
+        setError(data.error || t("posterUploadError"));
         return;
       }
-      const uploadRes = await fetch(meta.uploadUrl, {
-        method: "PUT",
-        headers: { "Content-Type": file.type },
-        body: file,
-      });
-      if (!uploadRes.ok) {
-        setError(t("posterUploadError"));
-        return;
-      }
-      setUrl(meta.publicUrl);
+
+      setUrl(data.publicUrl);
     } catch {
       setError(t("posterUploadError"));
     } finally {
@@ -298,7 +308,8 @@ export function LiveAdminPanel() {
       <section className="rounded-2xl border border-garden-200 bg-white px-6 py-6 shadow-sm">
         <h2 className="text-lg font-semibold text-garden-900">{t("createTitle")}</h2>
         <form className="mt-4 grid gap-3 sm:grid-cols-2" onSubmit={createEvent}>
-          <input value={createTitle} onChange={(e) => setCreateTitle(e.target.value)} required placeholder={t("titlePlaceholder")} className="rounded-lg border border-garden-200 px-3 py-2 text-sm" />
+          <input value={createTitle} onChange={(e) => setCreateTitle(e.target.value)} required placeholder={t("titleZhPlaceholder")} className="rounded-lg border border-garden-200 px-3 py-2 text-sm" />
+          <input value={createTitleEn} onChange={(e) => setCreateTitleEn(e.target.value)} required placeholder={t("titleEnPlaceholder")} className="rounded-lg border border-garden-200 px-3 py-2 text-sm" />
           <input value={createSlug} onChange={(e) => setCreateSlug(e.target.value)} required placeholder={t("slugPlaceholder")} className="rounded-lg border border-garden-200 px-3 py-2 text-sm" />
           <input type="datetime-local" value={createScheduledAt} onChange={(e) => setCreateScheduledAt(e.target.value)} className="rounded-lg border border-garden-200 px-3 py-2 text-sm" />
           <div className="grid grid-cols-2 gap-2">
@@ -389,7 +400,7 @@ export function LiveAdminPanel() {
                     key={event.id}
                     className={`border-t border-garden-100 ${selectedId === event.id ? "bg-garden-50" : ""}`}
                   >
-                    <td className="py-2 pr-4 font-medium text-garden-900">{event.title}</td>
+                    <td className="py-2 pr-4 font-medium text-garden-900">{getDisplayTitle(event, locale)}</td>
                     <td className="py-2 pr-4">
                       <span className="rounded-full bg-garden-100 px-2 py-0.5 text-xs font-medium text-garden-800">
                         {event.status}
@@ -405,7 +416,7 @@ export function LiveAdminPanel() {
                       <div className="flex flex-wrap items-center gap-2">
                         <button
                           type="button"
-                          onClick={() => void inviteRsvp(event.id, event.title)}
+                          onClick={() => void inviteRsvp(event.id, getDisplayTitle(event, locale))}
                           disabled={inviteSendingId === event.id}
                           className="rounded-full border border-garden-300 px-3 py-1 text-xs font-semibold text-garden-700 hover:bg-garden-100 disabled:opacity-50"
                         >
@@ -432,10 +443,11 @@ export function LiveAdminPanel() {
       {selectedEvent ? (
         <section className="rounded-2xl border border-garden-200 bg-white px-6 py-6 shadow-sm space-y-4">
           <h2 className="text-lg font-semibold text-garden-900">
-            {t("manageTitle")} — <span className="text-garden-600">{selectedEvent.title}</span>
+            {t("manageTitle")} — <span className="text-garden-600">{getDisplayTitle(selectedEvent, locale)}</span>
           </h2>
           <form className="grid gap-3 sm:grid-cols-2" onSubmit={updateEvent}>
-            <input value={editTitle} onChange={(e) => setEditTitle(e.target.value)} required placeholder={t("titlePlaceholder")} className="rounded-lg border border-garden-200 px-3 py-2 text-sm" />
+            <input value={editTitle} onChange={(e) => setEditTitle(e.target.value)} required placeholder={t("titleZhPlaceholder")} className="rounded-lg border border-garden-200 px-3 py-2 text-sm" />
+            <input value={editTitleEn} onChange={(e) => setEditTitleEn(e.target.value)} required placeholder={t("titleEnPlaceholder")} className="rounded-lg border border-garden-200 px-3 py-2 text-sm" />
             <input value={editSlug} onChange={(e) => setEditSlug(e.target.value)} required placeholder={t("slugPlaceholder")} className="rounded-lg border border-garden-200 px-3 py-2 text-sm" />
             <input type="datetime-local" value={editScheduledAt} onChange={(e) => setEditScheduledAt(e.target.value)} className="rounded-lg border border-garden-200 px-3 py-2 text-sm" />
             <div className="grid grid-cols-2 gap-2">

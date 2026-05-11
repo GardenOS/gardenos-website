@@ -240,7 +240,6 @@
     "directLinkHint": "This stream cannot be embedded here. Open it directly:",
     "noCurrentStream": "No current stream URL is available yet.",
     "rsvpTitle": "Reserve the next live session",
-    "rsvpLead": "Reservation happens on the register page. This page is for stream viewing and schedule updates.",
     "nextEventLabel": "Next reservable session",
     "reserveEntryBody": "If you want to reserve the next public test, go to the register page to complete registration or one-click reservation.",
     "reserveEntryButton": "Go to reservation",
@@ -290,6 +289,8 @@
     "loadError": "Could not load live events.",
     "createTitle": "Create live event",
     "titlePlaceholder": "Event title",
+    "titleZhPlaceholder": "Chinese title",
+    "titleEnPlaceholder": "English title",
     "slugPlaceholder": "event-slug",
     "statusLabel": "Status",
     "visibilityLabel": "Visibility",
@@ -500,9 +501,48 @@
     "deleting": "Deleting...",
     "deleteConfirm": "Delete this sign-up record? Email: {email}",
     "deleteError": "Failed to delete this sign-up.",
+    "inviteSendButton": "Send invite",
+    "inviteSending": "Sending...",
+    "inviteSelectEventFirst": "Please select a live event first",
+    "inviteDuplicateConfirm": "This user has already received an invite for this live event. Send again anyway?",
+    "inviteSendError": "Failed to send invite",
+    "inviteSendRuntimeError": "An error occurred while sending the invite email",
+    "inviteSendSuccess": "Invite email sent to {email}",
+    "inviteAllButton": "Invite all",
+    "inviteAllSending": "Inviting...",
+    "inviteAllConfirm": "Send RSVP invitation emails to all candidates for this live event?",
+    "inviteAllError": "Failed to send batch invites",
+    "inviteAllRuntimeError": "An error occurred while sending batch invites",
+    "inviteAllSuccess": "Batch invite completed: candidates {candidate}, sent {invited}, skipped {skipped}, failed {failed}",
     "prevPage": "Previous",
     "nextPage": "Next",
     "pageInfo": "Page {page} of {total}"
+  },
+  "rsvp": {
+    "loading": "Processing…",
+    "success": {
+      "title": "Reservation successful!",
+      "subtitle": "We've completed your reservation",
+      "eventInfo": "Event details",
+      "topic": "Topic",
+      "time": "Scheduled time",
+      "message": "We'll notify you by email before the live stream starts. Please keep your inbox open.",
+      "ctaPrimary": "Watch the live stream →",
+      "ctaSecondary": "Back to home",
+      "redirect": "Redirecting to live page in 5 seconds"
+    },
+    "invalid": {
+      "title": "Invalid or expired invitation link",
+      "subtitle": "Unable to complete reservation",
+      "message": "The invitation link may have expired or is invalid. Please reopen the link from your email or go to the home page to make a new reservation.",
+      "cta": "Go to live page"
+    },
+    "error": {
+      "title": "Reservation failed",
+      "subtitle": "Something went wrong",
+      "message": "An error occurred while processing your reservation. Please try again later or go to the home page to make a new reservation.",
+      "cta": "Return to live page"
+    }
   },
   "footer": {
     "rights": "All rights reserved."

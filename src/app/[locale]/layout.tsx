@@ -29,6 +29,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       template: "%s · GardenOS",
     },
     description: t("description"),
+    icons: {
+      icon: "/images/Squire%20Logo.png",
+      shortcut: "/images/Squire%20Logo.png",
+      apple: "/images/Squire%20Logo.png",
+    },
     alternates: {
       canonical: `/${locale}`,
       languages: {

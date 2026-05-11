@@ -45,9 +45,11 @@ export function validateCreateLiveEventInput(body: unknown): CreateLiveEventInpu
   const payload = (body ?? {}) as Record<string, unknown>;
   const slug = String(payload.slug ?? "").trim();
   const title = String(payload.title ?? "").trim();
+  const titleEn = String(payload.titleEn ?? "").trim();
 
   if (!slug) throw new ValidationError("slug is required.");
   if (!title) throw new ValidationError("title is required.");
+  if (!titleEn) throw new ValidationError("titleEn is required.");
 
   const scheduledStartAt = toNullableTrimmed(payload.scheduledStartAt);
   if (scheduledStartAt && Number.isNaN(Date.parse(scheduledStartAt))) {
@@ -78,6 +80,7 @@ export function validateCreateLiveEventInput(body: unknown): CreateLiveEventInpu
   return {
     slug,
     title,
+    titleEn,
     description: toNullableTrimmed(payload.description) ?? undefined,
     locale: toNullableTrimmed(payload.locale) ?? undefined,
     visibility: parseVisibility(payload.visibility),
@@ -115,11 +118,13 @@ export function validateUpdateLiveEventInput(body: unknown): UpdateLiveEventInpu
   const payload = (body ?? {}) as Record<string, unknown>;
   const slug = String(payload.slug ?? "").trim();
   const title = String(payload.title ?? "").trim();
+  const titleEn = String(payload.titleEn ?? "").trim();
   const status = parseStatus(payload.status);
   const visibility = parseVisibility(payload.visibility);
 
   if (!slug) throw new ValidationError("slug is required.");
   if (!title) throw new ValidationError("title is required.");
+  if (!titleEn) throw new ValidationError("titleEn is required.");
   if (!status) throw new ValidationError("status is required.");
   if (!visibility) throw new ValidationError("visibility is required.");
 
@@ -152,6 +157,7 @@ export function validateUpdateLiveEventInput(body: unknown): UpdateLiveEventInpu
   return {
     slug,
     title,
+    titleEn,
     visibility,
     status,
     promoVideoUrl,

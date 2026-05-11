@@ -4,12 +4,14 @@ type InviteTokenPayload = {
   email: string;
   eventId: string;
   exp: number;
+  lang?: 'zh' | 'en';
 };
 
 type CreateInviteTokenInput = {
   email: string;
   eventId: string;
   expiresInSeconds?: number;
+  lang?: 'zh' | 'en';
 };
 
 function getInviteSecret(): string {
@@ -38,6 +40,7 @@ export function createRsvpInviteToken(input: CreateInviteTokenInput): string {
     email: String(input.email ?? "").trim().toLowerCase(),
     eventId: String(input.eventId ?? "").trim(),
     exp: Math.floor(Date.now() / 1000) + (input.expiresInSeconds ?? 7 * 24 * 60 * 60),
+    lang: input.lang,
   };
 
   const payloadBase64 = base64UrlEncode(JSON.stringify(payload));
@@ -45,7 +48,7 @@ export function createRsvpInviteToken(input: CreateInviteTokenInput): string {
   return `${payloadBase64}.${signature}`;
 }
 
-export function verifyRsvpInviteToken(token: string): { email: string; eventId: string } | null {
+export function verifyRsvpInviteToken(token: string): { email: string; eventId: string; lang?: "zh" | "en" } | null {
   const [payloadBase64, signature] = String(token ?? "").split(".");
   if (!payloadBase64 || !signature) return null;
 
@@ -70,5 +73,6 @@ export function verifyRsvpInviteToken(token: string): { email: string; eventId: 
   return {
     email: String(payload.email).trim().toLowerCase(),
     eventId: String(payload.eventId).trim(),
+    lang: payload.lang,
   };
 }

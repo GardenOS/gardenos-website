@@ -8,6 +8,7 @@ export type LiveEvent = {
   id: string;
   slug: string;
   title: string;
+  titleEn: string | null;
   description: string | null;
   status: LiveEventStatus;
   visibility: LiveEventVisibility;
@@ -29,6 +30,7 @@ export type LiveEvent = {
 export type CreateLiveEventInput = {
   slug: string;
   title: string;
+  titleEn: string;
   description?: string;
   locale?: string;
   visibility?: LiveEventVisibility;
@@ -52,6 +54,7 @@ export type UpdateLiveEventLinksInput = {
 export type UpdateLiveEventInput = {
   slug: string;
   title: string;
+  titleEn: string;
   visibility: LiveEventVisibility;
   status: LiveEventStatus;
   promoVideoUrl: string | null;

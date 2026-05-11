@@ -14,6 +14,7 @@ function mapRow(row: Record<string, unknown>): LiveEvent {
     id: String(row.id),
     slug: String(row.slug),
     title: String(row.title),
+    titleEn: row.title_en ? String(row.title_en) : null,
     description: row.description ? String(row.description) : null,
     status: String(row.status) as LiveEventStatus,
     visibility: String(row.visibility) as LiveEventVisibility,
@@ -38,17 +39,18 @@ export async function createLiveEvent(input: CreateLiveEventInput, actorUserId: 
   const result = await pool.query(
     `
       INSERT INTO live_events (
-        slug, title, description, locale, visibility, status,
+        slug, title, title_en, description, locale, visibility, status,
         promo_video_url, poster_url,
         warmup_url, live_url, replay_url, scheduled_start_at,
         created_by, updated_by
       )
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
       RETURNING *
     `,
     [
       input.slug,
       input.title,
+      input.titleEn,
       input.description ?? null,
       input.locale ?? "en",
       input.visibility ?? "draft",
@@ -114,7 +116,10 @@ export async function findPublishedByStatus(status: LiveEventStatus): Promise<Li
       SELECT *
       FROM live_events
       WHERE visibility = 'published' AND status = $1
-      ORDER BY scheduled_start_at ASC NULLS LAST, updated_at DESC
+      ORDER BY
+        CASE WHEN $1 = 'prelive' AND scheduled_start_at IS NULL THEN 0 ELSE 1 END ASC,
+        scheduled_start_at ASC NULLS LAST,
+        updated_at DESC
       LIMIT 1
     `,
     [status]
@@ -242,15 +247,16 @@ export async function updateLiveEvent(
       UPDATE live_events
       SET slug = $2,
           title = $3,
-          visibility = $4,
-          status = $5,
-          promo_video_url = $6,
-          poster_url = $7,
-          warmup_url = $8,
-          live_url = $9,
-          replay_url = $10,
-          scheduled_start_at = $11,
-          updated_by = $12,
+          title_en = $4,
+          visibility = $5,
+          status = $6,
+          promo_video_url = $7,
+          poster_url = $8,
+          warmup_url = $9,
+          live_url = $10,
+          replay_url = $11,
+          scheduled_start_at = $12,
+          updated_by = $13,
           updated_at = NOW()
       WHERE id = $1
       RETURNING *
@@ -259,6 +265,7 @@ export async function updateLiveEvent(
       eventId,
       input.slug,
       input.title,
+      input.titleEn,
       input.visibility,
       input.status,
       input.promoVideoUrl,

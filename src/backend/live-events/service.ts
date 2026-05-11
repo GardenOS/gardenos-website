@@ -19,8 +19,13 @@ import type {
   UpdateLiveEventLinksInput,
 } from "@/backend/live-events/liveEvent";
 import { createAuditLog } from "@/backend/audit/repository";
-import { listInviteCandidateEmailsByEvent, listRsvpsByEvent } from "@/backend/rsvp/repository";
+import {
+  hasRegisteredRsvpForEvent,
+  listInviteCandidateEmailsByEvent,
+  listRsvpsByEvent,
+} from "@/backend/rsvp/repository";
 import { queueRsvpInvite } from "@/backend/notifications/service";
+import { hasInviteBeenSent, recordInviteSend } from "@/backend/live-events/inviteRecords";
 
 export type CurrentLiveContext = {
   stage: "prelive" | "live" | "replay" | "ended" | "none";
@@ -178,21 +183,45 @@ export async function listEventRsvpsService(eventId: string, query: { limit?: nu
 export async function sendRsvpInviteEmailsService(eventId: string, actorUserId: string): Promise<{
   candidateCount: number;
   invitedCount: number;
+  skippedCount: number;
+  failedCount: number;
   sentTo: string[];
+  skippedTo: string[];
+  failedTo: string[];
 }> {
   const event = await getLiveEventById(eventId);
   if (!event) throw new NotFoundError("Live event not found.");
 
-  const candidateEmails = await listInviteCandidateEmailsByEvent(eventId);
+  const candidateContacts = await listInviteCandidateEmailsByEvent(eventId);
 
   const sentTo: string[] = [];
-  for (const email of candidateEmails) {
+  const skippedTo: string[] = [];
+  const failedTo: string[] = [];
+  for (const candidate of candidateContacts) {
+    const alreadyRegistered = await hasRegisteredRsvpForEvent(eventId, candidate.email);
+    if (alreadyRegistered) {
+      skippedTo.push(candidate.email);
+      await recordInviteSend(eventId, candidate.email, "skipped", "already_registered").catch(() => undefined);
+      continue;
+    }
+
+    const alreadySent = await hasInviteBeenSent(eventId, candidate.email);
+    if (alreadySent) {
+      skippedTo.push(candidate.email);
+      await recordInviteSend(eventId, candidate.email, "skipped", "already_invited").catch(() => undefined);
+      continue;
+    }
+
     const result = await queueRsvpInvite({
-      email,
+      email: candidate.email,
+      lang: candidate.lang,
       event,
     });
     if (result.queued) {
-      sentTo.push(email);
+      sentTo.push(candidate.email);
+    } else {
+      failedTo.push(candidate.email);
+      await recordInviteSend(eventId, candidate.email, "failed", result.reason).catch(() => undefined);
     }
   }
 
@@ -202,15 +231,23 @@ export async function sendRsvpInviteEmailsService(eventId: string, actorUserId: 
     action: "invite_rsvp_sent",
     actorUserId,
     afterData: {
-      candidateCount: candidateEmails.length,
+      candidateCount: candidateContacts.length,
       invitedCount: sentTo.length,
+      skippedCount: skippedTo.length,
+      failedCount: failedTo.length,
       sentTo,
+      skippedTo,
+      failedTo,
     },
   });
 
   return {
-    candidateCount: candidateEmails.length,
+    candidateCount: candidateContacts.length,
     invitedCount: sentTo.length,
+    skippedCount: skippedTo.length,
+    failedCount: failedTo.length,
     sentTo,
+    skippedTo,
+    failedTo,
   };
 }

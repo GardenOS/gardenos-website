@@ -5,6 +5,7 @@ import type { RsvpRecord } from "@/backend/rsvp/rsvp";
 import { createAuditLog } from "@/backend/audit/repository";
 import type { LiveEvent } from "@/backend/live-events/liveEvent";
 import { createRsvpInviteToken } from "@/backend/rsvp/inviteToken";
+import { recordInviteSend } from "@/backend/live-events/inviteRecords";
 
 export type NotificationDispatchResult = {
   queued: boolean;
@@ -17,12 +18,30 @@ export type RegisterConfirmationInput = {
   lang?: string | null;
 };
 
-export type NotificationEventDetails = Pick<LiveEvent, "id" | "title" | "description" | "scheduledStartAt">;
+export type NotificationEventDetails = Pick<LiveEvent, "id" | "title" | "titleEn" | "description" | "scheduledStartAt">;
 
 export type InviteRsvpInput = {
   email: string;
+  lang?: "zh" | "en" | null;
   event: NotificationEventDetails;
 };
+
+function normalizeLang(value: string | null | undefined): "zh" | "en" {
+  return value === "en" ? "en" : "zh";
+}
+
+function pickEventTitleByLang(event: NotificationEventDetails | null | undefined, lang: "zh" | "en"): string {
+  if (!event) {
+    return lang === "en" ? "GardenOS Live Demo" : "GardenOS 直播";
+  }
+
+  if (lang === "en") {
+    const titleEn = event.titleEn?.trim();
+    if (titleEn) return titleEn;
+  }
+
+  return event.title.trim() || (lang === "en" ? "GardenOS Live Demo" : "GardenOS 直播");
+}
 
 const apiKey = process.env.RESEND_API_KEY;
 const emailFrom = process.env.EMAIL_FROM ?? "onboarding@resend.dev";
@@ -55,72 +74,6 @@ function getSiteUrl(): string {
   return "https://mygardenos.com";
 }
 
-function buildCalendarSection(event: NotificationEventDetails | null | undefined): string {
-  if (!event?.scheduledStartAt) {
-    return "";
-  }
-
-  const startAt = new Date(event.scheduledStartAt);
-  if (Number.isNaN(startAt.getTime())) {
-    return "";
-  }
-
-  const endAt = new Date(startAt.getTime() + 60 * 60 * 1000);
-  const googleDates = `${startAt.toISOString().replace(/[-:]|\.\d{3}/g, "")}/${endAt
-    .toISOString()
-    .replace(/[-:]|\.\d{3}/g, "")}`;
-  const eventTitle = event.title.trim() || "GardenOS 活动";
-  const description = event.description?.trim() || "GardenOS 活动预约确认";
-  const siteUrl = getSiteUrl();
-  const icsUrl = `${siteUrl.replace(/\/$/, "")}/api/calendar/live-event/${encodeURIComponent(event.id)}`;
-  const googleUrl = new URL("https://calendar.google.com/calendar/render");
-  googleUrl.searchParams.set("action", "TEMPLATE");
-  googleUrl.searchParams.set("text", eventTitle);
-  googleUrl.searchParams.set("dates", googleDates);
-  googleUrl.searchParams.set("details", description);
-
-  return `
-    <div style="margin-top:24px;padding:20px;border-radius:16px;background:#f5faf2;border:1px solid #d8e9d3;">
-      <p style="margin:0 0 8px;font-size:14px;color:#2d6a2d;font-weight:600;">预约时间</p>
-      <p style="margin:0 0 14px;font-size:15px;color:#1f2937;">${escapeHtml(formatEventTime(event.scheduledStartAt))}</p>
-      <div>
-        <a href="${googleUrl.toString()}" style="display:inline-block;margin-right:10px;margin-bottom:10px;padding:10px 16px;border-radius:999px;background:#2d6a2d;color:#ffffff;text-decoration:none;font-weight:600;">加入 Google Calendar</a>
-        <a href="${icsUrl}" style="display:inline-block;margin-bottom:10px;padding:10px 16px;border-radius:999px;border:1px solid #2d6a2d;color:#2d6a2d;text-decoration:none;font-weight:600;">下载 .ics 日历文件</a>
-      </div>
-    </div>
-  `;
-}
-
-async function sendSuccessMail(
-  to: string,
-  name: string,
-  event?: NotificationEventDetails | null
-): Promise<{ error?: { message: string } }> {
-  const resend = new Resend(apiKey);
-  const safeName = escapeHtml(name);
-  const calendarSection = buildCalendarSection(event);
-
-  const html = `
-    <div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:32px;">
-      <h2 style="color:#2d6a2d;">恭喜预约成功！</h2>
-      <p>您好，${safeName}，</p>
-      <p>您已成功预约本次活动，期待与您相见！</p>
-      ${calendarSection}
-      <br/>
-      <p style="color:#888;font-size:12px;">— MYGARDENOS.COM</p>
-    </div>
-  `;
-
-  const result = await resend.emails.send({ from: emailFrom, to, subject: "恭喜预约成功 — MYGARDENOS.COM", html });
-  if (result.error) {
-    console.warn(`[notifications] Send from ${emailFrom} failed: ${result.error.message}`);
-    return { error: result.error };
-  }
-
-  console.log(`[notifications] Email sent from ${emailFrom} to ${to}`);
-  return {};
-}
-
 async function logEmailFailure(entityId: string, to: string, reason: string, source: string): Promise<void> {
   await createAuditLog({
     entityType: "rsvp",
@@ -144,8 +97,7 @@ export async function queueRsvpConfirmation(
     return { queued: false, reason: "notification-provider-not-configured" };
   }
 
-  const name = rsvp.fullName ?? rsvp.email;
-  const { error } = await sendSuccessMail(rsvp.email, name, event);
+  const { error } = await sendRegisterImageMail(rsvp.email, rsvp.fullName, rsvp.locale, event);
 
   if (error) {
     console.error("[notifications] Failed to send RSVP confirmation email:", error);
@@ -218,7 +170,7 @@ function buildRegisterMailSubject(
   event?: NotificationEventDetails | null
 ): string {
   const i18n = EMAIL_I18N[lang];
-  const eventTitle = event?.title?.trim() || i18n.fallbackEventTitle;
+  const eventTitle = pickEventTitleByLang(event, lang) || i18n.fallbackEventTitle;
   const eventTime = event?.scheduledStartAt ? formatSubjectDateTime(event.scheduledStartAt, lang) : null;
 
   if (!eventTime) {
@@ -245,12 +197,11 @@ async function sendRegisterImageMail(
   event?: NotificationEventDetails | null
 ): Promise<{ error?: { message: string } }> {
   const resend = new Resend(apiKey);
-  const siteUrl = getSiteUrl().replace(/\/$/, "");
   const assetsUrl = "https://pub-02cc13bc15314870b396f792dc2ec072.r2.dev/email/rsvp/assets";
   const providedName = String(name ?? "").trim();
   const displayName = providedName || extractUsernameFromEmail(to);
   const safeName = escapeHtml(displayName);
-  const resolvedLang: "zh" | "en" = lang === "en" ? "en" : "zh";
+  const resolvedLang = normalizeLang(lang);
   const i18n = EMAIL_I18N[resolvedLang];
   const greetingLine = safeName ? i18n.greetingWithName(safeName) : i18n.greetingNoName;
   const subject = buildRegisterMailSubject(resolvedLang, event);
@@ -323,30 +274,70 @@ export async function queueRsvpInvite(input: InviteRsvpInput): Promise<Notificat
   }
 
   const siteUrl = getSiteUrl().replace(/\/$/, "");
+  const assetsUrl = "https://pub-02cc13bc15314870b396f792dc2ec072.r2.dev/email/rsvp/assets";
+  const lang = normalizeLang(input.lang);
   const token = createRsvpInviteToken({
     email: to,
     eventId: input.event.id,
     expiresInSeconds: 7 * 24 * 60 * 60,
+    lang,
   });
-  const oneClickUrl = `${siteUrl}/api/live/rsvp/one-click?token=${encodeURIComponent(token)}`;
-  const title = escapeHtml(input.event.title || "GardenOS 直播活动");
-  const time = input.event.scheduledStartAt ? escapeHtml(formatEventTime(input.event.scheduledStartAt)) : "时间待确认";
+  const localePath = lang === "en" ? "en" : "zh";
+  const oneClickUrl = `${siteUrl}/${localePath}/rsvp?token=${encodeURIComponent(token)}`;
+  const titleZh = escapeHtml(pickEventTitleByLang(input.event, "zh"));
+  const titleEn = escapeHtml(pickEventTitleByLang(input.event, "en"));
+  const time = input.event.scheduledStartAt
+    ? escapeHtml(formatEventTime(input.event.scheduledStartAt))
+    : "待确认 / To be confirmed";
+  const subject = `邀请预约直播 / Live RSVP Invitation: ${pickEventTitleByLang(input.event, "zh")} / ${pickEventTitleByLang(input.event, "en")}`;
 
   const html = `
-    <div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:32px;">
-      <h2 style="color:#2d6a2d;margin-bottom:24px;">直播预约邀请</h2>
-      <p style="font-size:15px;line-height:1.6;color:#1f2937;margin:0 0 12px;">我们准备了新的直播场次：</p>
-      <p style="font-size:16px;font-weight:600;color:#2d6a2d;margin:0 0 12px;">${title}</p>
-      <p style="font-size:14px;color:#6b7280;margin:0 0 32px;">预计时间：${time}</p>
-      
-      <div style="text-align:center;margin:32px 0;">
-        <a href="${oneClickUrl}" style="display:inline-block;padding:14px 32px;border-radius:8px;background:#2d6a2d;color:#ffffff;text-decoration:none;font-weight:700;font-size:16px;line-height:1.5;">预约这场直播</a>
+    <div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:32px;color:#1f2937;">
+      <!-- 主要内容卡 -->
+      <div style="margin-bottom:32px;padding:24px;background-image:url('${assetsUrl}/image1.png');background-size:cover;background-position:center;border-radius:12px;">
+        <!-- 标题 -->
+        <h1 style="color:#2d6a2d;margin:0 0 32px;font-size:24px;font-weight:700;">直播预约邀请 / Live RSVP Invitation</h1>
+        
+        <!-- 介绍段落 -->
+        <div style="margin-bottom:32px;line-height:1.8;">
+          <p style="margin:0 0 8px;font-size:15px;">我们即将举办一场新的直播活动，欢迎提前预约。</p>
+          <p style="margin:0;font-size:15px;">We are preparing a new live session and you are welcome to reserve your spot in advance.</p>
+        </div>
+        
+        <!-- 直播主题 -->
+        <div style="margin-bottom:24px;padding:16px;border-radius:8px;">
+          <p style="margin:0 0 8px;font-size:13px;color:#6b7280;font-weight:600;">直播主题 / Live Topic</p>
+          <p style="margin:0 0 6px;font-size:16px;font-weight:600;color:#2d6a2d;">${titleZh}</p>
+          <p style="margin:0;font-size:16px;font-weight:600;color:#2d6a2d;">${titleEn}</p>
+        </div>
+        
+        <!-- 预计时间 -->
+        <div style="margin-bottom:32px;padding:16px;border-radius:8px;">
+          <p style="margin:0 0 8px;font-size:13px;color:#6b7280;font-weight:600;">预计时间 / Scheduled Time</p>
+          <p style="margin:0;font-size:15px;color:#2d6a2d;font-weight:500;">${time}</p>
+        </div>
+        
+        <!-- 行动说明 -->
+        <div style="line-height:1.8;">
+          <p style="margin:0 0 8px;font-size:15px;">点击下方按钮完成预约。直播时间确认后，我们会第一时间通知你。</p>
+          <p style="margin:0;font-size:15px;">Please click the button below to reserve this session. Once the live time is confirmed, we will notify you as soon as possible.</p>
+        </div>
       </div>
       
-      <p style="font-size:13px;color:#6b7280;margin:24px 0 0;">无法点击按钮？复制下方链接到浏览器打开：</p>
-      <p style="font-size:12px;color:#2d6a2d;word-break:break-all;margin:8px 0;padding:12px;background:#f5faf2;border-radius:6px;font-family:monospace;">${oneClickUrl}</p>
+      <!-- 按钮 -->
+      <div style="text-align:center;margin:32px 0;">
+        <a href="${oneClickUrl}" style="display:inline-block;padding:14px 32px;border-radius:8px;background:#2d6a2d;color:#ffffff;text-decoration:none;font-weight:700;font-size:16px;line-height:1.5;">预约这场直播 / Reserve this session</a>
+      </div>
       
-      <p style="color:#888;font-size:12px;margin-top:32px;border-top:1px solid #e5e7eb;padding-top:16px;">— MYGARDENOS.COM</p>
+      <!-- 备用链接 -->
+      <div style="margin-top:32px;padding-top:24px;border-top:1px solid #e5e7eb;">
+        <p style="font-size:13px;color:#6b7280;margin:0 0 8px;">无法点击按钮？/ Button not working?</p>
+        <p style="font-size:12px;color:#666;margin:0 0 8px;">复制下方链接到浏览器打开 / Copy and open this link:</p>
+        <p style="font-size:12px;color:#2d6a2d;word-break:break-all;margin:8px 0;padding:12px;background:#f5faf2;border-radius:6px;font-family:monospace;">${oneClickUrl}</p>
+      </div>
+      
+      <!-- 页脚 -->
+      <p style="color:#888;font-size:12px;margin-top:32px;text-align:center;">— MYGARDENOS.COM</p>
     </div>
   `;
 
@@ -354,7 +345,7 @@ export async function queueRsvpInvite(input: InviteRsvpInput): Promise<Notificat
   const result = await resend.emails.send({
     from: emailFrom,
     to,
-    subject: `邀请预约直播：${input.event.title}`,
+    subject,
     html,
   });
 
@@ -366,14 +357,21 @@ export async function queueRsvpInvite(input: InviteRsvpInput): Promise<Notificat
       action: "invite_email_failed",
       afterData: {
         to,
-        subject: `邀请预约直播：${input.event.title}`,
+        subject,
         error: result.error.message,
       },
     }).catch((dbErr) => console.error("[notifications] Failed to write invite failure audit log:", dbErr));
+
+    await recordInviteSend(input.event.id, to, 'failed', result.error.message).catch((dbErr) =>
+      console.error("[notifications] Failed to record failed invite send:", dbErr)
+    );
 
     return { queued: false, reason: result.error.message };
   }
 
   console.log(`[notifications] Invite email sent from ${emailFrom} to ${to} for event ${input.event.id}`);
+  await recordInviteSend(input.event.id, to, 'sent').catch((dbErr) =>
+    console.error("[notifications] Failed to record successful invite send:", dbErr)
+  );
   return { queued: true };
 }
