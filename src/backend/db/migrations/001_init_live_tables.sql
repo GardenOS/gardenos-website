@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS live_events (
   title TEXT NOT NULL,
   title_en TEXT,
   description TEXT,
+  description_en TEXT,
   status TEXT NOT NULL DEFAULT 'prelive' CHECK (status IN ('prelive', 'live', 'replay')),
   visibility TEXT NOT NULL DEFAULT 'draft' CHECK (visibility IN ('draft', 'published', 'archived')),
   locale TEXT NOT NULL DEFAULT 'en',

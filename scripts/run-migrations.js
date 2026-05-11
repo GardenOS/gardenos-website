@@ -105,6 +105,13 @@ async function runMigrations() {
     await client.query(migration010);
     console.log('✓ Migration 010 completed');
 
+    // Migration 011: Add live_events.description_en for bilingual rich text copy
+    console.log('Running migration 011_live_event_description_en.sql...');
+    const migration011Path = path.join(__dirname, '../src/backend/db/migrations/011_live_event_description_en.sql');
+    const migration011 = fs.readFileSync(migration011Path, 'utf8');
+    await client.query(migration011);
+    console.log('✓ Migration 011 completed');
+
     console.log('\n✓ All migrations completed successfully!');
   } catch (error) {
     console.error('ERROR during migration:', error.message);

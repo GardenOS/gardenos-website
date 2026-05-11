@@ -10,6 +10,7 @@ export type LiveEvent = {
   title: string;
   titleEn: string | null;
   description: string | null;
+  descriptionEn: string | null;
   status: LiveEventStatus;
   visibility: LiveEventVisibility;
   locale: string;
@@ -32,6 +33,7 @@ export type CreateLiveEventInput = {
   title: string;
   titleEn: string;
   description?: string;
+  descriptionEn?: string;
   locale?: string;
   visibility?: LiveEventVisibility;
   status?: LiveEventStatus;
@@ -55,6 +57,8 @@ export type UpdateLiveEventInput = {
   slug: string;
   title: string;
   titleEn: string;
+  description: string | null;
+  descriptionEn: string | null;
   visibility: LiveEventVisibility;
   status: LiveEventStatus;
   promoVideoUrl: string | null;

@@ -25,6 +25,8 @@ export default async function LivePage({ params }: Props) {
 
   return (
     <div className="space-y-16 sm:space-y-20">
+      {/* Temporarily hidden: static schedule header, replaced by admin rich text content. */}
+      {/*
       <header className="space-y-6">
         <p className="inline-flex rounded-full border border-garden-200 bg-white px-3 py-1 text-xs font-medium uppercase tracking-wide text-garden-700">
           {t("badge")}
@@ -34,9 +36,12 @@ export default async function LivePage({ params }: Props) {
         </h1>
         <p className="max-w-3xl text-pretty text-lg leading-relaxed text-garden-800">{t("lead")}</p>
       </header>
+      */}
 
       <LivePublicPanel />
 
+      {/* Temporarily hidden: public schedule section. */}
+      {/*
       <section aria-labelledby="window-heading">
         <div className="overflow-hidden rounded-2xl border border-garden-700/30 bg-gradient-to-br from-garden-800 via-garden-700 to-garden-600 px-6 py-8 text-garden-50 shadow-lg sm:px-10 sm:py-10">
           <p className="text-xs font-semibold uppercase tracking-widest text-garden-200/90">
@@ -56,6 +61,7 @@ export default async function LivePage({ params }: Props) {
           </p>
         </div>
       </section>
+      */}
 
       <section aria-labelledby="channels-heading" className="space-y-8">
         <h2

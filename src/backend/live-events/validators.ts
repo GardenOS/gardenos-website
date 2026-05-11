@@ -55,6 +55,8 @@ export function validateCreateLiveEventInput(body: unknown): CreateLiveEventInpu
   if (scheduledStartAt && Number.isNaN(Date.parse(scheduledStartAt))) {
     throw new ValidationError("scheduledStartAt must be a valid ISO date string.");
   }
+  const description = toNullableTrimmed(payload.description);
+  const descriptionEn = toNullableTrimmed(payload.descriptionEn);
 
   const warmupUrl = toNullableTrimmed(payload.warmupUrl);
   const liveUrl = toNullableTrimmed(payload.liveUrl);
@@ -81,7 +83,8 @@ export function validateCreateLiveEventInput(body: unknown): CreateLiveEventInpu
     slug,
     title,
     titleEn,
-    description: toNullableTrimmed(payload.description) ?? undefined,
+    description: description ?? undefined,
+    descriptionEn: descriptionEn ?? undefined,
     locale: toNullableTrimmed(payload.locale) ?? undefined,
     visibility: parseVisibility(payload.visibility),
     status: parseStatus(payload.status),
@@ -132,6 +135,8 @@ export function validateUpdateLiveEventInput(body: unknown): UpdateLiveEventInpu
   if (scheduledStartAt && Number.isNaN(Date.parse(scheduledStartAt))) {
     throw new ValidationError("scheduledStartAt must be a valid ISO date string.");
   }
+  const description = toNullableTrimmed(payload.description);
+  const descriptionEn = toNullableTrimmed(payload.descriptionEn);
 
   const warmupUrl = toNullableTrimmed(payload.warmupUrl);
   const liveUrl = toNullableTrimmed(payload.liveUrl);
@@ -158,6 +163,8 @@ export function validateUpdateLiveEventInput(body: unknown): UpdateLiveEventInpu
     slug,
     title,
     titleEn,
+    description,
+    descriptionEn,
     visibility,
     status,
     promoVideoUrl,

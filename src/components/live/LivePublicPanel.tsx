@@ -12,6 +12,7 @@ type LiveEvent = {
   title: string;
   titleEn: string | null;
   description: string | null;
+  descriptionEn: string | null;
   status: "prelive" | "live" | "replay" | "ended";
   visibility: "draft" | "published" | "archived";
   locale: string;
@@ -71,16 +72,6 @@ function toYoutubeEmbedUrl(rawUrl?: string | null): string | null {
   }
 }
 
-function pickStageUrl(stage: LiveStage, event: LiveEvent | null): string | null {
-  if (!event) return null;
-
-  if (stage === "live") return event.liveUrl ?? event.warmupUrl ?? event.replayUrl;
-  if (stage === "prelive") return event.warmupUrl ?? event.liveUrl ?? event.replayUrl;
-  if (stage === "replay") return event.replayUrl ?? event.liveUrl ?? event.warmupUrl;
-  if (stage === "ended") return event.replayUrl ?? null;
-  return null;
-}
-
 function formatDate(value: string | null, locale: string): string {
   if (!value) return "-";
   const date = new Date(value);
@@ -120,20 +111,22 @@ function getDisplayTitle(event: LiveEvent, locale: string): string {
   return event.title;
 }
 
+function getDisplayDescription(event: LiveEvent, locale: string): string | null {
+  if (locale === "en") {
+    return event.descriptionEn?.trim() || event.description?.trim() || null;
+  }
+  return event.description?.trim() || event.descriptionEn?.trim() || null;
+}
+
 export function LivePublicPanel() {
   const t = useTranslations("liveRuntime");
   const locale = useLocale();
 
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string>("");
-  const [stage, setStage] = useState<LiveStage>("none");
   const [currentEvent, setCurrentEvent] = useState<LiveEvent | null>(null);
   const [events, setEvents] = useState<LiveEvent[]>([]);
 
   useEffect(() => {
     async function load() {
-      setLoading(true);
-      setError("");
       try {
         const [currentRes, eventsRes] = await Promise.all([
           fetch("/api/live/current", { cache: "no-store" }),
@@ -147,30 +140,24 @@ export function LivePublicPanel() {
         const currentData = (await currentRes.json()) as CurrentLiveResponse;
         const eventsData = (await eventsRes.json()) as EventsResponse;
 
-        setStage(currentData.stage);
         setCurrentEvent(currentData.event);
         setEvents(eventsData.events ?? []);
       } catch {
-        setError(t("loadError"));
-      } finally {
-        setLoading(false);
+        // Keep page functional even if the latest live data cannot be loaded.
       }
     }
 
     void load();
   }, [t]);
 
-  const stageLabel = useMemo(() => {
-    if (stage === "live") return t("stageLive");
-    if (stage === "prelive") return t("stagePrelive");
-    if (stage === "replay") return t("stageReplay");
-    if (stage === "ended") return t("stageEnded");
-    return t("stageNone");
-  }, [stage, t]);
-
-  const selectedStreamUrl = pickStageUrl(stage, currentEvent);
-  const embedUrl = toYoutubeEmbedUrl(selectedStreamUrl);
   const nextUpcomingEvent = useMemo(() => pickNearestUpcomingEvent(events), [events]);
+  const contentEvent = currentEvent ?? nextUpcomingEvent;
+  const liveCopy = contentEvent ? getDisplayDescription(contentEvent, locale) : null;
+  const headline = contentEvent
+    ? getDisplayTitle(contentEvent, locale)
+    : locale === "en"
+      ? "Live Event"
+      : "直播";
 
   const preliveEvents = events.filter((event) => event.status === "prelive");
   const liveEvents = events.filter((event) => event.status === "live");
@@ -179,13 +166,29 @@ export function LivePublicPanel() {
 
   return (
     <div className="space-y-8">
+      <header>
+        <h1 className="text-balance text-3xl font-semibold tracking-tight text-garden-950 sm:text-4xl">
+          {headline}
+        </h1>
+      </header>
+
+      {liveCopy ? (
+        <section className="rounded-2xl bg-garden-50 px-6 py-6 sm:px-8">
+          <div
+            className="text-garden-900 leading-relaxed [&>*+*]:mt-3 [&_h1]:text-3xl [&_h1]:font-semibold [&_h2]:text-2xl [&_h2]:font-semibold [&_h3]:text-xl [&_h3]:font-semibold [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_a]:text-garden-700 [&_a]:underline"
+            dangerouslySetInnerHTML={{ __html: liveCopy }}
+          />
+        </section>
+      ) : null}
+
       {/* Promo video and poster for the nearest upcoming / current event */}
       {(() => {
-        const promoEvent = currentEvent ?? nextUpcomingEvent;
+        const promoEvent = contentEvent;
         if (!promoEvent) return null;
         const promoEmbed = toYoutubeEmbedUrl(promoEvent.promoVideoUrl);
         const isDirectVideo = promoEvent.promoVideoUrl && !promoEmbed;
-        const hasPoster = Boolean(promoEvent.posterUrl);
+        const hasVideo = Boolean(promoEmbed || isDirectVideo);
+        const hasPoster = Boolean(promoEvent.posterUrl) && !hasVideo;
         if (!promoEmbed && !isDirectVideo && !hasPoster) return null;
         return (
           <section className="space-y-4">
@@ -220,6 +223,8 @@ export function LivePublicPanel() {
           </section>
         );
       })()}
+      {/* Temporarily hidden: current-stage stream panel */}
+      {/*
       <section className="rounded-2xl border border-garden-200 bg-white px-6 py-6 shadow-sm sm:px-8">
         <div className="flex flex-wrap items-center gap-3">
           <span className="rounded-full border border-garden-300 bg-garden-50 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-garden-700">
@@ -258,6 +263,7 @@ export function LivePublicPanel() {
           )}
         </div>
       </section>
+      */}
 
       <section className="rounded-2xl border border-garden-200 bg-white px-6 py-6 shadow-sm sm:px-8">
         <h2 className="text-lg font-semibold text-garden-950">{t("rsvpTitle")}</h2>

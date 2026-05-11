@@ -7,6 +7,8 @@ type LiveEvent = {
   id: string;
   title: string;
   titleEn: string | null;
+  description: string | null;
+  descriptionEn: string | null;
   slug: string;
   status: "prelive" | "live" | "replay" | "ended";
   visibility: "draft" | "published" | "archived";
@@ -35,6 +37,64 @@ function getDisplayTitle(event: LiveEvent, locale: string): string {
   return event.title;
 }
 
+function normalizeRichText(value: string): string | null {
+  const trimmed = value.trim();
+  if (!trimmed) return null;
+
+  const plain = trimmed
+    .replace(/<[^>]*>/g, "")
+    .replace(/&nbsp;/g, " ")
+    .trim();
+
+  return plain ? trimmed : null;
+}
+
+type RichTextEditorProps = {
+  label: string;
+  value: string;
+  placeholder: string;
+  onChange: (value: string) => void;
+};
+
+function RichTextEditor({ label, value, placeholder, onChange }: RichTextEditorProps) {
+  const editorRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!editorRef.current) return;
+    if (editorRef.current.innerHTML !== value) {
+      editorRef.current.innerHTML = value;
+    }
+  }, [value]);
+
+  const runCommand = (command: string, commandValue?: string) => {
+    editorRef.current?.focus();
+    document.execCommand(command, false, commandValue);
+    onChange(editorRef.current?.innerHTML ?? "");
+  };
+
+  return (
+    <div className="sm:col-span-2 space-y-2">
+      <label className="block text-xs font-medium text-garden-700">{label}</label>
+      <div className="flex flex-wrap gap-2">
+        <button type="button" onClick={() => runCommand("bold")} className="rounded border border-garden-300 px-2 py-1 text-xs font-semibold text-garden-700 hover:bg-garden-50">B</button>
+        <button type="button" onClick={() => runCommand("italic")} className="rounded border border-garden-300 px-2 py-1 text-xs font-semibold text-garden-700 hover:bg-garden-50">I</button>
+        <button type="button" onClick={() => runCommand("formatBlock", "<h3>")} className="rounded border border-garden-300 px-2 py-1 text-xs font-semibold text-garden-700 hover:bg-garden-50">H3</button>
+        <button type="button" onClick={() => runCommand("formatBlock", "<p>")} className="rounded border border-garden-300 px-2 py-1 text-xs font-semibold text-garden-700 hover:bg-garden-50">P</button>
+        <button type="button" onClick={() => runCommand("insertUnorderedList")} className="rounded border border-garden-300 px-2 py-1 text-xs font-semibold text-garden-700 hover:bg-garden-50">• List</button>
+        <button type="button" onClick={() => runCommand("insertOrderedList")} className="rounded border border-garden-300 px-2 py-1 text-xs font-semibold text-garden-700 hover:bg-garden-50">1. List</button>
+      </div>
+      <div
+        ref={editorRef}
+        contentEditable
+        suppressContentEditableWarning
+        data-placeholder={placeholder}
+        onInput={(event) => onChange((event.currentTarget as HTMLDivElement).innerHTML)}
+        className="min-h-32 rounded-lg border border-garden-200 px-3 py-2 text-sm text-garden-900 outline-none focus:border-garden-400 empty:before:block empty:before:text-garden-400 empty:before:content-[attr(data-placeholder)] [&>*+*]:mt-2"
+      />
+    </div>
+  );
+}
+
 export function LiveAdminPanel() {
   const t = useTranslations("dashboardLive");
   const locale = useLocale();
@@ -53,6 +113,8 @@ export function LiveAdminPanel() {
   const [createVisibility, setCreateVisibility] = useState<"published" | "draft">("published");
   const [createPromoVideoUrl, setCreatePromoVideoUrl] = useState("");
   const [createPosterUrl, setCreatePosterUrl] = useState("");
+  const [createDescriptionZh, setCreateDescriptionZh] = useState("");
+  const [createDescriptionEn, setCreateDescriptionEn] = useState("");
   const [createWarmupUrl, setCreateWarmupUrl] = useState("");
   const [createLiveUrl, setCreateLiveUrl] = useState("");
   const [createReplayUrl, setCreateReplayUrl] = useState("");
@@ -68,6 +130,8 @@ export function LiveAdminPanel() {
   const [editVisibility, setEditVisibility] = useState<"published" | "draft" | "archived">("published");
   const [editPromoVideoUrl, setEditPromoVideoUrl] = useState("");
   const [editPosterUrl, setEditPosterUrl] = useState("");
+  const [editDescriptionZh, setEditDescriptionZh] = useState("");
+  const [editDescriptionEn, setEditDescriptionEn] = useState("");
   const [editWarmupUrl, setEditWarmupUrl] = useState("");
   const [editLiveUrl, setEditLiveUrl] = useState("");
   const [editReplayUrl, setEditReplayUrl] = useState("");
@@ -106,6 +170,8 @@ export function LiveAdminPanel() {
     setEditVisibility(target.visibility);
     setEditPromoVideoUrl(target.promoVideoUrl ?? "");
     setEditPosterUrl(target.posterUrl ?? "");
+    setEditDescriptionZh(target.description ?? "");
+    setEditDescriptionEn(target.descriptionEn ?? "");
     setEditWarmupUrl(target.warmupUrl ?? "");
     setEditLiveUrl(target.liveUrl ?? "");
     setEditReplayUrl(target.replayUrl ?? "");
@@ -131,6 +197,8 @@ export function LiveAdminPanel() {
           titleEn: createTitleEn,
           status: createStatus,
           visibility: createVisibility,
+          description: normalizeRichText(createDescriptionZh) ?? undefined,
+          descriptionEn: normalizeRichText(createDescriptionEn) ?? undefined,
           scheduledStartAt: createScheduledAt ? new Date(createScheduledAt).toISOString() : undefined,
           promoVideoUrl: createPromoVideoUrl || undefined,
           posterUrl: createPosterUrl || undefined,
@@ -154,6 +222,8 @@ export function LiveAdminPanel() {
       setCreateScheduledAt("");
       setCreatePromoVideoUrl("");
       setCreatePosterUrl("");
+      setCreateDescriptionZh("");
+      setCreateDescriptionEn("");
       setCreateWarmupUrl("");
       setCreateLiveUrl("");
       setCreateReplayUrl("");
@@ -183,6 +253,8 @@ export function LiveAdminPanel() {
           titleEn: editTitleEn,
           status: editStatus,
           visibility: editVisibility,
+          description: normalizeRichText(editDescriptionZh),
+          descriptionEn: normalizeRichText(editDescriptionEn),
           scheduledStartAt: editScheduledAt ? new Date(editScheduledAt).toISOString() : null,
           promoVideoUrl: editPromoVideoUrl || null,
           posterUrl: editPosterUrl || null,
@@ -330,6 +402,18 @@ export function LiveAdminPanel() {
               </select>
             </label>
           </div>
+          <RichTextEditor
+            label={t("descriptionZhLabel")}
+            value={createDescriptionZh}
+            placeholder={t("descriptionZhPlaceholder")}
+            onChange={setCreateDescriptionZh}
+          />
+          <RichTextEditor
+            label={t("descriptionEnLabel")}
+            value={createDescriptionEn}
+            placeholder={t("descriptionEnPlaceholder")}
+            onChange={setCreateDescriptionEn}
+          />
           {/* Promo video URL */}
           <input value={createPromoVideoUrl} onChange={(e) => setCreatePromoVideoUrl(e.target.value)} placeholder={t("promoVideoPlaceholder")} className="sm:col-span-2 rounded-lg border border-garden-200 px-3 py-2 text-sm" />
           {/* Poster URL + upload */}
@@ -477,6 +561,18 @@ export function LiveAdminPanel() {
                 </select>
               </label>
             </div>
+            <RichTextEditor
+              label={t("descriptionZhLabel")}
+              value={editDescriptionZh}
+              placeholder={t("descriptionZhPlaceholder")}
+              onChange={setEditDescriptionZh}
+            />
+            <RichTextEditor
+              label={t("descriptionEnLabel")}
+              value={editDescriptionEn}
+              placeholder={t("descriptionEnPlaceholder")}
+              onChange={setEditDescriptionEn}
+            />
             <input value={editPromoVideoUrl} onChange={(e) => setEditPromoVideoUrl(e.target.value)} placeholder={t("promoVideoPlaceholder")} className="sm:col-span-2 rounded-lg border border-garden-200 px-3 py-2 text-sm" />
             <div className="sm:col-span-2 space-y-2">
               <div className="flex gap-2">
