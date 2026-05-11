@@ -112,6 +112,13 @@ async function runMigrations() {
     await client.query(migration011);
     console.log('✓ Migration 011 completed');
 
+    // Migration 012: Add language preference for Clerk users
+    console.log('Running migration 012_clerk_users_language.sql...');
+    const migration012Path = path.join(__dirname, '../src/backend/db/migrations/012_clerk_users_language.sql');
+    const migration012 = fs.readFileSync(migration012Path, 'utf8');
+    await client.query(migration012);
+    console.log('✓ Migration 012 completed');
+
     console.log('\n✓ All migrations completed successfully!');
   } catch (error) {
     console.error('ERROR during migration:', error.message);

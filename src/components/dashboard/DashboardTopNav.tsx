@@ -15,6 +15,7 @@ type NavItem = {
 };
 
 type DashboardTopNavProps = {
+  isInternal: boolean;
   labels: {
     scans: string;
     live: string;
@@ -24,16 +25,18 @@ type DashboardTopNavProps = {
   };
 };
 
-export function DashboardTopNav({ labels }: DashboardTopNavProps) {
+export function DashboardTopNav({ isInternal, labels }: DashboardTopNavProps) {
   const selectedSegment = useSelectedLayoutSegment();
 
-  const navItems: NavItem[] = [
-    { href: "/dashboard", segment: null, label: labels.scans },
-    { href: "/dashboard/live", segment: "live", label: labels.live },
-    { href: "/dashboard/live-test", segment: "live-test", label: labels.liveTest },
-    { href: "/dashboard/rsvp", segment: "rsvp", label: labels.rsvp },
-    { href: "/dashboard/whitelist", segment: "whitelist", label: labels.whitelist },
-  ];
+  const navItems: NavItem[] = isInternal
+    ? [
+        { href: "/dashboard", segment: null, label: labels.scans },
+        { href: "/dashboard/live", segment: "live", label: labels.live },
+        { href: "/dashboard/live-test", segment: "live-test", label: labels.liveTest },
+        { href: "/dashboard/rsvp", segment: "rsvp", label: labels.rsvp },
+        { href: "/dashboard/whitelist", segment: "whitelist", label: labels.whitelist },
+      ]
+    : [{ href: "/dashboard", segment: null, label: labels.scans }];
 
   function isActive(segment: string | null): boolean {
     return selectedSegment === segment;

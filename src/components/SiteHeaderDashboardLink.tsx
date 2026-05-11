@@ -1,14 +1,11 @@
 import { Link } from "@/i18n/routing";
 import { getTranslations } from "next-intl/server";
-import { isCurrentUserInternal } from "@/backend/auth/admin";
+import { auth } from "@clerk/nextjs/server";
 
 export async function SiteHeaderDashboardLink() {
-  const [t, isInternal] = await Promise.all([
-    getTranslations("nav"),
-    isCurrentUserInternal(),
-  ]);
+  const [t, { userId }] = await Promise.all([getTranslations("nav"), auth()]);
 
-  if (!isInternal) {
+  if (!userId) {
     return null;
   }
 

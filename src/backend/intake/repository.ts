@@ -18,6 +18,8 @@ export type RegisterIntakeInput = {
   liveEventId?: string | null;
 };
 
+export type UserLanguage = "zh" | "en";
+
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
@@ -26,6 +28,18 @@ function trimToNull(value: string | null | undefined): string | null {
   if (value == null) return null;
   const normalized = value.trim();
   return normalized ? normalized : null;
+}
+
+function normalizeLanguage(value: string | null | undefined): UserLanguage {
+  return value === "zh" ? "zh" : "en";
+}
+
+async function ensureClerkUsersLanguageColumn(): Promise<void> {
+  const pool = getDbPool();
+  await pool.query(`
+    ALTER TABLE IF EXISTS public.clerk_users
+      ADD COLUMN IF NOT EXISTS language TEXT NOT NULL DEFAULT 'en'
+  `);
 }
 
 // ---------------------------------------------------------------------------
@@ -76,6 +90,7 @@ export async function insertClerkUserIntake(input: {
   clerkUserId: string;
 }): Promise<void> {
   const pool = getDbPool();
+  await ensureClerkUsersLanguageColumn();
 
   await pool.query(
     `
@@ -87,6 +102,55 @@ export async function insertClerkUserIntake(input: {
     `,
     [input.clerkUserId, input.fullName, input.email]
   );
+}
+
+export async function setClerkUserLanguagePreference(input: {
+  clerkUserId: string;
+  email: string;
+  language: string;
+}): Promise<void> {
+  const pool = getDbPool();
+  await ensureClerkUsersLanguageColumn();
+
+  const language = normalizeLanguage(input.language);
+  const email = input.email.trim();
+
+  await pool.query(
+    `
+      INSERT INTO public.clerk_users (clerk_user_id, full_name, email, language)
+      VALUES ($1, NULL, $2, $3)
+      ON CONFLICT (clerk_user_id) DO UPDATE
+        SET email = EXCLUDED.email,
+            language = EXCLUDED.language
+    `,
+    [input.clerkUserId, email, language]
+  );
+}
+
+export async function getClerkUserLanguageByEmail(email: string): Promise<UserLanguage | null> {
+  const pool = getDbPool();
+  await ensureClerkUsersLanguageColumn();
+
+  const normalized = email.trim();
+  if (!normalized) {
+    return null;
+  }
+
+  const result = await pool.query(
+    `
+      SELECT language
+      FROM public.clerk_users
+      WHERE lower(email) = lower($1)
+      LIMIT 1
+    `,
+    [normalized]
+  );
+
+  if (result.rowCount === 0) {
+    return null;
+  }
+
+  return normalizeLanguage(String(result.rows[0]?.language ?? null));
 }
 
 // ---------------------------------------------------------------------------

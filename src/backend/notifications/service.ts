@@ -2,6 +2,7 @@ import fs from "fs";
 import path from "path";
 import { Resend } from "resend";
 import type { RsvpRecord } from "@/backend/rsvp/rsvp";
+import { getUserLanguageByEmail } from "@/backend/notifications/userLanguage";
 import { createAuditLog } from "@/backend/audit/repository";
 import type { LiveEvent } from "@/backend/live-events/liveEvent";
 import { createRsvpInviteToken } from "@/backend/rsvp/inviteToken";
@@ -96,15 +97,17 @@ export async function queueRsvpConfirmation(
     console.warn("[notifications] RESEND_API_KEY not configured, skipping email.");
     return { queued: false, reason: "notification-provider-not-configured" };
   }
-
-  const { error } = await sendRegisterImageMail(rsvp.email, rsvp.fullName, rsvp.locale, event);
-
+  // 优先查找用户语言偏好
+  let lang = rsvp.locale;
+  if (!lang) {
+    lang = await getUserLanguageByEmail(rsvp.email);
+  }
+  const { error } = await sendRegisterImageMail(rsvp.email, rsvp.fullName, lang, event);
   if (error) {
     console.error("[notifications] Failed to send RSVP confirmation email:", error);
     await logEmailFailure(rsvp.id, rsvp.email, error.message, "live-rsvp");
     return { queued: false, reason: error.message };
   }
-
   return { queued: true };
 }
 
@@ -243,13 +246,16 @@ export async function queueRegisterConfirmation(
     console.warn("[notifications] RESEND_API_KEY not configured, skipping email.");
     return { queued: false, reason: "notification-provider-not-configured" };
   }
-
   const to = String(input.email ?? "").trim();
   if (!to) {
     return { queued: false, reason: "missing-recipient-email" };
   }
-
-  const { error } = await sendRegisterImageMail(to, input.fullName, input.lang, event);
+  // 优先查找用户语言偏好
+  let lang = input.lang;
+  if (!lang) {
+    lang = await getUserLanguageByEmail(to);
+  }
+  const { error } = await sendRegisterImageMail(to, input.fullName, lang, event);
   if (error) {
     console.error("[notifications] Failed to send register confirmation email:", {
       to,
@@ -258,7 +264,6 @@ export async function queueRegisterConfirmation(
     await logEmailFailure(`register:${to}`, to, error.message, "register");
     return { queued: false, reason: error.message };
   }
-
   return { queued: true };
 }
 
