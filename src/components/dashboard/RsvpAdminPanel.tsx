@@ -1,13 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 const PAGE_SIZE = 20;
 
 type LiveEvent = {
   id: string;
   title: string;
+  titleEn: string | null;
   slug: string;
   status: "prelive" | "live" | "replay" | "ended";
   visibility: "draft" | "published" | "archived";
@@ -15,6 +16,12 @@ type LiveEvent = {
 };
 
 // Unified user row for the per-event merged table
+function getDisplayTitle(event: LiveEvent, locale: string): string {
+  if (locale === "en") {
+    return event.titleEn?.trim() || event.title;
+  }
+  return event.title;
+}
 type EventUser = {
   key: string;
   fullName: string;
@@ -73,6 +80,7 @@ type RegistrationRow = {
 
 export function RsvpAdminPanel() {
   const t = useTranslations("dashboardRsvp");
+  const locale = useLocale();
 
   // Events
   const [events, setEvents] = useState<LiveEvent[]>([]);
@@ -89,6 +97,10 @@ export function RsvpAdminPanel() {
   const [allError, setAllError] = useState("");
   const [deleteError, setDeleteError] = useState("");
   const [deletingId, setDeletingId] = useState<number | null>(null);
+  const [sendingInviteId, setSendingInviteId] = useState<number | null>(null);
+  const [sendingAllInvites, setSendingAllInvites] = useState(false);
+  const [inviteError, setInviteError] = useState("");
+  const [inviteInfo, setInviteInfo] = useState("");
   const [page, setPage] = useState(0);
 
   // Load events on mount, then auto-select nearest
@@ -111,14 +123,17 @@ export function RsvpAdminPanel() {
         const all = data.events ?? [];
         setEvents(all);
 
-        const now = Date.now();
-        const upcoming = all
-          .filter((e) => e.status !== "replay" && e.status !== "ended")
-          .sort((a, b) => {
-            const ta = a.scheduledStartAt ? new Date(a.scheduledStartAt).getTime() : Infinity;
-            const tb = b.scheduledStartAt ? new Date(b.scheduledStartAt).getTime() : Infinity;
-            return Math.abs(ta - now) - Math.abs(tb - now);
-          });
+        const prelive = all.filter((e) => e.status === "prelive");
+        const preliveWithoutSchedule = prelive.filter((e) => !e.scheduledStartAt);
+
+        const upcoming =
+          preliveWithoutSchedule.length > 0
+            ? preliveWithoutSchedule
+            : [...prelive].sort((a, b) => {
+                const ta = a.scheduledStartAt ? new Date(a.scheduledStartAt).getTime() : Infinity;
+                const tb = b.scheduledStartAt ? new Date(b.scheduledStartAt).getTime() : Infinity;
+                return ta - tb;
+              });
 
         const autoSelect = upcoming[0] ?? all[0];
         if (autoSelect) {
@@ -236,6 +251,106 @@ export function RsvpAdminPanel() {
     }
   }
 
+  async function handleSendInvite(row: RegistrationRow) {
+    if (!selectedEventId) {
+      setInviteError(t("inviteSelectEventFirst"));
+      return;
+    }
+
+    setInviteError("");
+    setInviteInfo("");
+    setSendingInviteId(row.id);
+
+    try {
+      const sendInvite = async (force = false) => {
+        const res = await fetch("/api/admin/live/invite-send", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            eventId: selectedEventId,
+            email: row.email,
+            lang: row.lang,
+            force,
+          }),
+        });
+        const data = (await res.json().catch(() => null)) as {
+          ok?: boolean;
+          error?: string;
+          message?: string;
+          alreadySent?: boolean;
+          needsConfirm?: boolean;
+        } | null;
+
+        return { res, data };
+      };
+
+      let { res, data } = await sendInvite(false);
+
+      if (res.status === 409 && data?.needsConfirm) {
+        const confirmed = window.confirm(t("inviteDuplicateConfirm"));
+        if (!confirmed) return;
+        ({ res, data } = await sendInvite(true));
+      }
+
+      if (!res.ok || !data?.ok) {
+        setInviteError(data?.error || t("inviteSendError"));
+        return;
+      }
+
+      alert(t("inviteSendSuccess", { email: row.email }));
+    } catch {
+      setInviteError(t("inviteSendRuntimeError"));
+    } finally {
+      setSendingInviteId(null);
+    }
+  }
+
+  async function handleSendInviteToAll() {
+    if (!selectedEventId) {
+      setInviteError(t("inviteSelectEventFirst"));
+      return;
+    }
+
+    const confirmed = window.confirm(t("inviteAllConfirm"));
+    if (!confirmed) return;
+
+    setInviteError("");
+    setInviteInfo("");
+    setSendingAllInvites(true);
+
+    try {
+      const res = await fetch(`/api/live/events/${selectedEventId}/invite-rsvp`, {
+        method: "POST",
+      });
+      const data = (await res.json().catch(() => null)) as {
+        ok?: boolean;
+        error?: string;
+        candidateCount?: number;
+        invitedCount?: number;
+        skippedCount?: number;
+        failedCount?: number;
+      } | null;
+
+      if (!res.ok || !data?.ok) {
+        setInviteError(data?.error || t("inviteAllError"));
+        return;
+      }
+
+      setInviteInfo(
+        t("inviteAllSuccess", {
+          invited: data.invitedCount ?? 0,
+          candidate: data.candidateCount ?? 0,
+          skipped: data.skippedCount ?? 0,
+          failed: data.failedCount ?? 0,
+        })
+      );
+    } catch {
+      setInviteError(t("inviteAllRuntimeError"));
+    } finally {
+      setSendingAllInvites(false);
+    }
+  }
+
   const selectedEvent = events.find((e) => e.id === selectedEventId);
   const totalPages = Math.max(1, Math.ceil(allRegistrations.length / PAGE_SIZE));
   const pagedRows = allRegistrations.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
@@ -259,7 +374,7 @@ export function RsvpAdminPanel() {
             <option value="">{t("eventSelectPlaceholder")}</option>
             {events.map((event) => (
               <option key={event.id} value={event.id}>
-                {event.title} — {event.status}
+                {getDisplayTitle(event, locale)} — {event.status}
                 {event.scheduledStartAt ? ` (${new Date(event.scheduledStartAt).toLocaleDateString()})` : ""}
               </option>
             ))}
@@ -283,7 +398,7 @@ export function RsvpAdminPanel() {
         <section className="rounded-2xl border border-garden-200 bg-white px-6 py-6 shadow-sm">
           <div className="mb-4 flex items-center justify-between gap-3">
             <div>
-              <h2 className="text-lg font-semibold text-garden-900">{selectedEvent?.title}</h2>
+              <h2 className="text-lg font-semibold text-garden-900">{selectedEvent ? getDisplayTitle(selectedEvent, locale) : ""}</h2>
               <p className="text-xs text-garden-600">{t("total", { count: eventUsers.length })}</p>
             </div>
           </div>
@@ -328,13 +443,23 @@ export function RsvpAdminPanel() {
             <h2 className="text-lg font-semibold text-garden-900">{t("registrationsTitle")}</h2>
             <p className="text-xs text-garden-600">{t("registrationsLead")}</p>
           </div>
-          <button
-            type="button"
-            onClick={() => void loadAllRegistrations()}
-            className="rounded-full border border-garden-300 px-4 py-2 text-sm font-semibold text-garden-800 hover:bg-garden-50"
-          >
-            {t("refreshButton")}
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => void handleSendInviteToAll()}
+              disabled={!selectedEventId || sendingAllInvites}
+              className="rounded-full border border-garden-300 px-4 py-2 text-sm font-semibold text-garden-800 hover:bg-garden-50 disabled:opacity-50"
+            >
+              {sendingAllInvites ? t("inviteAllSending") : t("inviteAllButton")}
+            </button>
+            <button
+              type="button"
+              onClick={() => void loadAllRegistrations()}
+              className="rounded-full border border-garden-300 px-4 py-2 text-sm font-semibold text-garden-800 hover:bg-garden-50"
+            >
+              {t("refreshButton")}
+            </button>
+          </div>
         </div>
 
         {allError ? (
@@ -349,6 +474,8 @@ export function RsvpAdminPanel() {
               {t("registrationsTotal", { count: allRegistrations.length })}
             </p>
             {deleteError ? <p className="mb-3 text-sm text-red-700">{deleteError}</p> : null}
+            {inviteError ? <p className="mb-3 text-sm text-red-700">{inviteError}</p> : null}
+            {inviteInfo ? <p className="mb-3 text-sm text-green-700">{inviteInfo}</p> : null}
 
             <div className="overflow-x-auto">
               <table className="w-full text-left text-sm">
@@ -379,44 +506,53 @@ export function RsvpAdminPanel() {
                         )}
                       </td>
                       <td className="py-2">
-                        <button
-                          type="button"
-                          onClick={() => void handleDeleteRegistration(row)}
-                          disabled={deletingId === row.id}
-                          className="rounded-md border border-red-300 px-3 py-1.5 text-xs font-semibold text-red-700 hover:bg-red-50 disabled:opacity-50"
-                        >
-                          {deletingId === row.id ? t("deleting") : t("deleteButton")}
-                        </button>
+                        <div className="flex items-center gap-2">
+                          <button
+                            type="button"
+                            onClick={() => void handleSendInvite(row)}
+                            disabled={sendingInviteId === row.id || !selectedEventId}
+                            className="rounded-md border border-garden-300 px-3 py-1.5 text-xs font-semibold text-garden-700 hover:bg-garden-50 disabled:opacity-50"
+                          >
+                            {sendingInviteId === row.id ? t("inviteSending") : t("inviteSendButton")}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => void handleDeleteRegistration(row)}
+                            disabled={deletingId === row.id}
+                            className="rounded-md border border-red-300 px-3 py-1.5 text-xs font-semibold text-red-700 hover:bg-red-50 disabled:opacity-50"
+                          >
+                            {deletingId === row.id ? t("deleting") : t("deleteButton")}
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
+              {totalPages > 1 ? (
+                <div className="mt-4 flex items-center gap-3 text-sm">
+                  <button
+                    type="button"
+                    onClick={() => setPage((p) => Math.max(0, p - 1))}
+                    disabled={page <= 0}
+                    className="rounded-lg border border-garden-200 px-3 py-1.5 text-garden-700 hover:bg-garden-50 disabled:opacity-40"
+                  >
+                    {t("prevPage")}
+                  </button>
+                  <span className="text-garden-600">
+                    {t("pageInfo", { page: page + 1, total: totalPages })}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
+                    disabled={page >= totalPages - 1}
+                    className="rounded-lg border border-garden-200 px-3 py-1.5 text-garden-700 hover:bg-garden-50 disabled:opacity-40"
+                  >
+                    {t("nextPage")}
+                  </button>
+                </div>
+              ) : null}
             </div>
-
-            {totalPages > 1 ? (
-              <div className="mt-4 flex items-center justify-between gap-3 text-sm">
-                <button
-                  type="button"
-                  onClick={() => setPage((p) => Math.max(0, p - 1))}
-                  disabled={page === 0}
-                  className="rounded-lg border border-garden-200 px-3 py-1.5 text-garden-700 hover:bg-garden-50 disabled:opacity-40"
-                >
-                  {t("prevPage")}
-                </button>
-                <span className="text-garden-600">
-                  {t("pageInfo", { page: page + 1, total: totalPages })}
-                </span>
-                <button
-                  type="button"
-                  onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
-                  disabled={page >= totalPages - 1}
-                  className="rounded-lg border border-garden-200 px-3 py-1.5 text-garden-700 hover:bg-garden-50 disabled:opacity-40"
-                >
-                  {t("nextPage")}
-                </button>
-              </div>
-            ) : null}
           </>
         )}
       </section>

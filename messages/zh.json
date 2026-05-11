@@ -240,7 +240,6 @@
     "directLinkHint": "当前链接无法直接嵌入，请点击原链接观看：",
     "noCurrentStream": "当前还没有可播放的直播地址。",
     "rsvpTitle": "预约最近一场直播",
-    "rsvpLead": "预约统一在注册页完成，这里主要用于看直播和查看场次状态。",
     "nextEventLabel": "当前可预约场次",
     "reserveEntryBody": "如果你要预约最近一场公开测试，请前往注册页完成首次登记或一键预约。",
     "reserveEntryButton": "前往预约",
@@ -290,6 +289,8 @@
     "loadError": "加载直播场次失败。",
     "createTitle": "创建直播场次",
     "titlePlaceholder": "场次标题",
+    "titleZhPlaceholder": "中文标题",
+    "titleEnPlaceholder": "英文标题",
     "slugPlaceholder": "event-slug",
     "statusLabel": "状态",
     "visibilityLabel": "可见性",
@@ -500,9 +501,48 @@
     "deleting": "删除中...",
     "deleteConfirm": "确认删除这条预约记录吗？邮箱：{email}",
     "deleteError": "删除预约记录失败。",
+    "inviteSendButton": "发送邀请",
+    "inviteSending": "发送中…",
+    "inviteSelectEventFirst": "请先选择一个直播场次",
+    "inviteDuplicateConfirm": "该用户已收到过这场直播邀请，是否仍然再次发送？",
+    "inviteSendError": "发送邀请失败",
+    "inviteSendRuntimeError": "发送邀请邮件时出错",
+    "inviteSendSuccess": "已向 {email} 发送邀请邮件",
+    "inviteAllButton": "邀请所有人",
+    "inviteAllSending": "邀请中…",
+    "inviteAllConfirm": "确认向该直播场次的所有候选用户发送预约邀请邮件吗？",
+    "inviteAllError": "批量发送邀请失败",
+    "inviteAllRuntimeError": "批量发送邀请时出错",
+    "inviteAllSuccess": "批量邀请已完成：候选 {candidate}，成功 {invited}，跳过 {skipped}，失败 {failed}",
     "prevPage": "上一页",
     "nextPage": "下一页",
     "pageInfo": "第 {page} / {total} 页"
+  },
+  "rsvp": {
+    "loading": "正在处理…",
+    "success": {
+      "title": "预约成功！",
+      "subtitle": "我们已为你完成预约",
+      "eventInfo": "直播详情",
+      "topic": "主题",
+      "time": "预计时间",
+      "message": "我们将在直播开始前通过邮件通知你，请保留你的邮箱畅通。",
+      "ctaPrimary": "去看直播 →",
+      "ctaSecondary": "返回首页",
+      "redirect": "5 秒后自动跳转到直播页"
+    },
+    "invalid": {
+      "title": "邀请链接无效或已过期",
+      "subtitle": "无法完成预约",
+      "message": "邀请链接可能已过期或无效。请重新打开邮件中的邀请链接，或前往首页重新预约。",
+      "cta": "前往直播页面"
+    },
+    "error": {
+      "title": "预约失败",
+      "subtitle": "出现了一些问题",
+      "message": "预约过程中出现错误。请稍后重试，或前往首页通过其他方式预约。",
+      "cta": "返回直播页面"
+    }
   },
   "footer": {
     "rights": "保留所有权利。"

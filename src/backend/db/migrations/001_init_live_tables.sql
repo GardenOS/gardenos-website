@@ -5,6 +5,7 @@ CREATE TABLE IF NOT EXISTS live_events (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   slug TEXT NOT NULL UNIQUE,
   title TEXT NOT NULL,
+  title_en TEXT,
   description TEXT,
   status TEXT NOT NULL DEFAULT 'prelive' CHECK (status IN ('prelive', 'live', 'replay')),
   visibility TEXT NOT NULL DEFAULT 'draft' CHECK (visibility IN ('draft', 'published', 'archived')),

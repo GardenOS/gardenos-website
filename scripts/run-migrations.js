@@ -84,6 +84,27 @@ async function runMigrations() {
     await client.query(migration007);
     console.log('✓ Migration 007 completed');
 
+    // Migration 008: Add live_events.title_en for bilingual titles
+    console.log('Running migration 008_live_event_title_en.sql...');
+    const migration008Path = path.join(__dirname, '../src/backend/db/migrations/008_live_event_title_en.sql');
+    const migration008 = fs.readFileSync(migration008Path, 'utf8');
+    await client.query(migration008);
+    console.log('✓ Migration 008 completed');
+
+    // Migration 009: Track RSVP invite email sends
+    console.log('Running migration 009_invite_send_records.sql...');
+    const migration009Path = path.join(__dirname, '../src/backend/db/migrations/009_invite_send_records.sql');
+    const migration009 = fs.readFileSync(migration009Path, 'utf8');
+    await client.query(migration009);
+    console.log('✓ Migration 009 completed');
+
+    // Migration 010: Extend invite send status with skipped
+    console.log('Running migration 010_invite_send_records_skipped_status.sql...');
+    const migration010Path = path.join(__dirname, '../src/backend/db/migrations/010_invite_send_records_skipped_status.sql');
+    const migration010 = fs.readFileSync(migration010Path, 'utf8');
+    await client.query(migration010);
+    console.log('✓ Migration 010 completed');
+
     console.log('\n✓ All migrations completed successfully!');
   } catch (error) {
     console.error('ERROR during migration:', error.message);

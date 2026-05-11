@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/routing";
 
 type LiveStage = "prelive" | "live" | "replay" | "ended" | "none";
@@ -10,6 +10,7 @@ type LiveEvent = {
   id: string;
   slug: string;
   title: string;
+  titleEn: string | null;
   description: string | null;
   status: "prelive" | "live" | "replay" | "ended";
   visibility: "draft" | "published" | "archived";
@@ -100,6 +101,11 @@ function pickNearestUpcomingEvent(events: LiveEvent[]): LiveEvent | null {
   const upcoming = events.filter((event) => event.status === "prelive");
   if (!upcoming.length) return null;
 
+  const withoutSchedule = upcoming.filter((event) => !event.scheduledStartAt);
+  if (withoutSchedule.length) {
+    return withoutSchedule[0] ?? null;
+  }
+
   return [...upcoming].sort((left, right) => {
     const startDiff = toTimestamp(left.scheduledStartAt) - toTimestamp(right.scheduledStartAt);
     if (startDiff !== 0) return startDiff;
@@ -107,8 +113,16 @@ function pickNearestUpcomingEvent(events: LiveEvent[]): LiveEvent | null {
   })[0] ?? null;
 }
 
+function getDisplayTitle(event: LiveEvent, locale: string): string {
+  if (locale === "en") {
+    return event.titleEn?.trim() || event.title;
+  }
+  return event.title;
+}
+
 export function LivePublicPanel() {
   const t = useTranslations("liveRuntime");
+  const locale = useLocale();
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>("");
@@ -199,7 +213,7 @@ export function LivePublicPanel() {
               // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={promoEvent.posterUrl!}
-                alt={promoEvent.title}
+                alt={getDisplayTitle(promoEvent, locale)}
                 className="w-full rounded-2xl border border-garden-200 object-cover shadow-sm"
               />
             ) : null}
@@ -212,7 +226,7 @@ export function LivePublicPanel() {
             {t("currentStage")}: {stageLabel}
           </span>
           {currentEvent ? (
-            <span className="text-sm font-medium text-garden-700">{currentEvent.title}</span>
+            <span className="text-sm font-medium text-garden-700">{getDisplayTitle(currentEvent, locale)}</span>
           ) : null}
         </div>
 
@@ -247,15 +261,14 @@ export function LivePublicPanel() {
 
       <section className="rounded-2xl border border-garden-200 bg-white px-6 py-6 shadow-sm sm:px-8">
         <h2 className="text-lg font-semibold text-garden-950">{t("rsvpTitle")}</h2>
-        <p className="mt-2 text-sm text-garden-800">{t("rsvpLead")}</p>
 
         <div className="mt-4 rounded-2xl border border-garden-200 bg-garden-50 px-4 py-4">
           <p className="text-xs font-semibold uppercase tracking-wide text-garden-700">{t("nextEventLabel")}</p>
           {nextUpcomingEvent ? (
             <>
-              <p className="mt-2 text-base font-semibold text-garden-950">{nextUpcomingEvent.title}</p>
+              <p className="mt-2 text-base font-semibold text-garden-950">{getDisplayTitle(nextUpcomingEvent, locale)}</p>
               <p className="mt-1 text-sm text-garden-700">
-                {formatDate(nextUpcomingEvent.scheduledStartAt, nextUpcomingEvent.locale)}
+                {formatDate(nextUpcomingEvent.scheduledStartAt, locale)}
               </p>
             </>
           ) : (
@@ -283,8 +296,8 @@ export function LivePublicPanel() {
             {preliveEvents.length ? (
               preliveEvents.map((event) => (
                 <li key={event.id}>
-                  <p className="font-medium text-garden-900">{event.title}</p>
-                  <p className="text-xs text-garden-600">{formatDate(event.scheduledStartAt, event.locale)}</p>
+                  <p className="font-medium text-garden-900">{getDisplayTitle(event, locale)}</p>
+                  <p className="text-xs text-garden-600">{formatDate(event.scheduledStartAt, locale)}</p>
                 </li>
               ))
             ) : (
@@ -299,8 +312,8 @@ export function LivePublicPanel() {
             {liveEvents.length ? (
               liveEvents.map((event) => (
                 <li key={event.id}>
-                  <p className="font-medium text-garden-900">{event.title}</p>
-                  <p className="text-xs text-garden-600">{formatDate(event.actualStartAt ?? event.scheduledStartAt, event.locale)}</p>
+                  <p className="font-medium text-garden-900">{getDisplayTitle(event, locale)}</p>
+                  <p className="text-xs text-garden-600">{formatDate(event.actualStartAt ?? event.scheduledStartAt, locale)}</p>
                 </li>
               ))
             ) : (
@@ -315,8 +328,8 @@ export function LivePublicPanel() {
             {replayEvents.length ? (
               replayEvents.map((event) => (
                 <li key={event.id}>
-                  <p className="font-medium text-garden-900">{event.title}</p>
-                  <p className="text-xs text-garden-600">{formatDate(event.actualEndAt ?? event.updatedAt, event.locale)}</p>
+                  <p className="font-medium text-garden-900">{getDisplayTitle(event, locale)}</p>
+                  <p className="text-xs text-garden-600">{formatDate(event.actualEndAt ?? event.updatedAt, locale)}</p>
                 </li>
               ))
             ) : (
@@ -331,8 +344,8 @@ export function LivePublicPanel() {
             {endedEvents.length ? (
               endedEvents.map((event) => (
                 <li key={event.id}>
-                  <p className="font-medium text-garden-900">{event.title}</p>
-                  <p className="text-xs text-garden-600">{formatDate(event.actualEndAt ?? event.updatedAt, event.locale)}</p>
+                  <p className="font-medium text-garden-900">{getDisplayTitle(event, locale)}</p>
+                  <p className="text-xs text-garden-600">{formatDate(event.actualEndAt ?? event.updatedAt, locale)}</p>
                 </li>
               ))
             ) : (

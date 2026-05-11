@@ -26,7 +26,20 @@ function getSiteUrl(): string {
   return "https://mygardenos.com";
 }
 
-export async function GET(_: Request, context: { params: Promise<{ eventId: string }> }) {
+function normalizeLang(value: string | null): "zh" | "en" {
+  return value === "en" ? "en" : "zh";
+}
+
+function pickEventTitle(event: { title: string; titleEn: string | null }, lang: "zh" | "en"): string {
+  if (lang === "en") {
+    return event.titleEn?.trim() || event.title;
+  }
+  return event.title;
+}
+
+export async function GET(request: Request, context: { params: Promise<{ eventId: string }> }) {
+  const url = new URL(request.url);
+  const lang = normalizeLang(url.searchParams.get("lang"));
   const { eventId } = await context.params;
   const event = await getLiveEventById(eventId);
 
@@ -41,7 +54,8 @@ export async function GET(_: Request, context: { params: Promise<{ eventId: stri
 
   const endAt = new Date(startAt.getTime() + 60 * 60 * 1000);
   const siteUrl = getSiteUrl();
-  const details = event.description?.trim() || "GardenOS 活动预约确认";
+  const details = event.description?.trim() || (lang === "en" ? "GardenOS event registration confirmation" : "GardenOS 活动预约确认");
+  const title = pickEventTitle(event, lang);
   const ics = [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
@@ -52,7 +66,7 @@ export async function GET(_: Request, context: { params: Promise<{ eventId: stri
     `DTSTAMP:${toIcsDateTime(new Date())}`,
     `DTSTART:${toIcsDateTime(startAt)}`,
     `DTEND:${toIcsDateTime(endAt)}`,
-    `SUMMARY:${escapeIcsText(event.title)}`,
+    `SUMMARY:${escapeIcsText(title)}`,
     `DESCRIPTION:${escapeIcsText(details)}`,
     `LOCATION:${escapeIcsText(siteUrl)}`,
     "END:VEVENT",

@@ -75,36 +75,73 @@ export async function listRsvpsByEvent(eventId: string, pageQuery: PaginationQue
   return result.rows.map((row) => mapRow(row as Record<string, unknown>));
 }
 
-export async function listInviteCandidateEmailsByEvent(eventId: string): Promise<string[]> {
+export type InviteCandidate = {
+  email: string;
+  lang: "zh" | "en";
+};
+
+export async function listInviteCandidateEmailsByEvent(eventId: string): Promise<InviteCandidate[]> {
   await ensureRegistrationsSchema();
   const pool = getDbPool();
   const result = await pool.query(
     `
-      WITH candidate_emails AS (
-        SELECT LOWER(TRIM(email)) AS email
+      WITH candidate_contacts AS (
+        SELECT LOWER(TRIM(email)) AS email,
+               CASE WHEN LOWER(TRIM(lang)) = 'en' THEN 'en' ELSE 'zh' END AS lang,
+               1 AS priority,
+               submitted_at AS source_time
         FROM public.registrations
         WHERE email IS NOT NULL AND is_active = true
-        UNION
-        SELECT LOWER(TRIM(email)) AS email
+        UNION ALL
+        SELECT LOWER(TRIM(email)) AS email,
+               CASE WHEN LOWER(TRIM(locale)) = 'en' THEN 'en' ELSE 'zh' END AS lang,
+               2 AS priority,
+               registered_at AS source_time
         FROM live_rsvps
         WHERE email IS NOT NULL
+      ),
+      preferred_contacts AS (
+        SELECT DISTINCT ON (email)
+          email,
+          lang
+        FROM candidate_contacts
+        WHERE email <> ''
+        ORDER BY email, priority ASC, source_time DESC NULLS LAST
       )
-      SELECT c.email
-      FROM candidate_emails c
+      SELECT c.email, c.lang
+      FROM preferred_contacts c
       WHERE c.email <> ''
-        AND NOT EXISTS (
-          SELECT 1
-          FROM live_rsvps r
-          WHERE r.event_id = $1
-            AND LOWER(r.email) = c.email
-            AND r.status = 'registered'
-        )
       ORDER BY c.email ASC
     `,
     [eventId]
   );
 
   return result.rows
-    .map((row) => String((row as Record<string, unknown>).email ?? "").trim().toLowerCase())
-    .filter(Boolean);
+    .map((row) => {
+      const mapped = row as Record<string, unknown>;
+      const email = String(mapped.email ?? "").trim().toLowerCase();
+      const lang = String(mapped.lang ?? "zh") === "en" ? "en" : "zh";
+      return { email, lang };
+    })
+    .filter((row) => Boolean(row.email));
+}
+
+export async function hasRegisteredRsvpForEvent(eventId: string, email: string): Promise<boolean> {
+  const pool = getDbPool();
+  const normalizedEmail = String(email ?? "").trim().toLowerCase();
+  if (!normalizedEmail) return false;
+
+  const result = await pool.query(
+    `
+      SELECT 1
+      FROM live_rsvps
+      WHERE event_id = $1
+        AND LOWER(email) = $2
+        AND status = 'registered'
+      LIMIT 1
+    `,
+    [eventId, normalizedEmail]
+  );
+
+  return result.rows.length > 0;
 }
